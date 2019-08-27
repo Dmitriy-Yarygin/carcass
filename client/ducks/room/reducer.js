@@ -1,26 +1,29 @@
 import * as actionTypes from './actionTypes';
 
-const INIT_STATE = { login: null, redirectToReferrer: false };
+const INIT_STATE = {};
 
-export default function usersReducer(state = INIT_STATE, action) {
+export default function roomsReducer(state = INIT_STATE, action) {
   const { type, payload } = action;
 
   switch (type) {
     case actionTypes.INIT_ROOMS:
       return { ...state, rooms: [...payload] };
 
-    // case actionTypes.USER_UPDATE:
-    //   let users = state.users.map(user => {
-    //     if (user.id === payload.id) {
-    //       return payload;
-    //     }
-    //     return user;
-    //   });
-    //   return { ...state, users };
+    case actionTypes.ROOM_CREATE:
+      return { ...state, rooms: [...state.rooms, payload] };
 
-    // case actionTypes.USER_DEL:
-    //   users = state.users.filter(user => user.id !== payload);
-    //   return { ...state, users };
+    case actionTypes.ROOM_UPDATE:
+      let rooms = state.rooms.map(room => {
+        if (room.id === payload.id) {
+          return payload;
+        }
+        return room;
+      });
+      return { ...state, rooms };
+
+    case actionTypes.ROOM_DEL:
+      rooms = state.rooms.filter(room => room.id !== payload);
+      return { ...state, rooms };
 
     default:
       return state;

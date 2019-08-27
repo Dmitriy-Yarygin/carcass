@@ -3,7 +3,7 @@ const log = require('../helpers/logger')(__filename);
 
 const authRouter = require('./auth');
 const usersRouter = require('./users');
-// const progsRouter = require('./soft');
+const roomsRouter = require('./rooms');
 
 const router = new Router();
 
@@ -13,7 +13,7 @@ router
     return next();
   })
   .use('/api/auth', authRouter.routes())
-  .use('/api/users', usersRouter.routes());
-// .use('/api/soft', progsRouter.routes());
+  .use('/api/users', usersRouter.routes())
+  .use('/api/rooms', roomsRouter.routes());
 
 module.exports = router;

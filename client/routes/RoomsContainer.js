@@ -1,22 +1,22 @@
 import { connect } from 'react-redux';
-import Admins from './Admins';
-import * as usersActions from '../ducks/user/actions';
+import Rooms from './Rooms';
 import * as roomsActions from '../ducks/room/actions';
 
 const mapStateToProps = state => ({
-  user: state.user
+  user: state.user,
+  room: state.room
 });
 
 const mapDispatchToProps = dispatch => ({
-  loadRooms: options => dispatch(roomsActions.loadRooms(options))
+  loadRooms: options => dispatch(roomsActions.loadRooms(options)),
 
-  // // userAdd: newUser => dispatch(usersActions.userAdd(newUser)),
+  roomAdd: newRoom => dispatch(roomsActions.roomAdd(newRoom)),
 
-  // userUpdate: newUser => dispatch(usersActions.userUpdate(newUser)),
+  roomUpdate: newRoom => dispatch(roomsActions.roomUpdate(newRoom)),
 
-  // userDelete: id => dispatch(usersActions.userDelete(id))
+  roomDelete: id => dispatch(roomsActions.roomDelete(id))
 });
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Admins);
+)(Rooms);

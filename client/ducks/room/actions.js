@@ -6,10 +6,8 @@ export const loadRooms = options => dispatch => {
   return fetchAndCatch(`/api/rooms${params}`).then(answer => {
     if (answer.success) {
       dispatch(roomsInit(answer.result));
-    } else {
-      console.error(answer);
     }
-    return answer.success;
+    return answer;
   });
 };
 
@@ -17,42 +15,56 @@ export const roomsInit = roomsArray => ({
   type: actionTypes.INIT_ROOMS,
   payload: roomsArray
 });
-/*
-export const userUpdate = ({ id, ...editedUser }) => dispatch => {
-  return fetchAndCatch(`/api/rooms/${id}`, {
-    method: 'PUT',
+
+// ROOM_CREATE
+export const roomAdd = newRoom => dispatch => {
+  return fetchAndCatch(`/api/rooms/`, {
+    method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(editedUser)
+    body: JSON.stringify(newRoom)
   }).then(answer => {
     if (answer.success) {
-      dispatch(userUpdate2(answer.result));
-    } else {
-      console.error(answer);
+      dispatch(roomCreate(answer.result));
     }
-    return answer.success;
+    return answer;
   });
 };
 
-export const userUpdate2 = editedUser => ({
-  type: actionTypes.USER_UPDATE,
-  payload: editedUser
+export const roomCreate = newRoom => ({
+  type: actionTypes.ROOM_CREATE,
+  payload: newRoom
 });
 
-export const userDelete = id => dispatch => {
+export const roomUpdate = ({ id, ...editedRoom }) => dispatch => {
+  return fetchAndCatch(`/api/rooms/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(editedRoom)
+  }).then(answer => {
+    if (answer.success) {
+      dispatch(roomUpdate2(answer.result));
+    }
+    return answer;
+  });
+};
+
+export const roomUpdate2 = editedRoom => ({
+  type: actionTypes.ROOM_UPDATE,
+  payload: editedRoom
+});
+
+export const roomDelete = id => dispatch => {
   return fetchAndCatch(`/api/rooms/${id}`, { method: 'DELETE' }).then(
     answer => {
       if (answer.success) {
-        dispatch(userDelete2(id));
-      } else {
-        console.error(answer);
+        dispatch(roomDelete2(id));
       }
-      return answer.success;
+      return answer;
     }
   );
 };
 
-export const userDelete2 = id => ({
-  type: actionTypes.USER_DEL,
+export const roomDelete2 = id => ({
+  type: actionTypes.ROOM_DEL,
   payload: id
 });
-*/

@@ -6,15 +6,15 @@ import { loadState, saveState } from './localStorage';
 import throttle from 'lodash.throttle';
 import storeCreator from './store';
 
-const store = storeCreator({});
+// const store = storeCreator({});
 
-// const store = storeCreator(loadState());
+const store = storeCreator(loadState());
 
-// store.subscribe(
-//   throttle(() => {
-//     saveState(store.getState());
-//   }, 1000)
-// );
+store.subscribe(
+  throttle(() => {
+    saveState(store.getState());
+  }, 1000)
+);
 
 class App extends Component {
   render() {

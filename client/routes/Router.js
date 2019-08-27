@@ -6,8 +6,9 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import lime from '@material-ui/core/colors/lime';
 import Home from './HomeContainer';
 import Login from './LoginContainer';
-import Admins from './RoomsContainer';
+import Admins from './AdminsContainer';
 import Rooms from './RoomsContainer';
+import Entrance from './Entrance';
 
 const theme = createMuiTheme({
   palette: {
@@ -30,25 +31,15 @@ class Routes extends Component {
             <Header />
             <Route path="/" exact component={Home} />
             <Route path="/login" exact component={Login} />
+            <Route path="/rooms/:id" exact component={Entrance} />
 
-            <PrivateRoute
-              path="/ChooseCreateRoom"
-              isAllowed={isAllowed}
-              user={user}
-              component={Admins}
-            />
-            <PrivateRoute
+            <LoginedRoute
               path="/rooms"
+              exact
               isAllowed={isAllowed}
-              user={user}
               component={Rooms}
             />
-            <PrivateRoute
-              path="/protected"
-              isAllowed={isAllowed}
-              user={user}
-              component={Admins}
-            />
+            <PrivateRoute path="/protected" user={user} component={Admins} />
           </MuiThemeProvider>
         </div>
       </BrowserRouter>
@@ -56,7 +47,25 @@ class Routes extends Component {
   }
 }
 
-const PrivateRoute = ({ component: Component, isAllowed, user, ...rest }) => (
+const LoginedRoute = ({ component: Component, isAllowed, ...rest }) => (
+  <Route
+    {...rest}
+    render={props =>
+      isAllowed ? (
+        <Component {...props} />
+      ) : (
+        <Redirect
+          to={{
+            pathname: '/login',
+            state: { from: props.location }
+          }}
+        />
+      )
+    }
+  />
+);
+
+const PrivateRoute = ({ component: Component, user, ...rest }) => (
   <Route
     {...rest}
     render={props =>

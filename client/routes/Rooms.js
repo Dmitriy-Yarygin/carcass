@@ -7,6 +7,8 @@ import tableIcons from '../common/icons';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
+import MySnackbar from '../common/MySnackbar';
+import PlayIcon from '@material-ui/icons/PlayArrow';
 
 const styles = {
   root: {
@@ -17,15 +19,20 @@ const styles = {
 };
 
 const columns = [
-  { title: '№', field: 'id' },
-  { title: 'Name', field: 'email' },
-  { title: 'Users', field: 'users' },
+  { title: '№', field: 'id', editable: 'never' },
+  { title: 'Name', field: 'name' },
+  { title: 'Created at', field: 'created_at' },
   { title: 'State', field: 'state' }
 ];
 
-class Admins extends React.Component {
+class Rooms extends React.Component {
   state = {
-    selectedRow: null
+    selectedRow: null,
+    msg: null
+  };
+
+  warningOnClose = () => {
+    this.setState({ msg: null });
   };
 
   componentDidMount() {
@@ -33,19 +40,38 @@ class Admins extends React.Component {
   }
 
   render() {
-    const { classes, user } = this.props;
+    const { classes, user, room } = this.props;
     const editable =
-      user.role === 'su'
+      user.role !== '0000000000000'
         ? {
-            onRowUpdate: (newData, oldData) => {
-              return new Promise(resolve => {
-                this.props.userUpdate(newData);
-                resolve();
-              });
-            },
+            onRowAdd: newData =>
+              new Promise(resolve => {
+                this.props.roomAdd(newData).then(answer => {
+                  if (!answer.success) {
+                    this.setState({
+                      msg: answer.error.detail,
+                      msgVariant: 'error'
+                    });
+                  }
+                  resolve();
+                });
+              }),
+            onRowUpdate: (newData, oldData) =>
+              new Promise(resolve => {
+                if (newData.name === oldData.name) delete newData.name;
+                this.props.roomUpdate(newData).then(answer => {
+                  if (!answer.success) {
+                    this.setState({
+                      msg: answer.error.detail,
+                      msgVariant: 'error'
+                    });
+                  }
+                  resolve();
+                });
+              }),
             onRowDelete: oldData =>
               new Promise(resolve => {
-                this.props.userDelete(oldData.id);
+                this.props.roomDelete(oldData.id);
                 resolve();
               })
           }
@@ -56,9 +82,16 @@ class Admins extends React.Component {
         <Paper className={classes.root} elevation={1}>
           <MaterialTable
             icons={tableIcons}
-            title="Users"
+            title="Rooms"
             columns={columns}
-            data={user.users}
+            data={room.rooms}
+            actions={[
+              {
+                icon: () => <PlayIcon color={'primary'} />,
+                tooltip: 'Enter room',
+                onClick: (event, rowData) => alert('You saved ' + rowData.name)
+              }
+            ]}
             editable={editable}
             onRowClick={(evt, selectedRow) => this.setState({ selectedRow })}
             options={{
@@ -78,6 +111,12 @@ class Admins extends React.Component {
             }}
           />
         </Paper>
+
+        <MySnackbar
+          message={this.state.msg}
+          onClose={this.warningOnClose}
+          variant={this.state.msgVariant}
+        />
       </Grid>
     );
   }
@@ -87,4 +126,4 @@ class Admins extends React.Component {
 //   classes: PropTypes.object.isRequired
 // };
 
-export default withStyles(styles)(Admins);
+export default withStyles(styles)(Rooms);

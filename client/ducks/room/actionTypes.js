@@ -1,3 +1,4 @@
 export const INIT_ROOMS = 'INIT_ROOMS';
-// export const USER_UPDATE = 'USER_UPDATE';
-// export const USER_DEL = 'USER_DEL';
+export const ROOM_CREATE = 'ROOM_CREATE';
+export const ROOM_UPDATE = 'ROOM_UPDATE';
+export const ROOM_DEL = 'ROOM_DEL';

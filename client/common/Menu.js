@@ -73,6 +73,10 @@ class Menu extends React.Component {
                       <MenuItem onClick={this.handleClose}>Home</MenuItem>
                     </Link>
 
+                    <Link to="/rooms">
+                      <MenuItem onClick={this.handleClose}>Rooms</MenuItem>
+                    </Link>
+
                     {fullMenu && (
                       <Link to="/protected">
                         <MenuItem onClick={this.handleClose}>Users</MenuItem>
