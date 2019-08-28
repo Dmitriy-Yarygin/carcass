@@ -1,11 +1,19 @@
 const log = require('../../helpers/logger')(__filename);
 const Rooms = require('../models/Rooms');
+const Users = require('../models/Users');
 
 const { getObjEnabledFields } = require('../../helpers/validators');
 const CREATE_FIELDS = ['name', 'state'];
-const READ_FIELDS = ['id', 'name', 'state'];
+const READ_FIELDS = ['id', 'name', 'state', 'created_at', 'updated_at'];
 
-const create = async ({ name, state }) => {
+const create = async ({ name, state }, userId) => {
+  const user = await Users.query().findById(userId);
+  if (!user) {
+    return {
+      success: false,
+      error: { detail: `The user - room creator not found.` }
+    };
+  }
   const rooms = await findByName(name);
   if (rooms.length) {
     return {
@@ -14,13 +22,23 @@ const create = async ({ name, state }) => {
     };
   }
 
-  const result = await Rooms.query().insert({ name, state });
+  const result = await user.$relatedQuery('rooms').insert({ name, state });
+  result.users = user.email;
   return { success: true, result };
 };
 
 const read = async id => {
   let result = id ? Rooms.query().findById(id) : Rooms.query();
-  result = await result.select(...READ_FIELDS);
+  result = await result
+    .eager('users(onlyNames, orderByName)')
+    .select(...READ_FIELDS);
+  // if (result.length) {
+  //   result.forEach((room, i) => {
+  //     if (room.users.length) {
+  //       result[i].users = room.users.map(user => user.email).join(', ');
+  //     }
+  //   });
+  // }
   return { success: true, result };
 };
 

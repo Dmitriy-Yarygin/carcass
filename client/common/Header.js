@@ -23,10 +23,8 @@ class Header extends React.Component {
     let userName = 'admin';
     if (user && user.email) {
       const { email } = user;
-      userName = email.substring(
-        0,
-        Math.min(email.indexOf('.'), email.indexOf('@'))
-      );
+      const position = Math.min(email.indexOf('.'), email.indexOf('@'));
+      userName = position > 0 ? email.substring(0, position) : email;
     }
     return (
       <div className={classes.root}>

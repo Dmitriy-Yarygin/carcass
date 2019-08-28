@@ -5,7 +5,15 @@ export const loadRooms = options => dispatch => {
   const params = optionsToGetParams(options);
   return fetchAndCatch(`/api/rooms${params}`).then(answer => {
     if (answer.success) {
-      dispatch(roomsInit(answer.result));
+      let rooms = answer.result;
+      if (rooms.length) {
+        rooms.forEach((room, i) => {
+          if (room.users.length) {
+            rooms[i].users = room.users.map(user => user.email).join(', ');
+          }
+        });
+      }
+      dispatch(roomsInit(rooms));
     }
     return answer;
   });

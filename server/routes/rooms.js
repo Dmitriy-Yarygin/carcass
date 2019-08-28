@@ -11,9 +11,11 @@ router.param('id', async (id, ctx, next) => {
 });
 
 router.post('/', async (ctx, next) => {
+  const { user } = ctx.session;
+  ctx.assert(user && user.id, 401, 'User not found. Please login!');
   const record = ctx.request.body;
   ctx.assert(record.name, 400, 'You should enter name for a room');
-  ctx.body = await roomsManager.create(record);
+  ctx.body = await roomsManager.create(record, user.id);
 });
 
 // routes below this block are only for logined users
@@ -32,6 +34,8 @@ router.get('/:id(\\d+)', async (ctx, next) => {
 });
 
 router.put('/:id(\\d+)', async (ctx, next) => {
+  const { user } = ctx.session;
+  ctx.assert(user, 401, 'User not found. Please login!');
   ctx.body = await roomsManager.update(ctx.params.id, ctx.request.body);
 });
 

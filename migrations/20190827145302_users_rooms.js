@@ -5,12 +5,15 @@ exports.up = function(knex) {
       .integer('user_id')
       .unsigned()
       .references('id')
-      .inTable('users');
+      .inTable('users')
+      .onDelete('CASCADE');
     table
       .integer('room_id')
       .unsigned()
       .references('id')
-      .inTable('rooms');
+      .inTable('rooms')
+      .onDelete('CASCADE');
+
     table.timestamps(true, true);
   });
 };

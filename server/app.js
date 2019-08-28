@@ -10,7 +10,8 @@ const router = require('./routes');
 const config = require('../config')();
 const log = require('./helpers/logger')(__filename);
 const path = require('path');
-const fs = require('fs');
+
+const IO = require('koa-socket-2');
 
 const app = new Koa();
 
@@ -32,6 +33,17 @@ app.use(session(config.session, app));
 app.use(serve(config.path.static));
 
 app.use(router.routes());
+
+////////////////////////////////////////////////////////////////
+const io = new IO();
+io.attach(app);
+app.io.on('connect', sock => {
+  console.log(`app.io.on('connect', (sock) => `);
+  // console.log(sock);
+});
+app.io.on('message', (ctx, data) => {
+  console.log('client sent data to message endpoint', data);
+});
 ////////////////////////////////////////////////////////////////
 if (config.env === 'development') {
   const webpackConfig = require('../webpack/webpack.config.dev');

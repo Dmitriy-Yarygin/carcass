@@ -21,7 +21,8 @@ const styles = {
 const columns = [
   { title: '№', field: 'id', editable: 'never' },
   { title: 'Name', field: 'name' },
-  { title: 'Created at', field: 'created_at' },
+  { title: 'Players', field: 'users', editable: 'never' },
+  { title: 'Created at', field: 'created_at', editable: 'never' },
   { title: 'State', field: 'state' }
 ];
 
@@ -36,11 +37,17 @@ class Rooms extends React.Component {
   };
 
   componentDidMount() {
+    console.log(`Rooms componentDidMount`);
     this.props.loadRooms();
+  }
+
+  componentDidUpdate() {
+    console.log(`Rooms componentDidUpdate`);
   }
 
   render() {
     const { classes, user, room } = this.props;
+    // console.log(room.rooms);
     const editable =
       user.role !== '0000000000000'
         ? {
@@ -77,6 +84,15 @@ class Rooms extends React.Component {
           }
         : {};
 
+    const actions = [
+      {
+        icon: () => <PlayIcon color={'primary'} />,
+        tooltip: 'Enter room',
+        onClick: (event, rowData) =>
+          this.props.history.push(`/rooms/${rowData.id}`)
+      }
+    ];
+
     return (
       <Grid container justify="center" alignItems="center">
         <Paper className={classes.root} elevation={1}>
@@ -85,13 +101,7 @@ class Rooms extends React.Component {
             title="Rooms"
             columns={columns}
             data={room.rooms}
-            actions={[
-              {
-                icon: () => <PlayIcon color={'primary'} />,
-                tooltip: 'Enter room',
-                onClick: (event, rowData) => alert('You saved ' + rowData.name)
-              }
-            ]}
+            actions={actions}
             editable={editable}
             onRowClick={(evt, selectedRow) => this.setState({ selectedRow })}
             options={{
@@ -105,6 +115,7 @@ class Rooms extends React.Component {
                     ? '#EEE'
                     : '#FFF'
               })
+              // grouping: true
               // searchFieldAlignment: 'left'
               // showTitle: false,
               // search: false
