@@ -10,7 +10,7 @@ import Authentication from '../common/Authentication';
 import Button from '@material-ui/core/Button';
 import HowToReg from '@material-ui/icons/HowToReg';
 import Menu from './Menu';
-import Socket from './SocketContainer';
+import SocketIndicator from './SocketIndicatorContainer';
 
 class Header extends React.Component {
   handleClickLogout = () => {
@@ -59,7 +59,7 @@ class Header extends React.Component {
                 <Button color="inherit">Login</Button>
               </Link>
             )}
-            <Socket />
+            <SocketIndicator />
           </Toolbar>
         </AppBar>
       </div>

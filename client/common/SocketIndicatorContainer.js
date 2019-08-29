@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { Socket } from './Socket';
+import Socket from './SocketIndicator';
 import * as actions from '../ducks/socket/actions';
 
 const mapStateToProps = state => ({
