@@ -9,9 +9,6 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import MySnackbar from '../common/MySnackbar';
 import PlayIcon from '@material-ui/icons/PlayArrow';
-import Button from '@material-ui/core/Button';
-
-import { socket } from '../common/Socket';
 
 const styles = {
   root: {
@@ -33,10 +30,6 @@ class Rooms extends React.Component {
   state = {
     selectedRow: null,
     msg: null
-  };
-
-  handleBtnClick = () => {
-    socket.emit('giveRooms', { msg: 'Give me rooms array!' });
   };
 
   warningOnClose = () => {
@@ -129,13 +122,6 @@ class Rooms extends React.Component {
             }}
           />
         </Paper>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={this.handleBtnClick}
-        >
-          Check socket
-        </Button>
 
         <MySnackbar
           message={this.state.msg}
