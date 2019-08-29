@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import ReactDOM from 'react-dom';
 import Button from '@material-ui/core/Button';
 
-import { socketEmit, socketOn } from '../common/Socket';
+import { socket } from '../common/Socket';
 
 const styles = theme => ({
   root: {
@@ -21,8 +21,7 @@ class Home extends React.Component {
   state = {};
 
   handleBtnClick = () => {
-    console.log('handleBtnClick');
-    socketEmit('message', { foo: 'To be or not to be? TO BE!' });
+    socket.emit('message', { foo: 'To be or not to be? TO BE!' });
   };
 
   render() {

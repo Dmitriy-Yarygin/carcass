@@ -1,6 +1,7 @@
 'use strict';
 
 const session = require('koa-session');
+const redisStore = require('koa-redis');
 const Koa = require('koa');
 const Webpack = require('webpack');
 const koaWebpack = require('koa-webpack');
@@ -10,8 +11,7 @@ const router = require('./routes');
 const config = require('../config')();
 const log = require('./helpers/logger')(__filename);
 const path = require('path');
-
-const IO = require('koa-socket-2');
+const carcaSockets = require('./sockets');
 
 const app = new Koa();
 
@@ -28,23 +28,15 @@ app.use(async (ctx, next) => {
 app.use(koaBody({ multipart: true }));
 
 app.keys = [config.session.key];
-app.use(session(config.session, app));
+app.use(session({ ...config.session, store: redisStore() }, app));
+// app.use(session(config.session, app));
 
 app.use(serve(config.path.static));
 
 app.use(router.routes());
 
-////////////////////////////////////////////////////////////////
-const io = new IO();
-io.attach(app);
-app.io.on('connect', sock => {
-  console.log(`app.io.on('connect', (sock) => `);
-  // console.log(sock);
-});
-app.io.on('message', (ctx, data) => {
-  console.log('client sent data to message endpoint', data);
-});
-////////////////////////////////////////////////////////////////
+carcaSockets(app);
+
 if (config.env === 'development') {
   const webpackConfig = require('../webpack/webpack.config.dev');
   const compiler = Webpack(webpackConfig);
