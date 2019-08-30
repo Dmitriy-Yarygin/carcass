@@ -21,7 +21,7 @@ class Home extends React.Component {
   state = {};
 
   handleBtnClick = () => {
-    socket.emit('message', { foo: 'To be or not to be? TO BE!' });
+    socket.emit('rooms:get', { foo: 'To be or not to be? TO BE!' });
   };
 
   render() {

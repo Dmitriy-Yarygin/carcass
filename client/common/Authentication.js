@@ -1,4 +1,5 @@
 import { fetchAndCatch } from '../common/helpers';
+import { socket } from './Socket';
 
 export default class Authentication {
   static registrate(data) {
@@ -35,6 +36,7 @@ export default class Authentication {
         if (response.status === 401) {
           return false;
         }
+        socket.open();
         return response.json().then(answer => answer.user);
       })
       .catch(console.error);
@@ -48,6 +50,7 @@ export default class Authentication {
         if (response.status !== 200) {
           throw response.statusText;
         }
+        socket.close();
         this.isUserLogin = false;
         return false;
       })
