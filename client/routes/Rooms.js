@@ -39,7 +39,6 @@ class Rooms extends React.Component {
 
   componentDidMount() {
     console.log(`Rooms componentDidMount`);
-    // this.props.loadRooms();
     socket.emit('rooms', { method: 'read' }, this.checkSuccess);
   }
 
@@ -48,9 +47,8 @@ class Rooms extends React.Component {
   }
 
   checkSuccess = answer => {
-    console.log('answer FIRST');
-    console.log(answer);
-
+    // console.log('answer FIRST');
+    // console.log(answer);
     if (!answer.success) {
       console.error(answer);
       this.setState({
@@ -69,42 +67,37 @@ class Rooms extends React.Component {
         users: room.users.map(user => user.email).join(', ')
       }));
     }
-    const editable =
-      user.role !== '0000000000000'
-        ? {
-            onRowAdd: newData =>
-              new Promise(resolve => {
-                socket.emit(
-                  'rooms',
-                  { method: 'create', data: newData },
-                  this.checkSuccess
-                );
-                resolve();
-              }),
-            onRowUpdate: (newData, oldData) =>
-              new Promise(resolve => {
-                if (newData.name !== oldData.name) {
-                  const data = { ...newData };
-                  delete data.users;
-                  socket.emit(
-                    'rooms',
-                    { method: 'update', data },
-                    this.checkSuccess
-                  );
-                }
-                resolve();
-              }),
-            onRowDelete: oldData =>
-              new Promise(resolve => {
-                socket.emit(
-                  'rooms',
-                  { method: 'del', data: oldData.id },
-                  this.checkSuccess
-                );
-                resolve();
-              })
+    const editable = {
+      onRowAdd: newData =>
+        new Promise(resolve => {
+          socket.emit(
+            'rooms',
+            { method: 'create', data: newData },
+            this.checkSuccess
+          );
+          resolve();
+        }),
+      onRowUpdate: (newData, oldData) =>
+        new Promise(resolve => {
+          if (newData.name !== oldData.name) {
+            const data = { ...newData };
+            delete data.users;
+            socket.emit('rooms', { method: 'update', data }, this.checkSuccess);
           }
-        : {};
+          resolve();
+        })
+    };
+    if (true || user.role === 'su' || user.role === 'admin') {
+      editable.onRowDelete = oldData =>
+        new Promise(resolve => {
+          socket.emit(
+            'rooms',
+            { method: 'del', data: oldData.id },
+            this.checkSuccess
+          );
+          resolve();
+        });
+    }
 
     const actions = [
       {
