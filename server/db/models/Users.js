@@ -29,11 +29,14 @@ class Users extends Model {
 
   static get modifiers() {
     return {
+      onlyIds(builder) {
+        builder.select('users.id');
+      },
       orderByName(builder) {
         builder.orderBy('email');
       },
-      onlyNames(builder) {
-        builder.select('email');
+      withoutPW(builder) {
+        builder.select('users.id', 'email', 'role');
       }
     };
   }

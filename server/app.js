@@ -11,7 +11,7 @@ const router = require('./routes');
 const config = require('../config')();
 const log = require('./helpers/logger')(__filename);
 const path = require('path');
-const carcaSockets = require('./sockets');
+const { carcaSockets } = require('./sockets');
 
 const app = new Koa();
 

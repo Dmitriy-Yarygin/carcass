@@ -7,6 +7,8 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 // import EditedField from '../common/EditedField';
 // import TextField from '@material-ui/core/TextField';
+import ReactDOM from 'react-dom';
+import Button from '@material-ui/core/Button';
 
 const styles = theme => ({
   root: {
@@ -18,6 +20,12 @@ const styles = theme => ({
 class Home extends React.Component {
   state = {
     selectedRow: null
+  };
+
+  handleBtnClick = () => {
+    // const newData = { name: 'Room 133', state: 'test' };
+    // console.log(`testing data = %O`, newData);
+    // this.props.roomAdd(newData);
   };
 
   componentDidMount() {
@@ -41,6 +49,13 @@ class Home extends React.Component {
         <Typography className={classes.title} variant="h6" noWrap>
           Title
         </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={this.handleBtnClick}
+        >
+          Test
+        </Button>
       </Paper>
     );
   }

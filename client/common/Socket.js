@@ -4,7 +4,7 @@ export const socket = io({
   transports: ['websocket']
 });
 
-export const socketListeners = setFlag => {
+export const socketListeners = storeFunctions => {
   socket.on('reconnect_attempt', () => {
     console.log(` trying reCONNECT `);
     socket.io.opts.transports = ['polling', 'websocket'];
@@ -12,12 +12,12 @@ export const socketListeners = setFlag => {
 
   socket.on('connect', () => {
     console.log(` CONNECT `);
-    setFlag(socket.connected);
+    storeFunctions.setFlag(socket.connected);
   });
 
   socket.on('disconnect', () => {
     console.log(` DISCONNECT `);
-    setFlag(socket.connected);
+    storeFunctions.setFlag(socket.connected);
   });
 
   socket.on('user:connected', user => {
@@ -27,7 +27,25 @@ export const socketListeners = setFlag => {
     console.log(` DISCONNECT %O`, user);
   });
 
-  socket.on('rooms:get', function(data) {
-    console.log('roomsList ', data);
+  socket.on('rooms:create', answer => {
+    console.log('rooms:create >>> %O', answer);
+    storeFunctions.addRoom(answer.result);
+  });
+
+  socket.on('rooms:read', function(answer) {
+    // console.log('roomsList ', answer);
+    console.log('ggggggggggggggggggggg');
+    console.log(answer.result);
+    storeFunctions.loadRooms(answer.result);
+  });
+
+  socket.on('rooms:update', answer => {
+    console.log('rooms:update >>> %O', answer);
+    storeFunctions.updateRoom(answer.result);
+  });
+
+  socket.on('rooms:del', answer => {
+    console.log('rooms:del >>> ', answer);
+    storeFunctions.delRoom(answer.id);
   });
 };

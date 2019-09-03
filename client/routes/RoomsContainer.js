@@ -7,16 +7,4 @@ const mapStateToProps = state => ({
   room: state.room
 });
 
-const mapDispatchToProps = dispatch => ({
-  loadRooms: options => dispatch(roomsActions.loadRooms(options)),
-
-  roomAdd: newRoom => dispatch(roomsActions.roomAdd(newRoom)),
-
-  roomUpdate: newRoom => dispatch(roomsActions.roomUpdate(newRoom)),
-
-  roomDelete: id => dispatch(roomsActions.roomDelete(id))
-});
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Rooms);
+export default connect(mapStateToProps)(Rooms);

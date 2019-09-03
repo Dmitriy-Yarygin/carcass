@@ -7,7 +7,7 @@ import { socketListeners } from './Socket';
 
 class SocketIndicator extends React.Component {
   componentDidMount() {
-    socketListeners(this.props.setFlag);
+    socketListeners(this.props);
   }
 
   render() {

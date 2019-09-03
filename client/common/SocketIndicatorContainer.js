@@ -1,13 +1,21 @@
 import { connect } from 'react-redux';
 import Socket from './SocketIndicator';
-import * as actions from '../ducks/socket/actions';
+import * as socketActions from '../ducks/socket/actions';
+import * as roomActions from '../ducks/room/actions';
 
 const mapStateToProps = state => ({
   socket: state.socket
 });
 
 const mapDispatchToProps = dispatch => ({
-  setFlag: flag => dispatch(actions.setFlag(flag))
+  setFlag: flag => dispatch(socketActions.setFlag(flag)),
+
+  addRoom: newRoom => dispatch(roomActions.roomCreate(newRoom)),
+  loadRooms: roomsArray => dispatch(roomActions.loadRooms(roomsArray)),
+  updateRoom: editedRoom => dispatch(roomActions.roomUpdate(editedRoom)),
+  delRoom: id => dispatch(roomActions.roomDel(id)),
+
+  addPlayer: player => dispatch(roomActions.roomNewPLayer(player))
 });
 
 export default connect(

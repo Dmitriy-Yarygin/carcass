@@ -9,6 +9,7 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import MySnackbar from '../common/MySnackbar';
 import PlayIcon from '@material-ui/icons/PlayArrow';
+import { socket } from '../common/Socket';
 
 const styles = {
   root: {
@@ -23,7 +24,7 @@ const columns = [
   { title: 'Name', field: 'name' },
   { title: 'Players', field: 'users', editable: 'never' },
   { title: 'Created at', field: 'created_at', editable: 'never' },
-  { title: 'State', field: 'state' }
+  { title: 'State', field: 'state', editable: 'never' }
 ];
 
 class Rooms extends React.Component {
@@ -38,47 +39,68 @@ class Rooms extends React.Component {
 
   componentDidMount() {
     console.log(`Rooms componentDidMount`);
-    this.props.loadRooms();
+    // this.props.loadRooms();
+    socket.emit('rooms', { method: 'read' }, this.checkSuccess);
   }
 
   componentDidUpdate() {
     console.log(`Rooms componentDidUpdate`);
   }
 
+  checkSuccess = answer => {
+    console.log('answer FIRST');
+    console.log(answer);
+
+    if (!answer.success) {
+      console.error(answer);
+      this.setState({
+        msg: answer.error.detail,
+        msgVariant: 'error'
+      });
+    }
+  };
+
   render() {
     const { classes, user, room } = this.props;
-    // console.log(room.rooms);
+    let roomsArray = [];
+    if (room && room.rooms && room.rooms.length) {
+      roomsArray = room.rooms.map(room => ({
+        ...room,
+        users: room.users.map(user => user.email).join(', ')
+      }));
+    }
     const editable =
       user.role !== '0000000000000'
         ? {
             onRowAdd: newData =>
               new Promise(resolve => {
-                this.props.roomAdd(newData).then(answer => {
-                  if (!answer.success) {
-                    this.setState({
-                      msg: answer.error.detail,
-                      msgVariant: 'error'
-                    });
-                  }
-                  resolve();
-                });
+                socket.emit(
+                  'rooms',
+                  { method: 'create', data: newData },
+                  this.checkSuccess
+                );
+                resolve();
               }),
             onRowUpdate: (newData, oldData) =>
               new Promise(resolve => {
-                if (newData.name === oldData.name) delete newData.name;
-                this.props.roomUpdate(newData).then(answer => {
-                  if (!answer.success) {
-                    this.setState({
-                      msg: answer.error.detail,
-                      msgVariant: 'error'
-                    });
-                  }
-                  resolve();
-                });
+                if (newData.name !== oldData.name) {
+                  const data = { ...newData };
+                  delete data.users;
+                  socket.emit(
+                    'rooms',
+                    { method: 'update', data },
+                    this.checkSuccess
+                  );
+                }
+                resolve();
               }),
             onRowDelete: oldData =>
               new Promise(resolve => {
-                this.props.roomDelete(oldData.id);
+                socket.emit(
+                  'rooms',
+                  { method: 'del', data: oldData.id },
+                  this.checkSuccess
+                );
                 resolve();
               })
           }
@@ -89,7 +111,12 @@ class Rooms extends React.Component {
         icon: () => <PlayIcon color={'primary'} />,
         tooltip: 'Enter room',
         onClick: (event, rowData) =>
-          this.props.history.push(`/rooms/${rowData.id}`)
+          socket.emit(
+            'rooms',
+            { method: 'newPlayer', data: rowData.id },
+            this.checkSuccess
+          )
+        // this.props.history.push(`/rooms/${rowData.id}`)
       }
     ];
 
@@ -100,7 +127,7 @@ class Rooms extends React.Component {
             icons={tableIcons}
             title="Rooms"
             columns={columns}
-            data={room.rooms}
+            data={roomsArray}
             actions={actions}
             editable={editable}
             onRowClick={(evt, selectedRow) => this.setState({ selectedRow })}
