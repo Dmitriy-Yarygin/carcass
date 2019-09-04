@@ -37,8 +37,19 @@ function carcaSockets(app) {
       log.warn('User should login!');
       return socket.disconnect(true);
     }
-    userSessionSocket.setSid(socket.session.user.id, sid);
-    userSessionSocket.setSocketId(socket.session.user.id, socket.id, io);
+
+    const userId = socket.session.user.id;
+    userSessionSocket.setSid(userId, sid);
+
+    const newSocketId = socket.id;
+    const oldSocketId = userSessionSocket.getSocketId(userId);
+    if (oldSocketId && oldSocketId !== newSocketId) {
+      const socketConnection = io.connections.get(oldSocketId);
+      if (socketConnection) {
+        socketConnection.disconnect(true);
+      }
+    }
+    userSessionSocket.setSocketId(userId, newSocketId);
 
     socket.broadcast.emit('user:connected', socket.session.user);
     log.silly(`User connected >>>`);

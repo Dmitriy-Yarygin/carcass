@@ -35,14 +35,20 @@ class UserSessionSocket {
       await redisStore.destroy(oldSid);
     }
   }
-  setSocketId(userId, newSocketId, io) {
-    const oldSocketId = this.userSocket[userId];
-    if (oldSocketId && oldSocketId !== newSocketId) {
-      const socketConnection = io.connections.get(oldSocketId);
-      if (socketConnection) {
-        socketConnection.disconnect(true);
-      }
-    }
+  getSocketId(userId) {
+    return this.userSocket[userId];
+  }
+  //   setSocketId(userId, newSocketId, io) {
+  //     const oldSocketId = this.userSocket[userId];
+  //     if (oldSocketId && oldSocketId !== newSocketId) {
+  //       const socketConnection = io.connections.get(oldSocketId);
+  //       if (socketConnection) {
+  //         socketConnection.disconnect(true);
+  //       }
+  //     }
+  //     this.userSocket[userId] = newSocketId;
+  //   }
+  setSocketId(userId, newSocketId) {
     this.userSocket[userId] = newSocketId;
   }
 

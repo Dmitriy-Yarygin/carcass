@@ -16,10 +16,11 @@ export const socketListeners = storeFunctions => {
     // storeFunctions.login(user);
   });
 
-  socket.on('disconnect', () => {
-    console.log(` DISCONNECT `);
+  socket.on('disconnect', reason => {
+    console.log(` DISCONNECT `, reason);
+    // if (reason === 'io server disconnect') { //transport close
     storeFunctions.setFlag(socket.connected);
-    storeFunctions.logout();
+    if (reason !== 'transport close') storeFunctions.logout();
   });
 
   socket.on('user:connected', user => {
