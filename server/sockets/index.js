@@ -2,44 +2,47 @@ const cookie = require('cookie');
 const log = require('../helpers/logger')(__filename);
 const roomsManager = require('../db/managers/rooms');
 const usersManager = require('../db/managers/users');
+const redisStore = require('../db/redis');
+const userSessionSocket = require('../helpers/userSessionSocket');
+
 const IO = require('koa-socket-2');
-// class CarcaIO {
-//   constructor() {
-//     if (!CarcaIO.instance) {
-//       CarcaIO.instance = new IO();
-//     }
-//     return CarcaIO.instance;
-//   }
-// }
+class CarcaIO {
+  constructor() {
+    if (!CarcaIO.instance) {
+      CarcaIO.instance = new IO();
+    }
+    return CarcaIO.instance;
+  }
+}
 
-// const io = new CarcaIO();
-const io = new IO();
+const io = new CarcaIO();
+// const io = new IO();
 
-function carcaSockets(app, redisStore) {
+function carcaSockets(app) {
   io.attach(app);
   io.on('connection', async socket => {
-    /////////////////////////////////////////////////////////////////////////////////////////////
+    let sid;
     log.info('socket.handshake >>>>>>>>>>>> ');
-    if (socket.handshake.headers.cookie) {
-      const cookiesObj = cookie.parse(socket.handshake.headers.cookie);
-      log.error('======= cookiesObj ==========');
-      log.silly(cookiesObj);
 
-      const { carcass_session } = cookiesObj;
-      log.error('======== carcass_session =========');
-      log.silly(carcass_session);
+    if (!socket.handshake.headers.cookie) {
+      log.warn('======= cookie absent ==========');
+      return socket.disconnect(true);
+    }
 
-      socket.session = await redisStore.get(carcass_session);
-      log.warn(socket.session);
-    } else log.error('======= cookie absent ==========');
+    log.warn(socket.handshake.headers.cookie);
+    sid = userSessionSocket.getSid(socket.handshake.headers.cookie);
+    socket.session = await redisStore.get(sid);
 
     if (!socket.session || !socket.session.user) {
       log.warn('User should login!');
-      socket.disconnect(true);
-    } else {
-      socket.broadcast.emit('user:connected', socket.session.user.email);
-      log.warn(`${socket.session.user.email} connected`);
+      return socket.disconnect(true);
     }
+    userSessionSocket.setSid(socket.session.user.id, sid);
+    userSessionSocket.setSocketId(socket.session.user.id, socket.id, io);
+
+    socket.broadcast.emit('user:connected', socket.session.user);
+    log.silly(`User connected >>>`);
+    log.warn(socket.session.user);
     /////////////////////////////////////////////////////////////////////////////////////////////
 
     // socket.on('user:login', async data => {
@@ -49,7 +52,7 @@ function carcaSockets(app, redisStore) {
     // });
 
     socket.on('rooms', async ({ method, data }, callback) => {
-      log.info(`Server rooms:${method} >>> %O`, data);
+      // log.info(`Server rooms:${method} >>> %O`, data);
       const result = await roomsManager[method](data, socket.session.user.id);
       log.verbose(`result = await roomsManager.${method}() >>> %O`, result);
       callback(result);
@@ -65,43 +68,14 @@ function carcaSockets(app, redisStore) {
           io.broadcast(`rooms:${method}`, result);
       }
     });
-    /*
-    socket.on('rooms:add', async (obj, callback) => {
-      log.info('Server rooms:post >>> %O', obj);
-      const result = await roomsManager.create(obj, socket.session.user.id);
-      log.verbose(result);
-      callback(result);
-      if (!result.success) return;
-      io.broadcast('rooms:add', result);
-    });
 
-    socket.on('rooms:update', async (obj, callback) => {
-      log.info('Server rooms:update >>> %O', obj);
-      log.silly(socket.session.user);
-      const result = await roomsManager.update(obj, socket.session.user.id);
-      log.verbose(result);
-      callback(result);
-      if (!result.success) return;
-      io.broadcast('rooms:update', result);
-    });
-
-    socket.on('rooms:del', async (id, callback) => {
-      log.info('Server rooms:del >>> id = ', id);
-      const result = await roomsManager.del(id);
-      // socket.join(room.name, () => {
-      //   let rooms = Object.keys(socket.rooms);
-      //   log.info(rooms); // [ <socket.id>, 'room 237' ]
-      // });
-      log.verbose(result);
-      callback(result);
-      if (!result.success) return;
-      io.broadcast('rooms:del', id);
-    });
-*/
     socket.on('disconnect', function() {
-      if (socket.session && socket.session.user && socket.session.user.email) {
+      if (socket.session && socket.session.user) {
         log.warn(`${socket.session.user.email} disconnected`);
         socket.broadcast.emit('user:disconnected', socket.session.user.email);
+
+        userSessionSocket.delSocketId(socket.session.user.id);
+        socket.session = null;
       } else {
         log.warn(`Unlogined user disconnected`);
       }
@@ -110,7 +84,6 @@ function carcaSockets(app, redisStore) {
 }
 module.exports = { io, carcaSockets };
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // to one room
 // socket.to('others').emit('an event', { some: 'data' });
 

@@ -44,12 +44,10 @@ class Header extends React.Component {
 
             {user.redirectToReferrer ? (
               <>
-                <Link to="/protected">
-                  <Button color="inherit">
-                    {userName}
-                    <HowToReg />
-                  </Button>
-                </Link>
+                <Button color="inherit">
+                  {userName}
+                  <HowToReg />
+                </Button>
                 <Button color="inherit" onClick={this.handleClickLogout}>
                   Logout
                 </Button>

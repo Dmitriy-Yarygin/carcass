@@ -1,7 +1,7 @@
 'use strict';
 
 const session = require('koa-session');
-const redisStore = require('koa-redis')();
+const redisStore = require('./db/redis');
 const Koa = require('koa');
 const Webpack = require('webpack');
 const koaWebpack = require('koa-webpack');
@@ -35,7 +35,7 @@ app.use(serve(config.path.static));
 
 app.use(router.routes());
 
-carcaSockets(app, redisStore);
+carcaSockets(app);
 
 if (config.env === 'development') {
   const webpackConfig = require('../webpack/webpack.config.dev');

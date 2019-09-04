@@ -60,6 +60,9 @@ class Rooms extends React.Component {
 
   render() {
     const { classes, user, room } = this.props;
+    // if (user.redirectToReferrer) {
+    //   return <Redirect to={ pathname: '/'} />;
+    // }
     let roomsArray = [];
     if (room && room.rooms && room.rooms.length) {
       roomsArray = room.rooms.map(room => ({
@@ -87,7 +90,7 @@ class Rooms extends React.Component {
           resolve();
         })
     };
-    if (true || user.role === 'su' || user.role === 'admin') {
+    if (user.role === 'su' || user.role === 'admin') {
       editable.onRowDelete = oldData =>
         new Promise(resolve => {
           socket.emit(

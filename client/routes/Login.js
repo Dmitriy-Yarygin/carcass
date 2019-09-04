@@ -139,7 +139,7 @@ class SignIn extends React.Component {
 
   render() {
     const { from } = this.props.location.state || {
-      from: { pathname: '/protected' }
+      from: { pathname: '/rooms' }
     };
     const { redirectToReferrer } = this.state;
     if (redirectToReferrer) {
