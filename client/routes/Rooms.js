@@ -1,9 +1,7 @@
 import React from 'react';
 // import PropTypes from "prop-types";
-
 import MaterialTable from 'material-table';
 import tableIcons from '../common/icons';
-// import SoftwareTable from '../common/SoftwareTable';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
@@ -47,8 +45,6 @@ class Rooms extends React.Component {
   }
 
   checkSuccess = answer => {
-    // console.log('answer FIRST');
-    // console.log(answer);
     if (!answer.success) {
       console.error(answer);
       this.setState({
@@ -56,13 +52,18 @@ class Rooms extends React.Component {
         msgVariant: 'error'
       });
     }
+    return answer.success;
   };
+
+  newPlayerEnterRoom = (event, rowData) =>
+    socket.emit('rooms', { method: 'newPlayer', data: rowData.id }, answer => {
+      if (this.checkSuccess(answer)) {
+        this.props.history.push(`/rooms/${rowData.id}`);
+      }
+    });
 
   render() {
     const { classes, user, room } = this.props;
-    // if (user.redirectToReferrer) {
-    //   return <Redirect to={ pathname: '/'} />;
-    // }
     let roomsArray = [];
     if (room && room.rooms && room.rooms.length) {
       roomsArray = room.rooms.map(room => ({
@@ -106,13 +107,7 @@ class Rooms extends React.Component {
       {
         icon: () => <PlayIcon color={'primary'} />,
         tooltip: 'Enter room',
-        onClick: (event, rowData) =>
-          socket.emit(
-            'rooms',
-            { method: 'newPlayer', data: rowData.id },
-            this.checkSuccess
-          )
-        // this.props.history.push(`/rooms/${rowData.id}`)
+        onClick: this.newPlayerEnterRoom
       }
     ];
 

@@ -2,6 +2,7 @@ const log = require('../../helpers/logger')(__filename);
 const Rooms = require('../models/Rooms');
 const Users = require('../models/Users');
 const Users_rooms = require('../models/Users_rooms');
+const GameMap = require('../../game/gameMap');
 const MAX_PLAYERS_IN_THE_ROOM = 6;
 
 const { getObjEnabledFields } = require('../../helpers/validators');
@@ -13,7 +14,25 @@ function makeAnswerWithError(detail) {
   return { success: false, error: { detail } };
 }
 
+const canJoin = async (roomId, userId) => {
+  const room = await Rooms.query()
+    .findById(roomId)
+    .eager('users(onlyIds)');
+  if (!room) {
+    return makeAnswerWithError(`The room with id = ${roomId} not found.`);
+  }
+  if (!room.users || !room.users.some(user => user.id === userId)) {
+    return makeAnswerWithError(`The user with id = ${userId} not in room.`);
+  }
+
+  return { success: true };
+};
+
 const newPlayer = async (id, userId) => {
+  const user = await Users.query().findById(userId);
+  if (!user) {
+    return makeAnswerWithError(`The user with id = ${userId} not found.`);
+  }
   const room = await Rooms.query()
     .findById(id)
     .eager('users(onlyIds)');
@@ -23,17 +42,13 @@ const newPlayer = async (id, userId) => {
   if (room.users && room.users.length >= MAX_PLAYERS_IN_THE_ROOM) {
     return makeAnswerWithError(`The room with id = ${id} already filled.`);
   }
-  if (room.users.find(user => user.id === userId)) {
-    return makeAnswerWithError(`The user ${userId} alredy in room ${id}.`);
+  // check is this user already in the room
+  if (!room.users.some(user => user.id === userId)) {
+    await Users_rooms.query().insert({
+      room_id: id,
+      user_id: userId
+    });
   }
-  const user = await Users.query().findById(userId);
-  if (!user) {
-    return makeAnswerWithError(`The user with id = ${userId} not found.`);
-  }
-  await Users_rooms.query().insert({
-    room_id: id,
-    user_id: userId
-  });
   return read(id);
 };
 
@@ -46,7 +61,11 @@ const create = async ({ name, state }, userId) => {
   if (!user) {
     return makeAnswerWithError(`The user - room creator not found.`);
   }
-  const result = await user.$relatedQuery('rooms').insert({ name, state });
+  const gameMap = new GameMap();
+  const map = gameMap.get();
+  const result = await user
+    .$relatedQuery('rooms')
+    .insert({ name, state: 'created', map });
   const { id, email } = user;
   result.users = [{ id, email }];
   return { success: true, result };
@@ -110,6 +129,7 @@ const isRoomExist = async id => {
 const findByName = name => Rooms.query().where('name', name);
 
 module.exports = {
+  canJoin,
   newPlayer,
   create,
   read,

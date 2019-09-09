@@ -4,6 +4,7 @@ exports.up = function(knex) {
     table.string('name').unique();
     table.timestamps(true, true);
     table.string('state');
+    table.jsonb('map');
   });
 };
 

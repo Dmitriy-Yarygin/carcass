@@ -5,22 +5,23 @@ export const socket = io({
 });
 
 export const socketListeners = storeFunctions => {
-  // socket.on('reconnect_attempt', () => {
-  //   console.log(` trying reCONNECT `);
-  //   socket.io.opts.transports = ['polling', 'websocket'];
-  // });
+  socket.on('reconnect_attempt', () => {
+    console.log(` trying reCONNECT `);
+    socket.io.opts.transports = ['polling', 'websocket'];
+  });
 
   socket.on('connect', () => {
     console.log(` CONNECT `);
     storeFunctions.setFlag(socket.connected);
-    // storeFunctions.login(user);
   });
 
   socket.on('disconnect', reason => {
     console.log(` DISCONNECT `, reason);
-    // if (reason === 'io server disconnect') { //transport close
     storeFunctions.setFlag(socket.connected);
-    if (reason !== 'transport close') storeFunctions.logout();
+    if (reason !== 'transport close') {
+      // if (reason === 'io server disconnect')
+      storeFunctions.logout();
+    }
   });
 
   socket.on('user:connected', user => {
@@ -30,18 +31,19 @@ export const socketListeners = storeFunctions => {
     console.log(` DISCONNECT %O`, user);
   });
 
+  socket.on('newPlayer', user => {
+    console.log(` >< Player enter ><`, user);
+  });
+
   socket.on('rooms:create', answer => {
     storeFunctions.addRoom(answer.result);
   });
-
   socket.on('rooms:read', function(answer) {
     storeFunctions.loadRooms(answer.result);
   });
-
   socket.on('rooms:update', answer => {
     storeFunctions.updateRoom(answer.result);
   });
-
   socket.on('rooms:del', answer => {
     storeFunctions.delRoom(answer.id);
   });

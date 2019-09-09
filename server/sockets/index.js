@@ -1,7 +1,7 @@
 const cookie = require('cookie');
 const log = require('../helpers/logger')(__filename);
 const roomsManager = require('../db/managers/rooms');
-const usersManager = require('../db/managers/users');
+const usersRoomsManager = require('../db/managers/users-rooms');
 const redisStore = require('../db/redis');
 const userSessionSocket = require('../helpers/userSessionSocket');
 
@@ -50,17 +50,36 @@ function carcaSockets(app) {
       }
     }
     userSessionSocket.setSocketId(userId, newSocketId);
+    const rooms = await usersRoomsManager.getUserRooms(userId);
+    rooms.forEach(({ room_id }) => {
+      const roomNick = `room${room_id}`;
+      socket.join(roomNick, () => {
+        io.to(roomNick).emit('newPlayer', { roomNick, userId }); // broadcast to everyone in the room
+      });
+    });
 
     socket.broadcast.emit('user:connected', socket.session.user);
     log.silly(`User connected >>>`);
     log.warn(socket.session.user);
+
     /////////////////////////////////////////////////////////////////////////////////////////////
 
-    // socket.on('user:login', async data => {
-    //   log.info(`Server recieved on user:login >>> %O`, data);
-    //   const res = await usersManager.login(data);
-    //   socket.emit('user:login', res);
-    // });
+    socket.on('show me rooms', async (obj, callback) => {
+      let rooms = socket.rooms;
+      callback(rooms);
+    });
+
+    socket.on('game:join', async ({ roomId }, callback) => {
+      const userId = socket.session.user.id;
+      const result = await roomsManager.canJoin(roomId, userId);
+      callback(result);
+      if (result.success) {
+        const roomNick = `room${roomId}`;
+        socket.join(roomNick, () => {
+          io.to(roomNick).emit('newPlayer', { userId }); // broadcast to everyone in the room
+        });
+      }
+    });
 
     socket.on('rooms', async ({ method, data }, callback) => {
       // log.info(`Server rooms:${method} >>> %O`, data);
@@ -68,13 +87,20 @@ function carcaSockets(app) {
       log.verbose(`result = await roomsManager.${method}() >>> %O`, result);
       callback(result);
       if (!result.success) return;
+      // const roomNick = result.result && result.result.id ? `room #${result.result.id}` : '';
       switch (method) {
         case 'read':
           socket.emit('rooms:read', result);
           break;
         case 'newPlayer':
+          // socket.join(roomNick, () => {
+          //   io.to(roomNick).emit('newPlayer'); // broadcast to everyone in the room
+          // });
           io.broadcast(`rooms:update`, result);
           break;
+        // case 'create':
+        //   socket.join(roomNick);
+        // no break!!! - cos default should be executed too!!!
         default:
           io.broadcast(`rooms:${method}`, result);
       }

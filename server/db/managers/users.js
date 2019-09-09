@@ -27,6 +27,13 @@ const login = async ({ email, password }) => {
   return { success, msg: `You entered wrong password for email = ${email}` };
 };
 
+const getUserRooms = async id => {
+  result = await Users.query()
+    .findById(id)
+    .eager('rooms');
+  return { success: true, result };
+};
+
 const read = async id => {
   let result = id ? Users.query().findById(id) : Users.query();
   result = await result.select(...READ_FIELDS);

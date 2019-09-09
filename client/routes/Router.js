@@ -8,7 +8,7 @@ import Home from './HomeContainer';
 import Login from './LoginContainer';
 import Admins from './AdminsContainer';
 import Rooms from './RoomsContainer';
-import Entrance from './Entrance';
+import Room from './RoomContainer';
 
 const theme = createMuiTheme({
   palette: {
@@ -31,7 +31,7 @@ class Routes extends Component {
             <Header />
             <Route path="/" exact component={Home} />
             <Route path="/login" exact component={Login} />
-            <Route path="/rooms/:id" exact component={Entrance} />
+            <Route path="/rooms/:id" exact component={Room} />
 
             <LoginedRoute
               path="/rooms"
