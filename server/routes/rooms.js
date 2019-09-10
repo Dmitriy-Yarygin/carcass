@@ -36,7 +36,8 @@ router.get('/:id(\\d+)', async (ctx, next) => {
 router.put('/:id(\\d+)', async (ctx, next) => {
   const { user } = ctx.session;
   ctx.assert(user, 401, 'User not found. Please login!');
-  ctx.body = await roomsManager.update(ctx.params.id, ctx.request.body);
+  const { name } = ctx.request.body;
+  ctx.body = await roomsManager.update(ctx.params.id, { name }, user.id);
 });
 
 router.del('/:id(\\d+)', async (ctx, next) => {

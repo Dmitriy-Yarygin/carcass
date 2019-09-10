@@ -1,14 +1,18 @@
-const { startTile, uniqueTiles } = require('./tiles');
+const { uniqueTiles } = require('./tiles');
+const log = require('../helpers/logger')(__filename);
 
 class TilesStore {
-  constructor(uniqueTiles) {
-    this.tilesInBox = [];
-    uniqueTiles.forEach(({ quantity, tile }) => {
-      for (let i = 0; i < quantity; i++) {
-        this.tilesInBox.push({ ...tile });
-      }
-    });
+  constructor(tiles) {
+    this.tilesInBox = tiles || [];
+    if (!tiles) {
+      uniqueTiles.forEach(({ quantity, tile }) => {
+        for (let i = 0; i < quantity; i++) {
+          this.tilesInBox.push({ ...tile });
+        }
+      });
+    }
     this.jumble();
+    log.warn(tiles);
   }
 
   jumble() {

@@ -13,7 +13,6 @@ exports.up = function(knex) {
       .references('id')
       .inTable('rooms')
       .onDelete('CASCADE');
-
     table.timestamps(true, true);
   });
 };

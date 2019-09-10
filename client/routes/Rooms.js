@@ -20,6 +20,7 @@ const styles = {
 const columns = [
   { title: '№', field: 'id', editable: 'never' },
   { title: 'Name', field: 'name' },
+  // { title: 'Owner', field: 'owner', editable: 'never' },
   { title: 'Players', field: 'users', editable: 'never' },
   { title: 'Created at', field: 'created_at', editable: 'never' },
   { title: 'State', field: 'state', editable: 'never' }
@@ -68,7 +69,8 @@ class Rooms extends React.Component {
     if (room && room.rooms && room.rooms.length) {
       roomsArray = room.rooms.map(room => ({
         ...room,
-        users: room.users.map(user => user.email).join(', ')
+        users: room.users.map(user => user.email).join(', '),
+        state: room.state.name
       }));
     }
     const editable = {
@@ -83,9 +85,9 @@ class Rooms extends React.Component {
         }),
       onRowUpdate: (newData, oldData) =>
         new Promise(resolve => {
-          if (newData.name !== oldData.name) {
-            const data = { ...newData };
-            delete data.users;
+          const { id, name } = newData;
+          if (name !== oldData.name) {
+            const data = { id, name };
             socket.emit('rooms', { method: 'update', data }, this.checkSuccess);
           }
           resolve();

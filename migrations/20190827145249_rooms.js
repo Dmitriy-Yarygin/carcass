@@ -3,8 +3,10 @@ exports.up = function(knex) {
     table.increments('id').primary();
     table.string('name').unique();
     table.timestamps(true, true);
-    table.string('state');
+    table.jsonb('state');
     table.jsonb('map');
+    table.specificType('tiles', 'json ARRAY');
+    table.integer('owner');
   });
 };
 

@@ -18,6 +18,13 @@ class CarcaIO {
 const io = new CarcaIO();
 // const io = new IO();
 
+function joinRoom(socket, userId, roomId) {
+  const roomNick = `room${roomId}`;
+  socket.join(roomNick, () => {
+    socket.to(roomNick).emit('newPlayer', { roomNick, userId });
+  });
+}
+
 function carcaSockets(app) {
   io.attach(app);
   io.on('connection', async socket => {
@@ -51,12 +58,7 @@ function carcaSockets(app) {
     }
     userSessionSocket.setSocketId(userId, newSocketId);
     const rooms = await usersRoomsManager.getUserRooms(userId);
-    rooms.forEach(({ room_id }) => {
-      const roomNick = `room${room_id}`;
-      socket.join(roomNick, () => {
-        io.to(roomNick).emit('newPlayer', { roomNick, userId }); // broadcast to everyone in the room
-      });
-    });
+    rooms.forEach(({ room_id }) => joinRoom(socket, userId, room_id));
 
     socket.broadcast.emit('user:connected', socket.session.user);
     log.silly(`User connected >>>`);
@@ -69,21 +71,29 @@ function carcaSockets(app) {
       callback(rooms);
     });
 
-    socket.on('game:join', async ({ roomId }, callback) => {
+    socket.on('game: get map', async ({ roomId }, callback) => {
       const userId = socket.session.user.id;
-      const result = await roomsManager.canJoin(roomId, userId);
+      const result = await roomsManager.getGameData(userId, roomId);
       callback(result);
-      if (result.success) {
-        const roomNick = `room${roomId}`;
-        socket.join(roomNick, () => {
-          io.to(roomNick).emit('newPlayer', { userId }); // broadcast to everyone in the room
-        });
-      }
+    });
+    ////////////     game: start        ///////////////////////
+    socket.on('game: start', async ({ roomId }, callback) => {
+      const userId = socket.session.user.id;
+      const result = await roomsManager.startGame(userId, roomId);
+      callback(result);
+    });
+
+    ////////////     game: get tile         ///////////////////////
+    socket.on('game: get tile', async ({ roomId }, callback) => {
+      const userId = socket.session.user.id;
+      const result = await roomsManager.getTile(userId, roomId);
+      callback(result);
     });
 
     socket.on('rooms', async ({ method, data }, callback) => {
       // log.info(`Server rooms:${method} >>> %O`, data);
-      const result = await roomsManager[method](data, socket.session.user.id);
+      const userId = socket.session.user.id;
+      const result = await roomsManager[method](data, userId);
       log.verbose(`result = await roomsManager.${method}() >>> %O`, result);
       callback(result);
       if (!result.success) return;
@@ -93,13 +103,11 @@ function carcaSockets(app) {
           socket.emit('rooms:read', result);
           break;
         case 'newPlayer':
-          // socket.join(roomNick, () => {
-          //   io.to(roomNick).emit('newPlayer'); // broadcast to everyone in the room
-          // });
+          joinRoom(socket, userId, data);
           io.broadcast(`rooms:update`, result);
           break;
-        // case 'create':
-        //   socket.join(roomNick);
+        case 'create':
+          joinRoom(socket, userId, result.result.id);
         // no break!!! - cos default should be executed too!!!
         default:
           io.broadcast(`rooms:${method}`, result);
@@ -120,15 +128,3 @@ function carcaSockets(app) {
   });
 }
 module.exports = { io, carcaSockets };
-
-// to one room
-// socket.to('others').emit('an event', { some: 'data' });
-
-// to multiple rooms
-// socket.to('room1').to('room2').emit('hello');
-
-// a private message to another socket
-// socket.to(/* another socket id */).emit('hey');
-
-// WARNING: `socket.to(socket.id).emit()` will NOT work, as it will send to everyone in the room
-// named `socket.id` but the sender. Please use the classic `socket.emit()` instead.
