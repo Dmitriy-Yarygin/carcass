@@ -29,13 +29,13 @@ class Home extends React.Component {
   };
 
   componentDidMount() {
-    console.log(`>> 1 >> home componentDidMount`);
+    // console.log(`>> 1 >> home componentDidMount`);
     // this.props.clearSearch();
     // this.props.loadSoft();
   }
 
   componentDidUpdate(prevProps) {
-    console.log(`>> 2 >> home componentDidUpdate`);
+    // console.log(`>> 2 >> home componentDidUpdate`);
     // if (this.props.search !== prevProps.search) {
     //   this.props.loadSoft({ search: this.props.search });
     // }

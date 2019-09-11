@@ -82,13 +82,27 @@ function carcaSockets(app) {
       const result = await roomsManager.startGame(userId, roomId);
       callback(result);
     });
-
     ////////////     game: get tile         ///////////////////////
     socket.on('game: get tile', async ({ roomId }, callback) => {
       const userId = socket.session.user.id;
       const result = await roomsManager.getTile(userId, roomId);
       callback(result);
     });
+    ////////////////////  socket.emit('game: put tile', { }, answer => {
+    socket.on(
+      'game: put tile',
+      async ({ roomId, position, rotation }, callback) => {
+        const userId = socket.session.user.id;
+        const result = await roomsManager.putTile(
+          userId,
+          roomId,
+          position,
+          rotation
+        );
+        // const result = { success: false, error: { detail: 'TESTing' } };
+        callback(result);
+      }
+    );
 
     socket.on('rooms', async ({ method, data }, callback) => {
       // log.info(`Server rooms:${method} >>> %O`, data);

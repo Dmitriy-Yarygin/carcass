@@ -142,14 +142,14 @@ class MapView extends React.PureComponent {
       ? state.extendedMap
       : extendMap(tilesMap.tilesMap);
     if (newTile) {
-      console.log('newTile');
+      // console.log('newTile');
       return {
         extendedMap: findVariants(extendedMap, newTile)
       };
     }
     if (tilesMap.timeStamp !== state.timeStamp) {
-      console.log(JSON.stringify(state.timeStamp));
-      console.log(JSON.stringify(tilesMap.timeStamp));
+      // console.log(JSON.stringify(state.timeStamp));
+      // console.log(JSON.stringify(tilesMap.timeStamp));
       return {
         extendedMap,
         timeStamp: tilesMap.timeStamp
@@ -160,13 +160,15 @@ class MapView extends React.PureComponent {
   }
 
   render() {
-    console.log(`MapView render`);
-    const { classes, newTile } = this.props;
+    // console.log(`MapView render`);
+    const { classes, onClick } = this.props;
     const { extendedMap } = this.state;
     return (
       <div className={classes.root}>
         {extendedMap &&
-          extendedMap.map((raw, i) => <MapRaw key={i} raw={raw} />)}
+          extendedMap.map((raw, i) => (
+            <MapRaw key={i} y={i} raw={raw} onClick={onClick} />
+          ))}
       </div>
     );
   }

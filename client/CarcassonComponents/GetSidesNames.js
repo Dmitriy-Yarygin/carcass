@@ -63,11 +63,11 @@ const styles = {
 class GetSidesNames extends React.Component {
   render() {
     const { classes, tile, rotation } = this.props;
-    console.log(`GetSidesNames render`);
-    console.log(tile);
+    // console.log(`GetSidesNames render`);
+    // console.log(tile);
 
     const rotationClass = rotation ? `rotate${rotation}` : 'rotate0';
-    console.log(rotationClass);
+    // console.log(rotationClass);
     return (
       <div className={classes[rotationClass]}>
         <h3 className={classes.tileClass_name}>{tile.name}</h3>

@@ -12,12 +12,19 @@ const styles = {
 
 class MapRaw extends React.Component {
   render() {
-    const { classes, raw } = this.props;
+    const { classes, raw, onClick, y } = this.props;
     return (
       <div className={classes.root}>
         {raw.map((cell, i) => {
           if (cell && cell.variants) {
-            return <EtherealTile key={i} tile={cell} />;
+            return (
+              <EtherealTile
+                key={i}
+                position={{ x: i, y }}
+                tile={cell}
+                onClick={onClick}
+              />
+            );
           }
           return <Tile key={i} tile={cell} />;
         })}

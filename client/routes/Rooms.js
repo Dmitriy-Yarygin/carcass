@@ -37,12 +37,12 @@ class Rooms extends React.Component {
   };
 
   componentDidMount() {
-    console.log(`Rooms componentDidMount`);
+    // console.log(`Rooms componentDidMount`);
     socket.emit('rooms', { method: 'read' }, this.checkSuccess);
   }
 
   componentDidUpdate() {
-    console.log(`Rooms componentDidUpdate`);
+    // console.log(`Rooms componentDidUpdate`);
   }
 
   checkSuccess = answer => {

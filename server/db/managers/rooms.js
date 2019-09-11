@@ -163,19 +163,52 @@ const getTile = async (userId, roomId) => {
     return result;
   }
   const { id, name, state, map, tiles, users, owner } = result.result;
-
-  // log.error(`tiles = ${JSON.stringify(tiles)}`);
-
   const tilesStore = new TilesStore(tiles);
   const tile = tilesStore.popTile();
-
-  // log.error(tile);
-
   return update(
     {
       id,
       tiles: tilesStore.getTilesInBox(),
-      state: { ...state, turn: state.turn + 1, playerTurn: owner, tile }
+      state: {
+        ...state,
+        turn: state.turn + 1,
+        playerTurn: owner,
+        tile,
+        stage: 'gotTile'
+      }
+    },
+    userId
+  );
+};
+
+const putTile = async (userId, roomId, { x, y }, rotation) => {
+  let result = await getGameData(userId, roomId);
+  if (!result.success) {
+    return result;
+  }
+  const { id, name, state, map, tiles, users, owner } = result.result;
+
+  // TODO check correct tile position on backend!
+
+  const mapWidth = map.tilesMap.length;
+  const mapHeight = map.tilesMap[0].length;
+
+  // map update //////////////////////////////////////////////////////////
+  // map update //////////////////////////////////////////////////////////
+  // map update //////////////////////////////////////////////////////////
+  // map update //////////////////////////////////////////////////////////
+
+  const newMap = map;
+
+  return update(
+    {
+      id,
+      state: {
+        ...state,
+        tile: null,
+        stage: 'putTile'
+      },
+      map: newMap
     },
     userId
   );

@@ -23,7 +23,7 @@ const styles = theme => ({
 class Room extends React.Component {
   state = {
     msg: null,
-    gameState: { tile: null },
+    gameState: { tile: null, stage: null },
     tilesMap: { tilesMap: null, timeStamp: null }
   };
 
@@ -32,7 +32,7 @@ class Room extends React.Component {
   };
 
   componentDidMount() {
-    console.log(`game_Room componentDidMount`);
+    // console.log(`game_Room componentDidMount`);
     socket.emit(
       'game: get map',
       { roomId: this.props.match.params.id },
@@ -52,8 +52,6 @@ class Room extends React.Component {
   }
 
   checkSuccess = answer => {
-    console.log(answer);
-
     if (!answer.success) {
       console.error(answer);
       this.setState({
@@ -68,11 +66,10 @@ class Room extends React.Component {
     socket.emit('show me rooms', {}, console.log);
   };
   ///////////////////////////// START
-  handleBtn1Click = () => {
+  startClick = () => {
     socket.emit('game: start', { roomId: this.state.id }, answer => {
       if (this.checkSuccess(answer)) {
-        console.log(answer.result);
-
+        // console.log(answer.result);
         const { map, state } = answer.result;
         this.setState({
           tilesMap: map,
@@ -82,7 +79,7 @@ class Room extends React.Component {
     });
   };
   ////////////////////////// GET TILE
-  handleTileClick = () => {
+  getTileClick = () => {
     if (this.state.tile) {
       return;
     }
@@ -94,7 +91,20 @@ class Room extends React.Component {
       }
     });
   };
-  //////////////////////////////////////
+  ////////////////////////////////////// PUT TILE executed in EtherealTile
+  putTileClick = (position, rotation) => {
+    const gameState = this.state;
+    this.setState({ gameState: { ...gameState, tile: null } });
+
+    socket.emit(
+      'game: put tile',
+      { roomId: this.state.id, position, rotation },
+      answer => {
+        this.checkSuccess(answer);
+      }
+    );
+  };
+  //////////////////
   handleBtn2Click = () => {
     console.log(this.state);
   };
@@ -104,7 +114,7 @@ class Room extends React.Component {
     const { classes, user, room } = this.props;
     // console.log(this.props);
     const { name, gameState, tilesMap } = this.state;
-    const { tile } = gameState;
+    const { tile, stage } = gameState;
     const startBtnFlag =
       gameState && gameState.name && gameState.name === 'created';
     const newTileBtnFlag =
@@ -123,19 +133,21 @@ class Room extends React.Component {
             Hello socket
           </Button>
 
-          {newTileBtnFlag && (
-            <Tile tile={tile} onClick={this.handleTileClick} />
-          )}
-          {startBtnFlag && (
-            <button onClick={this.handleBtn1Click}>Start</button>
-          )}
+          {newTileBtnFlag && <Tile tile={tile} onClick={this.getTileClick} />}
+          {startBtnFlag && <button onClick={this.startClick}>Start</button>}
           <button onClick={this.handleBtn2Click}>State</button>
           {/* {jumbledTiles.map(({ name }, i) => ( <p key={i}>{name}</p> ))} */}
         </Paper>
 
         <Paper className={classes.root} elevation={1}>
           {/* JSON.stringify(this.state.tilesMap) */}
-          {tilesMap && <MapView tilesMap={tilesMap} newTile={tile} />}
+          {tilesMap && (
+            <MapView
+              tilesMap={tilesMap}
+              newTile={tile}
+              onClick={this.putTileClick}
+            />
+          )}
         </Paper>
 
         <MySnackbar
