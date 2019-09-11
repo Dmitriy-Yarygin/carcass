@@ -1,7 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
+const rotate0 = {
+  margin: 0,
+  padding: 0,
+  width: '100%',
+  height: '100%',
 
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center'
+};
 const styles = {
   tileClass_name: {
     display: 'flex'
@@ -36,23 +45,17 @@ const styles = {
     left: '-30%',
     transform: 'rotate(90deg)'
   },
-  rotate0: {
-    margin: 0,
-    padding: 0
-  },
+  rotate0,
   rotate1: {
-    margin: 0,
-    padding: 0,
+    ...rotate0,
     transform: 'rotate(90deg)'
   },
   rotate2: {
-    margin: 0,
-    padding: 0,
+    ...rotate0,
     transform: 'rotate(180deg)'
   },
   rotate3: {
-    margin: 0,
-    padding: 0,
+    ...rotate0,
     transform: 'rotate(270deg)'
   }
 };
@@ -61,7 +64,7 @@ class GetSidesNames extends React.Component {
   render() {
     const { classes, tile, rotation } = this.props;
     console.log(`GetSidesNames render`);
-    // console.log(rotation);
+    console.log(tile);
 
     const rotationClass = rotation ? `rotate${rotation}` : 'rotate0';
     console.log(rotationClass);

@@ -4,12 +4,23 @@ import GetSidesNames from './GetSidesNames';
 import './EtherealTile.css';
 
 class EtherealTile extends React.Component {
-  state = { rotation: 0 };
+  state = { rotation: 0, variantsLength: 0 };
+
+  componentDidMount() {
+    console.log(`EtherealTile componentDidMount`);
+    if (this.props.tile && this.props.tile.variants) {
+      this.setState({
+        rotation: this.props.tile.variants[0],
+        variantsLength: this.props.tile.variants.length
+      });
+    }
+  }
 
   handleBtnClick = () => {
-    let rotation = (this.state.rotation + 1) % 4;
-    console.log(rotation);
-    this.setState({ rotation });
+    const { rotation, variantsLength } = this.state;
+    if (variantsLength) {
+      this.setState({ rotation: (rotation + 1) % variantsLength });
+    }
   };
 
   render() {
