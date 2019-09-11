@@ -12,7 +12,6 @@ class TilesStore {
       });
     }
     this.jumble();
-    log.warn(tiles);
   }
 
   jumble() {
@@ -25,6 +24,7 @@ class TilesStore {
       flagsArray[i] = true;
       jumbledArray.push(this.tilesInBox[i]);
     }
+    log.silly(this.tilesInBox);
     return (this.tilesInBox = [...jumbledArray]);
   }
 

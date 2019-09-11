@@ -1,5 +1,5 @@
 import React from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
@@ -17,14 +17,13 @@ const styles = theme => ({
   root: {
     margin: 20,
     padding: 5
-    // display: 'flex'
   }
 });
 
 class Room extends React.Component {
   state = {
     msg: null,
-    tile: null,
+    gameState: { tile: null },
     tilesMap: { tilesMap: null, timeStamp: null }
   };
 
@@ -53,6 +52,8 @@ class Room extends React.Component {
   }
 
   checkSuccess = answer => {
+    console.log(answer);
+
     if (!answer.success) {
       console.error(answer);
       this.setState({
@@ -66,19 +67,8 @@ class Room extends React.Component {
   handleBtnClick = () => {
     socket.emit('show me rooms', {}, console.log);
   };
-
-  handleTileClick = () => {
-    if (this.state.tile) {
-      return;
-    }
-    socket.emit('game: get tile', { roomId: this.state.id }, answer => {
-      if (this.checkSuccess(answer)) {
-        this.setState({ tile: answer.result });
-      }
-    });
-  };
+  ///////////////////////////// START
   handleBtn1Click = () => {
-    // START
     socket.emit('game: start', { roomId: this.state.id }, answer => {
       if (this.checkSuccess(answer)) {
         console.log(answer.result);
@@ -91,23 +81,34 @@ class Room extends React.Component {
       }
     });
   };
+  ////////////////////////// GET TILE
+  handleTileClick = () => {
+    if (this.state.tile) {
+      return;
+    }
+    console.log('//////// GET TILE');
+    socket.emit('game: get tile', { roomId: this.state.id }, answer => {
+      if (this.checkSuccess(answer)) {
+        // tile = answer.result.state.tile;
+        this.setState({ gameState: answer.result.state });
+      }
+    });
+  };
+  //////////////////////////////////////
   handleBtn2Click = () => {
     console.log(this.state);
   };
 
   render() {
+    console.log(`Room render`);
     const { classes, user, room } = this.props;
     // console.log(this.props);
-    // console.log(this.state);
-    const { name, gameState, tilesMap, tile } = this.state;
-    const startBtnFlag = gameState && gameState.name === 'created';
-    //   room.rooms &&
-    //   room.rooms[id] &&
-    //   room.rooms[id].owner &&
-    //   room.rooms[id].owner === user.id;
-    const newTileBtnFlag = gameState && gameState.name === 'started';
-    //   gameState && gameState.playerTurn && gameState.playerTurn === user.id;
-    // console.log(room.rooms[id].owner, user.id, startBtnFlag);
+    const { name, gameState, tilesMap } = this.state;
+    const { tile } = gameState;
+    const startBtnFlag =
+      gameState && gameState.name && gameState.name === 'created';
+    const newTileBtnFlag =
+      gameState && gameState.name && gameState.name === 'started';
     return (
       <Grid container direction="row">
         <Paper className={classes.root} elevation={1}>
@@ -147,8 +148,8 @@ class Room extends React.Component {
   }
 }
 
-// Room.propTypes = {
-//   classes: PropTypes.func.isRequired
-// };
+Room.propTypes = {
+  classes: PropTypes.object.isRequired
+};
 
 export default withStyles(styles)(Room);

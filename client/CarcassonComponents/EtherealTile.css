@@ -1,0 +1,43 @@
+.ethereal {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  border: 1px solid green;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: yellow;
+  animation-name: blink;
+  animation-duration: 2s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.tileClass_btn_rotate {
+  font-size: 0.5em;
+  position: absolute;
+  top: 0%;
+  left: 100%;
+  transform: translate(-100%, 0%);
+}
+
+.rotate1 {
+  transform: rotate(90deg);
+}
+.rotate2 {
+  transform: rotate(180deg);
+}
+.rotate3 {
+  transform: rotate(270deg);
+}

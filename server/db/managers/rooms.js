@@ -164,8 +164,13 @@ const getTile = async (userId, roomId) => {
   }
   const { id, name, state, map, tiles, users, owner } = result.result;
 
+  // log.error(`tiles = ${JSON.stringify(tiles)}`);
+
   const tilesStore = new TilesStore(tiles);
   const tile = tilesStore.popTile();
+
+  // log.error(tile);
+
   return update(
     {
       id,

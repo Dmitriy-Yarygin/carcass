@@ -7,10 +7,11 @@ const styles = {
     display: 'flex'
   },
   tileClass_side0: {
-    width: '100%',
-    textAlign: 'center',
     position: 'absolute',
-    top: 0
+    top: 0,
+    left: '50%',
+    marginRight: '-50%',
+    transform: 'translate(-50%, 0)'
   },
   tileClass_side1: {
     width: '80%',
@@ -18,7 +19,7 @@ const styles = {
     position: 'absolute',
     top: '40%',
     left: '50%',
-    transform: 'rotate(90deg)'
+    transform: 'rotate(-90deg)'
   },
   tileClass_side2: {
     position: 'absolute',
@@ -34,28 +35,55 @@ const styles = {
     top: '40%',
     left: '-30%',
     transform: 'rotate(90deg)'
+  },
+  rotate0: {
+    margin: 0,
+    padding: 0
+  },
+  rotate1: {
+    margin: 0,
+    padding: 0,
+    transform: 'rotate(90deg)'
+  },
+  rotate2: {
+    margin: 0,
+    padding: 0,
+    transform: 'rotate(180deg)'
+  },
+  rotate3: {
+    margin: 0,
+    padding: 0,
+    transform: 'rotate(270deg)'
   }
 };
 
 class GetSidesNames extends React.Component {
   render() {
-    const { classes, tile } = this.props;
+    const { classes, tile, rotation } = this.props;
+    console.log(`GetSidesNames render`);
+    // console.log(rotation);
+
+    const rotationClass = rotation ? `rotate${rotation}` : 'rotate0';
+    console.log(rotationClass);
     return (
-      <>
+      <div className={classes[rotationClass]}>
         <h3 className={classes.tileClass_name}>{tile.name}</h3>
-        {tile.sides.map(({ type, owner }, i) => (
-          <span
-            key={i}
-            className={classes[`tileClass_side${i}`]}
-          >{`${type} ${owner}`}</span>
-        ))}
-      </>
+        {tile.sides &&
+          tile.sides.map(({ type, owner }, i) => (
+            <span
+              key={i}
+              className={classes[`tileClass_side${i}`]}
+            >{`${type} ${owner}`}</span>
+          ))}
+      </div>
     );
   }
 }
 
 GetSidesNames.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  tile: PropTypes.object.isRequired
+  // rotation: PropTypes.number.isRequired
 };
 
 export default withStyles(styles)(GetSidesNames);

@@ -138,16 +138,18 @@ class MapView extends React.PureComponent {
   static getDerivedStateFromProps(props, state) {
     // console.log('getDerivedStateFromProps');
     const { tilesMap, newTile } = props;
+    const extendedMap = state.extendedMap
+      ? state.extendedMap
+      : extendMap(tilesMap.tilesMap);
     if (newTile) {
       console.log('newTile');
       return {
-        extendedMap: findVariants(state.extendedMap, newTile)
+        extendedMap: findVariants(extendedMap, newTile)
       };
     }
     if (tilesMap.timeStamp !== state.timeStamp) {
       console.log(JSON.stringify(state.timeStamp));
       console.log(JSON.stringify(tilesMap.timeStamp));
-      const extendedMap = extendMap(tilesMap.tilesMap);
       return {
         extendedMap,
         timeStamp: tilesMap.timeStamp
