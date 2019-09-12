@@ -47,4 +47,8 @@ export const socketListeners = storeFunctions => {
   socket.on('rooms:del', answer => {
     storeFunctions.delRoom(answer.id);
   });
+
+  socket.on('game: next turn', answer => {
+    console.log(answer);
+  });
 };

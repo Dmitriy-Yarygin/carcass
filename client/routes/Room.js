@@ -121,13 +121,17 @@ class Room extends React.Component {
   render() {
     console.log(`Room render`);
     const { classes, user, room } = this.props;
-    // console.log(this.props);
     const { name, gameState, tilesMap } = this.state;
-    const { tile, stage } = gameState;
+    console.log(`gameState = ${JSON.stringify(gameState)}`);
+    console.log(`user = ${JSON.stringify(user)}`);
+
+    const { tile, stage, turn, turnOrder, playerTurn } = gameState;
+
     const startBtnFlag =
       gameState && gameState.name && gameState.name === 'created';
     const newTileBtnFlag =
       gameState && gameState.name && gameState.name === 'started';
+    const isYourTurn = turnOrder && user.id == turnOrder[playerTurn];
     return (
       <Grid container direction="row">
         <Paper className={classes.root} elevation={1}>
@@ -142,7 +146,9 @@ class Room extends React.Component {
             Hello socket
           </Button>
 
-          {newTileBtnFlag && <Tile tile={tile} onClick={this.getTileClick} />}
+          {newTileBtnFlag && isYourTurn && (
+            <Tile tile={tile} onClick={this.getTileClick} />
+          )}
           {startBtnFlag && <button onClick={this.startClick}>Start</button>}
           <button onClick={this.handleBtn2Click}>State</button>
           {/* {jumbledTiles.map(({ name }, i) => ( <p key={i}>{name}</p> ))} */}

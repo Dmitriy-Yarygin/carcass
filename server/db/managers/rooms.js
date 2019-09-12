@@ -141,17 +141,18 @@ const startGame = async (userId, roomId) => {
   if (!result.success) {
     return result;
   }
-  const { id, state, owner } = result.result;
+  const { id, state, owner, users } = result.result;
   if (userId !== owner) {
     return makeAnswerWithError(`Only room owner can start the game!`);
   }
   const gameMap = new GameMap();
   const map = gameMap.get();
+  const turnOrder = users.map(({ id }) => id);
   return update(
     {
       id,
       map,
-      state: { ...state, name: 'started', turn: 0, playerTurn: owner }
+      state: { ...state, name: 'started', turn: 0, playerTurn: 0, turnOrder }
     },
     userId
   );
@@ -163,6 +164,15 @@ const getTile = async (userId, roomId) => {
     return result;
   }
   const { id, name, state, map, tiles, users, owner } = result.result;
+
+  const { turnOrder, playerTurn } = state;
+  if (userId !== turnOrder[playerTurn]) {
+    return {
+      success: false,
+      error: { detail: `It's not your turn!` }
+    };
+  }
+
   const tilesStore = new TilesStore(tiles);
   const tile = tilesStore.popTile();
   return update(
@@ -172,7 +182,6 @@ const getTile = async (userId, roomId) => {
       state: {
         ...state,
         turn: state.turn + 1,
-        playerTurn: owner,
         tile,
         stage: 'gotTile'
       }
@@ -190,17 +199,20 @@ const putTile = async (userId, roomId, position, rotation) => {
 
   const gameMap = new GameMap(map.tilesMap);
   const success = gameMap.putTileOnMap(state.tile, position, rotation);
-  if (tiles.length === 0) {
-    state.name = 'finished';
-  }
   if (success) {
+    //////////////////////   later this block needs to be moved to block after Miple placed on board
+    if (tiles.length === 0) state.name = 'finished';
+    let { playerTurn, turnOrder } = state;
+    playerTurn = (playerTurn + 1) % turnOrder.length;
+    //////////////////////////////////////////////////
     return update(
       {
         id,
         state: {
           ...state,
           tile: null,
-          stage: 'putTile'
+          stage: 'putTile',
+          playerTurn
         },
         map: gameMap.get()
       },

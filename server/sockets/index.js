@@ -100,6 +100,8 @@ function carcaSockets(app) {
           rotation
         );
         callback(result);
+        // here needs to send message to all players in the room except userId
+        socket.to(`room${roomId}`).emit('game: next turn', result);
       }
     );
 
