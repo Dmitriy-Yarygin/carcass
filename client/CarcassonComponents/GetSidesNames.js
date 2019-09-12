@@ -85,8 +85,8 @@ class GetSidesNames extends React.Component {
 
 GetSidesNames.propTypes = {
   classes: PropTypes.object.isRequired,
-  tile: PropTypes.object.isRequired
-  // rotation: PropTypes.number.isRequired
+  tile: PropTypes.object.isRequired,
+  rotation: PropTypes.number
 };
 
 export default withStyles(styles)(GetSidesNames);

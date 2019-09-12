@@ -21,9 +21,11 @@ class Tile extends React.Component {
     if (!tile) {
       return <div className={classes.tileClass} onClick={onClick}></div>;
     }
+    const rotation = tile.rotation || 0;
+
     return (
       <div className={classes.tileClass}>
-        <GetSidesNames tile={tile} />
+        <GetSidesNames tile={tile} rotation={rotation} />
       </div>
     );
   }

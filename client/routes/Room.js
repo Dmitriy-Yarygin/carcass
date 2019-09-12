@@ -100,7 +100,16 @@ class Room extends React.Component {
       'game: put tile',
       { roomId: this.state.id, position, rotation },
       answer => {
-        this.checkSuccess(answer);
+        if (this.checkSuccess(answer)) {
+          console.log('/// PUT TILE executed in EtherealTile answer');
+          console.log(answer.result);
+          // this.props.updateRoom(answer.result);
+          const { state, map } = answer.result;
+          this.setState({
+            tilesMap: map,
+            gameState: state
+          });
+        }
       }
     );
   };

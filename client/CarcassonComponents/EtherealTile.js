@@ -2,40 +2,37 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import GetSidesNames from './GetSidesNames';
 import './EtherealTile.css';
-import { socket } from '../common/Socket';
 
 class EtherealTile extends React.Component {
-  state = { rotation: 0, variantsLength: 0 };
+  state = { rotationIndex: 0 };
 
   componentDidMount() {
     // console.log(`EtherealTile componentDidMount`);
-    if (this.props.tile && this.props.tile.variants) {
-      this.setState({
-        rotation: this.props.tile.variants[0],
-        variantsLength: this.props.tile.variants.length
-      });
-    }
   }
 
   handleBtnClick = e => {
     e.stopPropagation();
-    const { rotation, variantsLength } = this.state;
-    if (variantsLength) {
-      this.setState({ rotation: (rotation + 1) % variantsLength });
+    const { tile } = this.props;
+    if (tile.variants && tile.variants.length) {
+      const rotationIndex =
+        (this.state.rotationIndex + 1) % tile.variants.length;
+      this.setState({ rotationIndex });
     }
   };
 
   tileClick = e => {
-    const { onClick, position } = this.props;
-    onClick(position, this.state.rotation);
+    const { onClick, position, tile } = this.props;
+    onClick(position, tile.variants[this.state.rotationIndex]);
   };
 
   render() {
-    console.log(this.props);
+    // console.log(this.props);
     const { tile } = this.props;
+    const { rotationIndex } = this.state;
+    const rotation = tile.variants[rotationIndex];
     return (
       <div className="ethereal" onClick={this.tileClick}>
-        <GetSidesNames tile={tile} rotation={this.state.rotation} />
+        <GetSidesNames tile={tile} rotation={rotation} />
         {tile.variants && tile.variants.length > 1 && (
           <button
             className="tileClass_btn_rotate"

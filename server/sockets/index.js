@@ -99,7 +99,6 @@ function carcaSockets(app) {
           position,
           rotation
         );
-        // const result = { success: false, error: { detail: 'TESTing' } };
         callback(result);
       }
     );

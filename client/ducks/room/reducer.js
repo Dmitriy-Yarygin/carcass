@@ -16,9 +16,6 @@ export default function roomsReducer(state = INIT_STATE, action) {
       let rooms = state.rooms.map(room => {
         if (room.id === payload.id) {
           return payload;
-          // if (!payload.users || !Array.isArray(payload.users)) return payload;
-          // usersString = payload.users.map(user => user.email).join(', ');
-          // return {...payload, users: usersString};
         }
         return room;
       });

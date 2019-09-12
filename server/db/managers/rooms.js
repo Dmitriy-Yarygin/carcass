@@ -181,37 +181,36 @@ const getTile = async (userId, roomId) => {
   );
 };
 
-const putTile = async (userId, roomId, { x, y }, rotation) => {
+const putTile = async (userId, roomId, position, rotation) => {
   let result = await getGameData(userId, roomId);
   if (!result.success) {
     return result;
   }
   const { id, name, state, map, tiles, users, owner } = result.result;
 
-  // TODO check correct tile position on backend!
-
-  const mapWidth = map.tilesMap.length;
-  const mapHeight = map.tilesMap[0].length;
-
-  // map update //////////////////////////////////////////////////////////
-  // map update //////////////////////////////////////////////////////////
-  // map update //////////////////////////////////////////////////////////
-  // map update //////////////////////////////////////////////////////////
-
-  const newMap = map;
-
-  return update(
-    {
-      id,
-      state: {
-        ...state,
-        tile: null,
-        stage: 'putTile'
+  const gameMap = new GameMap(map.tilesMap);
+  const success = gameMap.putTileOnMap(state.tile, position, rotation);
+  if (tiles.length === 0) {
+    state.name = 'finished';
+  }
+  if (success) {
+    return update(
+      {
+        id,
+        state: {
+          ...state,
+          tile: null,
+          stage: 'putTile'
+        },
+        map: gameMap.get()
       },
-      map: newMap
-    },
-    userId
-  );
+      userId
+    );
+  }
+  return {
+    success: false,
+    error: { detail: `Can't put this tile on the map!` }
+  };
 };
 
 module.exports = {
@@ -224,5 +223,6 @@ module.exports = {
   findByName,
   getGameData,
   startGame,
-  getTile
+  getTile,
+  putTile
 };
