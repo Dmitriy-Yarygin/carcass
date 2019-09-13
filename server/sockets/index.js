@@ -1,4 +1,3 @@
-const cookie = require('cookie');
 const log = require('../helpers/logger')(__filename);
 const roomsManager = require('../db/managers/rooms');
 const usersRoomsManager = require('../db/managers/users-rooms');
@@ -16,7 +15,6 @@ class CarcaIO {
 }
 
 const io = new CarcaIO();
-// const io = new IO();
 
 function joinRoom(socket, userId, roomId) {
   const roomNick = `room${roomId}`;
@@ -76,6 +74,7 @@ function carcaSockets(app) {
       const result = await roomsManager.getGameData(userId, roomId);
       callback(result);
     });
+
     ////////////     game: start        ///////////////////////
     socket.on('game: start', async ({ roomId }, callback) => {
       const userId = socket.session.user.id;
@@ -83,15 +82,14 @@ function carcaSockets(app) {
       callback(result);
       if (result.success) io.broadcast(`rooms:update`, result);
     });
-    // log.error(`roomId = ${roomId}`);
+
     ////////////     game: get tile         ///////////////////////
     socket.on('game: get tile', async ({ roomId }, callback) => {
       const userId = socket.session.user.id;
       const result = await roomsManager.getTile(userId, roomId);
       callback(result);
-      // if (result.success)
-      //   socket.to(`room${roomId}`).emit('rooms:update', result);
     });
+
     ////////////////////  socket.emit('game: put tile', { }, answer => {
     socket.on(
       'game: put tile',
@@ -105,8 +103,6 @@ function carcaSockets(app) {
           rotation
         );
         callback(result);
-        // here needs to send message to all players in the room except userId
-        // socket.to(`room${roomId}`).emit('game: next turn', result);
         if (result.success)
           socket.to(`room${roomId}`).emit('rooms:update', result);
       }
@@ -119,7 +115,7 @@ function carcaSockets(app) {
       log.verbose(`result = await roomsManager.${method}() >>> %O`, result);
       callback(result);
       if (!result.success) return;
-      // const roomNick = result.result && result.result.id ? `room #${result.result.id}` : '';
+
       switch (method) {
         case 'read':
           socket.emit('rooms:read', result);

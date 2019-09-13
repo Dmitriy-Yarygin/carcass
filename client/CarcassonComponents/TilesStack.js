@@ -12,16 +12,19 @@ class TileStack extends React.Component {
 
     const emptyTileClass = blinkFlag ? `tileClass blink` : `tileClass`;
 
+    const thickness = Math.round(tilesInStack / 1);
+    const cls = { boxShadow: `${thickness}px ${thickness}px` };
+
     if (!tile) {
       return (
-        <div className={emptyTileClass} onClick={onClick}>
+        <div className={emptyTileClass} onClick={onClick} style={cls}>
           <h2>{tilesInStack}</h2>
         </div>
       );
     }
 
     return (
-      <div className="tileClass">
+      <div className="tileClass" style={cls}>
         <GetSidesNames tile={tile} />
       </div>
     );
