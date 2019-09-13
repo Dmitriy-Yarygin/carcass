@@ -22,9 +22,9 @@ const styles = theme => ({
 
 class Room extends React.Component {
   state = {
-    msg: null,
-    gameState: { tile: null, stage: null },
-    tilesMap: { tilesMap: null, timeStamp: null }
+    msg: null
+    // gameState: { tile: null, stage: null },
+    // tilesMap: { tilesMap: null, timeStamp: null }
   };
 
   warningOnClose = () => {
@@ -38,13 +38,13 @@ class Room extends React.Component {
       { roomId: this.props.match.params.id },
       answer => {
         if (this.checkSuccess(answer)) {
-          const { id, name, map, state, users } = answer.result;
+          // const { id, name, map, state, users } = answer.result;
           this.setState({
-            id,
-            name,
-            tilesMap: map,
-            gameState: state,
-            players: users
+            roomId: answer.result.id,
+            roomName: answer.result.name
+            // tilesMap: map,
+            // gameState: state,
+            // players: users
           });
         }
       }
@@ -65,50 +65,48 @@ class Room extends React.Component {
   handleBtnClick = () => {
     socket.emit('show me rooms', {}, console.log);
   };
-  ///////////////////////////// START
+
   startClick = () => {
-    socket.emit('game: start', { roomId: this.state.id }, answer => {
+    socket.emit('game: start', { roomId: this.state.roomId }, answer => {
       if (this.checkSuccess(answer)) {
         // console.log(answer.result);
-        const { map, state } = answer.result;
-        this.setState({
-          tilesMap: map,
-          gameState: state
-        });
+        // const { map, state } = answer.result;
+        // this.setState({
+        //   tilesMap: map,
+        //   gameState: state
+        // });
       }
     });
   };
   ////////////////////////// GET TILE
   getTileClick = () => {
-    if (this.state.tile) {
-      return;
-    }
     console.log('//////// GET TILE');
-    socket.emit('game: get tile', { roomId: this.state.id }, answer => {
+    socket.emit('game: get tile', { roomId: this.state.roomId }, answer => {
       if (this.checkSuccess(answer)) {
+        this.props.updateRoom(answer.result);
         // tile = answer.result.state.tile;
-        this.setState({ gameState: answer.result.state });
+        // this.setState({ gameState: answer.result.state });
       }
     });
   };
   ////////////////////////////////////// PUT TILE executed in EtherealTile
   putTileClick = (position, rotation) => {
-    const gameState = this.state;
-    this.setState({ gameState: { ...gameState, tile: null } });
+    // const gameState = this.state;
+    // this.setState({ gameState: { ...gameState, tile: null } });
 
     socket.emit(
       'game: put tile',
-      { roomId: this.state.id, position, rotation },
+      { roomId: this.state.roomId, position, rotation },
       answer => {
         if (this.checkSuccess(answer)) {
           console.log('/// PUT TILE executed in EtherealTile answer');
           console.log(answer.result);
-          // this.props.updateRoom(answer.result);
-          const { state, map } = answer.result;
-          this.setState({
-            tilesMap: map,
-            gameState: state
-          });
+          this.props.updateRoom(answer.result);
+          // const { state, map } = answer.result;
+          // this.setState({
+          //   tilesMap: map,
+          //   gameState: state
+          // });
         }
       }
     );
@@ -120,38 +118,56 @@ class Room extends React.Component {
 
   render() {
     console.log(`Room render`);
+    let thisRoom,
+      whosTurn,
+      playersQueue,
+      startBtnFlag,
+      newTileBtnFlag,
+      isYourTurn,
+      gameState,
+      tile;
+    const { roomId, roomName } = this.state;
     const { classes, user, room } = this.props;
-    const { name, gameState, tilesMap, players } = this.state;
-    // console.log(`gameState = ${JSON.stringify(gameState)}`);
-    // console.log(`user = ${JSON.stringify(user)}`);
+    if (roomId && room && room.rooms) {
+      thisRoom = room.rooms.find(room => room.id === roomId); //
+      if (thisRoom) {
+        const { game_state, users } = thisRoom;
+        if (users) playersQueue = users.map(({ email }) => email).join('; ');
+        gameState = game_state;
+        if (gameState.tile) tile = gameState.tile;
+        console.log(`turnOrder = ${JSON.stringify(gameState.turnOrder)}`);
+        console.log(`user = ${JSON.stringify(user)}`);
 
-    const { tile, stage, turn, turnOrder, playerTurn } = gameState;
-    let whosTurn = false;
-    let playersQueue;
-    if (turnOrder && players) {
-      whosTurn = players.find(({ id }) => id === turnOrder[playerTurn]).email;
-      playersQueue = turnOrder
-        .map(
-          (id, i) =>
-            `${i + 1}) ${players.find(player => id === player.id).email}`
-        )
-        .join('; ');
+        if (gameState.turnOrder && users) {
+          const { turnOrder, playerTurn } = gameState;
+          isYourTurn = user.id == turnOrder[playerTurn];
+          whosTurn = users.find(({ id }) => id === turnOrder[playerTurn]).email;
+          playersQueue = turnOrder
+            .map(
+              (id, i) =>
+                `${i + 1}) ${users.find(player => id === player.id).email}`
+            )
+            .join('; ');
+        }
+        startBtnFlag = gameState.name && gameState.name === 'created';
+        newTileBtnFlag = gameState.name && gameState.name === 'started';
+      }
     }
-    const startBtnFlag =
-      gameState && gameState.name && gameState.name === 'created';
-    const newTileBtnFlag =
-      gameState && gameState.name && gameState.name === 'started';
-    const isYourTurn = turnOrder && user.id == turnOrder[playerTurn];
+    console.log(newTileBtnFlag, isYourTurn);
+    // console.log(`user = ${JSON.stringify(user)}`);
     return (
       <Grid container direction="row">
         <Paper className={classes.root} elevation={1}>
           <Typography className={classes.title} variant="h6" noWrap>
-            Room {name}
+            Room {roomName}
           </Typography>
           {whosTurn && (
             <Typography className={classes.title} variant="subtitle1" noWrap>
               Now turn of <b>{whosTurn}</b>
-              <br></br>
+            </Typography>
+          )}
+          {playersQueue && (
+            <Typography className={classes.title} variant="subtitle1" noWrap>
               Turn queue: {playersQueue}
             </Typography>
           )}
@@ -169,15 +185,13 @@ class Room extends React.Component {
           )}
           {startBtnFlag && <button onClick={this.startClick}>Start</button>}
           <button onClick={this.handleBtn2Click}>State</button>
-          {/* {jumbledTiles.map(({ name }, i) => ( <p key={i}>{name}</p> ))} */}
         </Paper>
 
         <Paper className={classes.root} elevation={1}>
-          {/* JSON.stringify(this.state.tilesMap) */}
-          {tilesMap && (
+          {thisRoom && thisRoom.stamped_map && gameState && (
             <MapView
-              tilesMap={tilesMap}
-              newTile={tile}
+              tilesMap={thisRoom.stamped_map}
+              gameState={gameState}
               onClick={this.putTileClick}
             />
           )}

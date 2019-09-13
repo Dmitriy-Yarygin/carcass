@@ -3,8 +3,8 @@ exports.up = function(knex) {
     table.increments('id').primary();
     table.string('name').unique();
     table.timestamps(true, true);
-    table.jsonb('state');
-    table.jsonb('map');
+    table.jsonb('game_state');
+    table.jsonb('stamped_map');
     table.specificType('tiles', 'json ARRAY');
     table.integer('owner');
   });

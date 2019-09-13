@@ -81,19 +81,22 @@ function carcaSockets(app) {
       const userId = socket.session.user.id;
       const result = await roomsManager.startGame(userId, roomId);
       callback(result);
-      io.broadcast(`rooms:update`, result);
+      if (result.success) io.broadcast(`rooms:update`, result);
     });
+    // log.error(`roomId = ${roomId}`);
     ////////////     game: get tile         ///////////////////////
     socket.on('game: get tile', async ({ roomId }, callback) => {
       const userId = socket.session.user.id;
       const result = await roomsManager.getTile(userId, roomId);
       callback(result);
-      socket.to(`room${roomId}`).emit('rooms:update', result);
+      if (result.success)
+        socket.to(`room${roomId}`).emit('rooms:update', result);
     });
     ////////////////////  socket.emit('game: put tile', { }, answer => {
     socket.on(
       'game: put tile',
       async ({ roomId, position, rotation }, callback) => {
+        console.log('game: put tile');
         const userId = socket.session.user.id;
         const result = await roomsManager.putTile(
           userId,
@@ -104,7 +107,8 @@ function carcaSockets(app) {
         callback(result);
         // here needs to send message to all players in the room except userId
         // socket.to(`room${roomId}`).emit('game: next turn', result);
-        socket.to(`room${roomId}`).emit('rooms:update', result);
+        if (result.success)
+          socket.to(`room${roomId}`).emit('rooms:update', result);
       }
     );
 

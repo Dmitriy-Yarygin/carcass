@@ -18,15 +18,20 @@ class MapView extends React.PureComponent {
 
   static getDerivedStateFromProps(props, state) {
     console.log('getDerivedStateFromProps');
-    const { tilesMap, newTile } = props;
+    const { tilesMap, gameState } = props;
     // const extendedMap = state.extendedMap
     //   ? state.extendedMap
     //   : GameMap.extendMap(tilesMap.tilesMap);
     const extendedMap = GameMap.extendMap(tilesMap.tilesMap);
-    if (newTile) {
+    if (
+      gameState &&
+      gameState.tile &&
+      gameState.stage &&
+      gameState.stage === 'gotTile'
+    ) {
       console.log('newTile');
       return {
-        extendedMap: GameMap.findVariants(extendedMap, newTile)
+        extendedMap: GameMap.findVariants(extendedMap, gameState.tile)
       };
     }
     if (tilesMap.timeStamp !== state.timeStamp) {
@@ -57,7 +62,9 @@ class MapView extends React.PureComponent {
 }
 
 MapView.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  tilesMap: PropTypes.object.isRequired,
+  gameState: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(MapView);

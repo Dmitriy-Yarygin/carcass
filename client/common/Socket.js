@@ -42,6 +42,7 @@ export const socketListeners = storeFunctions => {
     storeFunctions.loadRooms(answer.result);
   });
   socket.on('rooms:update', answer => {
+    console.log('rooms:update');
     storeFunctions.updateRoom(answer.result);
   });
   socket.on('rooms:del', answer => {

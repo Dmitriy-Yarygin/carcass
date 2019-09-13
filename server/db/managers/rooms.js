@@ -8,12 +8,12 @@ const TilesStore = require('../../game/tilesStore');
 const MAX_PLAYERS_IN_THE_ROOM = 6;
 
 const { getObjEnabledFields } = require('../../helpers/validators');
-const CREATE_FIELDS = ['name', 'state'];
 const READ_FIELDS = [
   'id',
   'name',
   'owner',
-  'state',
+  'game_state',
+  'stamped_map',
   'created_at',
   'updated_at'
 ];
@@ -35,7 +35,7 @@ const newPlayer = async (id, userId) => {
     return makeAnswerWithError(`The room with id = ${id} not found.`);
   }
   const isUserInRoom = room.users.some(user => user.id === userId);
-  if (!isUserInRoom && room.state.name !== 'created') {
+  if (!isUserInRoom && room.game_state.name !== 'created') {
     return makeAnswerWithError(
       `The game in room with id = ${id} already started.`
     );
@@ -64,7 +64,7 @@ const create = async ({ name }, userId) => {
   }
   const result = await user
     .$relatedQuery('rooms')
-    .insert({ name, state: { name: 'created' }, owner: userId });
+    .insert({ name, game_state: { name: 'created' }, owner: userId });
   const { id, email } = user;
   result.users = [{ id, email }];
   return { success: true, result };
@@ -141,18 +141,23 @@ const startGame = async (userId, roomId) => {
   if (!result.success) {
     return result;
   }
-  const { id, state, owner, users } = result.result;
+  const { id, game_state, owner, users } = result.result;
   if (userId !== owner) {
     return makeAnswerWithError(`Only room owner can start the game!`);
   }
   const gameMap = new GameMap();
-  const map = gameMap.get();
   const turnOrder = users.map(({ id }) => id);
   return update(
     {
       id,
-      map,
-      state: { ...state, name: 'started', turn: 0, playerTurn: 0, turnOrder }
+      stamped_map: gameMap.get(),
+      game_state: {
+        ...game_state,
+        name: 'started',
+        turn: 0,
+        playerTurn: 0,
+        turnOrder
+      }
     },
     userId
   );
@@ -163,13 +168,19 @@ const getTile = async (userId, roomId) => {
   if (!result.success) {
     return result;
   }
-  const { id, name, state, map, tiles, users, owner } = result.result;
-
-  const { turnOrder, playerTurn } = state;
+  const { id, game_state, tiles } = result.result;
+  const { turnOrder, playerTurn } = game_state;
   if (userId !== turnOrder[playerTurn]) {
     return {
       success: false,
       error: { detail: `It's not your turn!` }
+    };
+  }
+
+  if (game_state.tile) {
+    return {
+      success: false,
+      error: { detail: `Player already take tile !` }
     };
   }
 
@@ -179,9 +190,9 @@ const getTile = async (userId, roomId) => {
     {
       id,
       tiles: tilesStore.getTilesInBox(),
-      state: {
-        ...state,
-        turn: state.turn + 1,
+      game_state: {
+        ...game_state,
+        turn: game_state.turn + 1,
         tile,
         stage: 'gotTile'
       }
@@ -195,26 +206,34 @@ const putTile = async (userId, roomId, position, rotation) => {
   if (!result.success) {
     return result;
   }
-  const { id, name, state, map, tiles, users, owner } = result.result;
 
-  const gameMap = new GameMap(map.tilesMap);
-  const success = gameMap.putTileOnMap(state.tile, position, rotation);
+  const { id, game_state, stamped_map, tiles } = result.result;
+  const { turnOrder, playerTurn } = game_state;
+  if (userId !== turnOrder[playerTurn]) {
+    return {
+      success: false,
+      error: { detail: `It's not your turn!` }
+    };
+  }
+
+  const gameMap = new GameMap(stamped_map.tilesMap);
+  const success = gameMap.putTileOnMap(game_state.tile, position, rotation);
   if (success) {
     //////////////////////   later this block needs to be moved to block after Miple placed on board
-    if (tiles.length === 0) state.name = 'finished';
-    let { playerTurn, turnOrder } = state;
+    if (tiles.length === 0) game_state.name = 'finished';
+    let { playerTurn, turnOrder } = game_state;
     playerTurn = (playerTurn + 1) % turnOrder.length;
     //////////////////////////////////////////////////
     return update(
       {
         id,
-        state: {
-          ...state,
+        game_state: {
+          ...game_state,
           tile: null,
           stage: 'putTile',
           playerTurn
         },
-        map: gameMap.get()
+        stamped_map: gameMap.get()
       },
       userId
     );

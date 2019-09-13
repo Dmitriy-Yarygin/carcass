@@ -23,7 +23,7 @@ const columns = [
   // { title: 'Owner', field: 'owner', editable: 'never' },
   { title: 'Players', field: 'users', editable: 'never' },
   { title: 'Created at', field: 'created_at', editable: 'never' },
-  { title: 'State', field: 'state', editable: 'never' }
+  { title: 'State', field: 'game_state', editable: 'never' }
 ];
 
 class Rooms extends React.Component {
@@ -70,7 +70,7 @@ class Rooms extends React.Component {
       roomsArray = room.rooms.map(room => ({
         ...room,
         users: room.users.map(user => user.email).join(', '),
-        state: room.state.name
+        game_state: room.game_state.name
       }));
     }
     const editable = {
