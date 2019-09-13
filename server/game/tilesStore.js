@@ -27,7 +27,9 @@ class TilesStore {
     log.silly(this.tilesInBox);
     return (this.tilesInBox = [...jumbledArray]);
   }
-
+  howManyTilesInStack() {
+    return this.tilesInBox.length;
+  }
   getTilesInBox() {
     return [...this.tilesInBox];
   }

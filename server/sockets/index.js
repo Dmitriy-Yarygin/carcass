@@ -89,8 +89,8 @@ function carcaSockets(app) {
       const userId = socket.session.user.id;
       const result = await roomsManager.getTile(userId, roomId);
       callback(result);
-      if (result.success)
-        socket.to(`room${roomId}`).emit('rooms:update', result);
+      // if (result.success)
+      //   socket.to(`room${roomId}`).emit('rooms:update', result);
     });
     ////////////////////  socket.emit('game: put tile', { }, answer => {
     socket.on(

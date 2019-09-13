@@ -10,6 +10,7 @@ import Button from '@material-ui/core/Button';
 import MySnackbar from '../common/MySnackbar';
 import MapView from '../CarcassonComponents/MapView';
 import Tile from '../CarcassonComponents/Tile';
+import TilesStack from '../CarcassonComponents/TilesStack';
 
 import { socket } from '../common/Socket';
 
@@ -122,10 +123,8 @@ class Room extends React.Component {
       whosTurn,
       playersQueue,
       startBtnFlag,
-      newTileBtnFlag,
-      isYourTurn,
       gameState,
-      tile;
+      tilesStackBlinkFlag;
     const { roomId, roomName } = this.state;
     const { classes, user, room } = this.props;
     if (roomId && room && room.rooms) {
@@ -134,13 +133,15 @@ class Room extends React.Component {
         const { game_state, users } = thisRoom;
         if (users) playersQueue = users.map(({ email }) => email).join('; ');
         gameState = game_state;
-        if (gameState.tile) tile = gameState.tile;
-        console.log(`turnOrder = ${JSON.stringify(gameState.turnOrder)}`);
-        console.log(`user = ${JSON.stringify(user)}`);
 
         if (gameState.turnOrder && users) {
           const { turnOrder, playerTurn } = gameState;
-          isYourTurn = user.id == turnOrder[playerTurn];
+          // console.log(`gameState = ${JSON.stringify(gameState)}`);
+          tilesStackBlinkFlag = !!(
+            user.id === turnOrder[playerTurn] &&
+            gameState.stage !== 'gotTile' &&
+            gameState.tilesInStack
+          );
           whosTurn = users.find(({ id }) => id === turnOrder[playerTurn]).email;
           playersQueue = turnOrder
             .map(
@@ -150,10 +151,8 @@ class Room extends React.Component {
             .join('; ');
         }
         startBtnFlag = gameState.name && gameState.name === 'created';
-        newTileBtnFlag = gameState.name && gameState.name === 'started';
       }
     }
-    console.log(newTileBtnFlag, isYourTurn);
     // console.log(`user = ${JSON.stringify(user)}`);
     return (
       <Grid container direction="row">
@@ -180,8 +179,12 @@ class Room extends React.Component {
             Hello socket
           </Button>
 
-          {newTileBtnFlag && isYourTurn && (
-            <Tile tile={tile} onClick={this.getTileClick} />
+          {gameState && (
+            <TilesStack
+              gameState={gameState}
+              onClick={this.getTileClick}
+              blinkFlag={tilesStackBlinkFlag}
+            />
           )}
           {startBtnFlag && <button onClick={this.startClick}>Start</button>}
           <button onClick={this.handleBtn2Click}>State</button>

@@ -1,12 +1,4 @@
 .ethereal {
-  position: relative;
-  width: 90px;
-  height: 90px;
-  border: 1px solid green;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
   background: yellow;
   animation-name: blink;
   animation-duration: 2s;

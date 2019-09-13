@@ -37,7 +37,7 @@ const newPlayer = async (id, userId) => {
   const isUserInRoom = room.users.some(user => user.id === userId);
   if (!isUserInRoom && room.game_state.name !== 'created') {
     return makeAnswerWithError(
-      `The game in room with id = ${id} already started.`
+      `The game in room with id = ${id} is already ${room.game_state.name}.`
     );
   }
   if (room.users.length >= MAX_PLAYERS_IN_THE_ROOM) {
@@ -147,6 +147,8 @@ const startGame = async (userId, roomId) => {
   }
   const gameMap = new GameMap();
   const turnOrder = users.map(({ id }) => id);
+  const tilesStore = new TilesStore();
+
   return update(
     {
       id,
@@ -156,6 +158,7 @@ const startGame = async (userId, roomId) => {
         name: 'started',
         turn: 0,
         playerTurn: 0,
+        tilesInStack: tilesStore.howManyTilesInStack(),
         turnOrder
       }
     },
@@ -169,6 +172,21 @@ const getTile = async (userId, roomId) => {
     return result;
   }
   const { id, game_state, tiles } = result.result;
+
+  if (game_state.name === 'finished') {
+    return {
+      success: false,
+      error: { detail: `Game is over! No more tiles in stack!` }
+    };
+  }
+
+  if (game_state.name !== 'started') {
+    return {
+      success: false,
+      error: { detail: `Room owner should start the game!` }
+    };
+  }
+
   const { turnOrder, playerTurn } = game_state;
   if (userId !== turnOrder[playerTurn]) {
     return {
@@ -194,6 +212,7 @@ const getTile = async (userId, roomId) => {
         ...game_state,
         turn: game_state.turn + 1,
         tile,
+        tilesInStack: tilesStore.howManyTilesInStack(),
         stage: 'gotTile'
       }
     },

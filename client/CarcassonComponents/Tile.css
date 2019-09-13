@@ -1,0 +1,9 @@
+.tileClass {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  border: 1px solid green;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

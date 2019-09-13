@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import GetSidesNames from './GetSidesNames';
+import './Tile.css';
 import './EtherealTile.css';
 
 class EtherealTile extends React.Component {
@@ -31,7 +32,7 @@ class EtherealTile extends React.Component {
     const { rotationIndex } = this.state;
     const rotation = tile.variants[rotationIndex];
     return (
-      <div className="ethereal" onClick={this.tileClick}>
+      <div className="tileClass ethereal" onClick={this.tileClick}>
         <GetSidesNames tile={tile} rotation={rotation} />
         {tile.variants && tile.variants.length > 1 && (
           <button
