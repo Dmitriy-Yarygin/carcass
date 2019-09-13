@@ -121,12 +121,22 @@ class Room extends React.Component {
   render() {
     console.log(`Room render`);
     const { classes, user, room } = this.props;
-    const { name, gameState, tilesMap } = this.state;
-    console.log(`gameState = ${JSON.stringify(gameState)}`);
-    console.log(`user = ${JSON.stringify(user)}`);
+    const { name, gameState, tilesMap, players } = this.state;
+    // console.log(`gameState = ${JSON.stringify(gameState)}`);
+    // console.log(`user = ${JSON.stringify(user)}`);
 
     const { tile, stage, turn, turnOrder, playerTurn } = gameState;
-
+    let whosTurn = false;
+    let playersQueue;
+    if (turnOrder && players) {
+      whosTurn = players.find(({ id }) => id === turnOrder[playerTurn]).email;
+      playersQueue = turnOrder
+        .map(
+          (id, i) =>
+            `${i + 1}) ${players.find(player => id === player.id).email}`
+        )
+        .join('; ');
+    }
     const startBtnFlag =
       gameState && gameState.name && gameState.name === 'created';
     const newTileBtnFlag =
@@ -138,6 +148,14 @@ class Room extends React.Component {
           <Typography className={classes.title} variant="h6" noWrap>
             Room {name}
           </Typography>
+          {whosTurn && (
+            <Typography className={classes.title} variant="subtitle1" noWrap>
+              Now turn of <b>{whosTurn}</b>
+              <br></br>
+              Turn queue: {playersQueue}
+            </Typography>
+          )}
+
           <Button
             variant="contained"
             color="primary"

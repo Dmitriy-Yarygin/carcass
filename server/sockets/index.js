@@ -81,12 +81,14 @@ function carcaSockets(app) {
       const userId = socket.session.user.id;
       const result = await roomsManager.startGame(userId, roomId);
       callback(result);
+      io.broadcast(`rooms:update`, result);
     });
     ////////////     game: get tile         ///////////////////////
     socket.on('game: get tile', async ({ roomId }, callback) => {
       const userId = socket.session.user.id;
       const result = await roomsManager.getTile(userId, roomId);
       callback(result);
+      socket.to(`room${roomId}`).emit('rooms:update', result);
     });
     ////////////////////  socket.emit('game: put tile', { }, answer => {
     socket.on(
@@ -101,7 +103,8 @@ function carcaSockets(app) {
         );
         callback(result);
         // here needs to send message to all players in the room except userId
-        socket.to(`room${roomId}`).emit('game: next turn', result);
+        // socket.to(`room${roomId}`).emit('game: next turn', result);
+        socket.to(`room${roomId}`).emit('rooms:update', result);
       }
     );
 
