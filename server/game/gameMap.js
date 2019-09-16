@@ -1,8 +1,11 @@
-const { startTile } = require('./tiles');
+const { objectClone } = require('../helpers/objectFunctions');
+const { startTile, town52, town53 } = require('./tiles');
 
 class GameMap {
   constructor(initMap) {
-    this.tilesMap = Array.isArray(initMap) ? initMap : [[{ ...startTile }]];
+    this.tilesMap = Array.isArray(initMap)
+      ? initMap
+      : [[objectClone(startTile)]];
     this.timeStamp = new Date();
   }
 

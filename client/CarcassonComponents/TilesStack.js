@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import TileCover from './TileCover';
 import GetSidesNames from './GetSidesNames';
 import './Tile.css';
 import './TileStack.css';
@@ -12,19 +13,21 @@ class TileStack extends React.Component {
 
     const emptyTileClass = blinkFlag ? `tileClass blink` : `tileClass`;
 
-    const thickness = Math.round(tilesInStack / 1);
+    const thickness = Math.round(tilesInStack / 10);
     const cls = { boxShadow: `${thickness}px ${thickness}px` };
 
     if (!tile) {
       return (
         <div className={emptyTileClass} onClick={onClick} style={cls}>
           <h2>{tilesInStack}</h2>
+          <TileCover tile={tile} />
         </div>
       );
     }
 
     return (
       <div className="tileClass" style={cls}>
+        <TileCover tile={tile} />
         <GetSidesNames tile={tile} />
       </div>
     );

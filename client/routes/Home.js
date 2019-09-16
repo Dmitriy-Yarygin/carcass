@@ -18,13 +18,11 @@ const styles = theme => ({
 class Home extends React.Component {
   render() {
     const { classes } = this.props;
-
+    /*  <Paper className={classes.root} elevation={1}> */
     return (
-      <Paper className={classes.root} elevation={1}>
-        <Typography className={classes.title} variant="h6" noWrap>
-          Home
-        </Typography>
-      </Paper>
+      <Typography className={classes.title} variant="h6" noWrap>
+        Carcasson
+      </Typography>
     );
   }
 }

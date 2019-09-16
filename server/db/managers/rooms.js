@@ -7,7 +7,6 @@ const TilesStore = require('../../game/tilesStore');
 
 const MAX_PLAYERS_IN_THE_ROOM = 6;
 
-const { getObjEnabledFields } = require('../../helpers/validators');
 const READ_FIELDS = [
   'id',
   'name',

@@ -1,3 +1,4 @@
+const { objectClone } = require('../helpers/objectFunctions');
 const { uniqueTiles } = require('./tiles');
 const log = require('../helpers/logger')(__filename);
 
@@ -7,7 +8,7 @@ class TilesStore {
     if (!tiles) {
       uniqueTiles.forEach(({ quantity, tile }) => {
         for (let i = 0; i < quantity; i++) {
-          this.tilesInBox.push({ ...tile });
+          this.tilesInBox.push(objectClone(tile));
         }
       });
     }
@@ -24,18 +25,18 @@ class TilesStore {
       flagsArray[i] = true;
       jumbledArray.push(this.tilesInBox[i]);
     }
-    log.silly(this.tilesInBox);
-    return (this.tilesInBox = [...jumbledArray]);
+    // log.silly(this.tilesInBox);
+    return (this.tilesInBox = jumbledArray);
   }
   howManyTilesInStack() {
     return this.tilesInBox.length;
   }
   getTilesInBox() {
-    return [...this.tilesInBox];
+    return this.tilesInBox;
   }
   getTile() {
     const i = this.tilesInBox.length - 1;
-    if (i) return { ...this.tilesInBox[i] };
+    if (i) return this.tilesInBox[i];
     return null;
   }
   popTile() {

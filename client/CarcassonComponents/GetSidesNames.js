@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
 const rotate0 = {
+  zIndex: 6,
   margin: 0,
   padding: 0,
   width: '100%',
@@ -64,8 +65,6 @@ class GetSidesNames extends React.Component {
   render() {
     const { classes, tile, rotation } = this.props;
     // console.log(`GetSidesNames render`);
-    // console.log(tile);
-
     const rotationClass = rotation ? `rotate${rotation}` : 'rotate0';
     // console.log(rotationClass);
     return (

@@ -3,7 +3,6 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const Users = require('../models/Users');
 
-const { getObjEnabledFields } = require('../../helpers/validators');
 const CREATE_FIELDS = ['email', 'password', 'role'];
 const READ_FIELDS = ['id', 'email', 'role'];
 
