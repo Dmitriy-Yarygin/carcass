@@ -1,6 +1,33 @@
 const { objectClone } = require('../helpers/objectFunctions');
 const { startTile } = require('./tiles');
 
+function calculatePoints(includedTiles, mapMatrix, openFlag) {
+  const { owners, x, y } = includedTiles[0];
+  const placeType = mapMatrix[y][x].places[owners[0]].name;
+  let points = includedTiles.length;
+  switch (placeType) {
+    case 'town':
+      includedTiles.forEach(({ owners, x, y }) => {
+        owners.forEach(owner => {
+          console.log(mapMatrix[y][x].places[owner]);
+          if (mapMatrix[y][x].places[owner].shields)
+            points += mapMatrix[y][x].places[owner].shields;
+        });
+      });
+      if (!openFlag) points *= 2;
+      break;
+    case 'road':
+      break;
+    case 'field':
+      points = -555;
+      break;
+    case 'monastery':
+      if (!openFlag) points = 9;
+      break;
+  }
+  return points;
+}
+
 function getBorders(mapMatrix, { x, y }) {
   // console.log(`mapMatrix [${y}][${x}]`);
   const neighbors = [
@@ -160,7 +187,14 @@ class GameMap {
 
     selectAreaRecursive(key, x, y);
     // console.log(`checkedPlaces: ${JSON.stringify(checkedPlaces)}`);
-    console.log(`includedTiles: ${JSON.stringify(includedTiles)}`);
+    // console.log(`includedTiles: ${JSON.stringify(includedTiles)}`);
+
+    const pointsCount = calculatePoints(includedTiles, mapMatrix, openFlag);
+
+    console.log(
+      `${key} is ${openFlag ? 'open' : 'closed'}, points = ${pointsCount}`
+    );
+
     includedTiles.forEach(({ owners, x, y }) => {
       owners.forEach(owner => {
         mapMatrix[y][x].places[owner].color = 'red';
@@ -171,12 +205,12 @@ class GameMap {
     /* -------------------------------------------------------*/
     function selectAreaRecursive(key, x, y) {
       // checkedTilesPositions.push({ x, y });
-      console.log(`>>> Cell [${x}][${y}] >>>`);
+      // console.log(`>>> Cell [${x}][${y}] >>>`);
       if (isCellOutsideMap(mapMatrix, { x, y })) {
         console.error(`Cell [${x}][${y}] outside the map`);
         return;
       }
-      console.log(mapMatrix[y][x]);
+      // console.log(mapMatrix[y][x]);
       if (!mapMatrix[y][x]) return;
       if (
         checkedPlaces.some(
@@ -191,14 +225,21 @@ class GameMap {
       sides.forEach(({ owner }, i) => {
         if (owner === key) ownSides.push((i + rotation) % 4);
       });
-      console.log(`ownSides: ${JSON.stringify(ownSides)}`);
+      // console.log(`ownSides: ${JSON.stringify(ownSides)}`);
+
+      console.log(`>>> Cell [${x}][${y}] >>>`);
 
       const borders = getBorders(mapMatrix, { x, y });
-      console.log(`borders: ${JSON.stringify(borders)}`);
+      // console.log(`borders: ${JSON.stringify(borders)}`);
 
       ownSides.forEach(ownSideIndex => {
-        openFlag = borders[ownSideIndex].type === 'space';
-        if (openFlag) return;
+        const isThisBorderOpen = borders[ownSideIndex].type === 'space';
+        if (isThisBorderOpen) openFlag = true;
+
+        console.log(
+          `borders[ownSideIndex=${ownSideIndex}].type = ${borders[ownSideIndex].type} `
+        );
+        if (isThisBorderOpen) return;
         const { owner, type, x, y } = borders[ownSideIndex];
         const tileWithSameXY = includedTiles.find(
           place => place.x === x && place.y === y
@@ -219,25 +260,7 @@ class GameMap {
     /* -------------------------------------------------------*/
   }
   ///////////////////////////////////////////////////////////////////////
-
   ///////////////////////////////////////////////////////////////////////
-  /*
-  const road25 = {
-  name: 'Road25',
-  image: '/images/tiles/road25.jpg',
-  sides: [
-    { type: 'field', owner: 'A' },
-    { type: 'field', owner: 'A' },
-    { type: 'road', owner: 'B', right: 'A', left: 'C' },
-    { type: 'road', owner: 'B', right: 'C', left: 'A' }
-  ],
-  places: {
-    A: { name: 'field', x: '70%', y: '40%' },
-    B: { name: 'road', x: '50%', y: '50%' },
-    C: { name: 'field', x: '25%', y: '75%' }
-  }
-};
-*/
   ///////////////////////////////////////////////////////////////////////
 
   putTileOnMap(tile, position, rotation) {

@@ -8,7 +8,7 @@ const startTile = {
     { type: 'road', owner: 'B', right: 'C', left: 'D' }
   ],
   places: {
-    A: { name: 'town', x: '50%', y: '20%' }, //, shield: false, miple: userID, points: null},
+    A: { name: 'town', x: '50%', y: '20%' }, //, shields: false, miple: userID, points: null},
     B: { name: 'road', x: '50%', y: '50%' },
     C: { name: 'field', x: '50%', y: '75%' },
     D: { name: 'field', x: '15%', y: '30%' }
@@ -85,13 +85,13 @@ const town21 = {
   name: 'Town21',
   image: '/images/tiles/town21.jpg',
   sides: [
-    { type: 'town', owner: 'A', shield: 1 },
+    { type: 'town', owner: 'A' },
     { type: 'field', owner: 'B' },
     { type: 'field', owner: 'B' },
-    { type: 'town', owner: 'A', shield: 1 }
+    { type: 'town', owner: 'A' }
   ],
   places: {
-    A: { name: 'town', x: '30%', y: '20%' },
+    A: { name: 'town', x: '30%', y: '20%', shields: 1 },
     B: { name: 'field', x: '60%', y: '60%' }
   }
 };
@@ -99,13 +99,13 @@ const town22 = {
   name: 'Town22',
   image: '/images/tiles/town22.jpg',
   sides: [
-    { type: 'town', owner: 'A', shield: 1 },
+    { type: 'town', owner: 'A' },
     { type: 'road', owner: 'C', right: 'B', left: 'D' },
     { type: 'road', owner: 'C', right: 'D', left: 'B' },
-    { type: 'town', owner: 'A', shield: 1 }
+    { type: 'town', owner: 'A' }
   ],
   places: {
-    A: { name: 'town', x: '30%', y: '20%' },
+    A: { name: 'town', x: '30%', y: '20%', shields: 1 },
     B: { name: 'field', x: '45%', y: '55%' },
     C: { name: 'road', x: '70%', y: '70%' },
     D: { name: 'field', x: '85%', y: '85%' }
@@ -266,13 +266,13 @@ const town41 = {
   name: 'Town41',
   image: '/images/tiles/town41.jpg',
   sides: [
-    { type: 'town', owner: 'A', shield: 1 },
-    { type: 'town', owner: 'A', shield: 1 },
+    { type: 'town', owner: 'A' },
+    { type: 'town', owner: 'A' },
     { type: 'field', owner: 'B' },
-    { type: 'town', owner: 'A', shield: 1 }
+    { type: 'town', owner: 'A' }
   ],
   places: {
-    A: { name: 'town', x: '35%', y: '15%' },
+    A: { name: 'town', x: '35%', y: '15%', shields: 1 },
     B: { name: 'field', x: '50%', y: '85%' }
   }
 };
@@ -280,13 +280,13 @@ const town42 = {
   name: 'Town42',
   image: '/images/tiles/town42.jpg',
   sides: [
-    { type: 'town', owner: 'A', shield: 1 },
-    { type: 'town', owner: 'A', shield: 1 },
-    { type: 'town', owner: 'A', shield: 1 },
-    { type: 'town', owner: 'A', shield: 1 }
+    { type: 'town', owner: 'A' },
+    { type: 'town', owner: 'A' },
+    { type: 'town', owner: 'A' },
+    { type: 'town', owner: 'A' }
   ],
   places: {
-    A: { name: 'town', x: '25%', y: '15%' }
+    A: { name: 'town', x: '35%', y: '15%', shields: 1 }
   }
 };
 const town43 = {
@@ -307,13 +307,13 @@ const town44 = {
   name: 'Town44',
   image: '/images/tiles/town44.jpg',
   sides: [
-    { type: 'town', owner: 'A', shield: 1 },
-    { type: 'town', owner: 'A', shield: 1 },
+    { type: 'town', owner: 'A' },
+    { type: 'town', owner: 'A' },
     { type: 'road', owner: 'C', right: 'D', left: 'B' },
-    { type: 'town', owner: 'A', shield: 1 }
+    { type: 'town', owner: 'A' }
   ],
   places: {
-    A: { name: 'town', x: '25%', y: '15%' },
+    A: { name: 'town', x: '35%', y: '15%', shields: 1 },
     B: { name: 'field', x: '30%', y: '90%' },
     C: { name: 'road', x: '50%', y: '90%' },
     D: { name: 'field', x: '70%', y: '90%' }
@@ -328,7 +328,12 @@ const town45 = {
     { type: 'road', owner: 'C', right: 'D', left: 'B' },
     { type: 'town', owner: 'A' }
   ],
-  places: { ...town44.places }
+  places: {
+    A: { name: 'town', x: '35%', y: '15%' },
+    B: { name: 'field', x: '30%', y: '90%' },
+    C: { name: 'road', x: '50%', y: '90%' },
+    D: { name: 'field', x: '70%', y: '90%' }
+  }
 };
 
 const town51 = {
@@ -340,7 +345,10 @@ const town51 = {
     { type: 'field', owner: 'B' },
     { type: 'town', owner: 'A' }
   ],
-  places: { ...town41.places }
+  places: {
+    A: { name: 'town', x: '35%', y: '15%' },
+    B: { name: 'field', x: '50%', y: '85%' }
+  }
 };
 
 const town52 = {
@@ -348,13 +356,13 @@ const town52 = {
   image: '/images/tiles/town52.jpg',
   sides: [
     { type: 'field', owner: 'A' },
-    { type: 'town', owner: 'B', shield: 1 },
+    { type: 'town', owner: 'B' },
     { type: 'field', owner: 'A' },
-    { type: 'town', owner: 'B', shield: 1 }
+    { type: 'town', owner: 'B' }
   ],
   places: {
     A: { name: 'field', x: '50%', y: '10%' },
-    B: { name: 'town', x: '50%', y: '50%' },
+    B: { name: 'town', x: '50%', y: '50%', shields: 1 },
     C: { name: 'field', x: '50%', y: '90%' }
   }
 };
@@ -367,7 +375,11 @@ const town53 = {
     { type: 'field', owner: 'A' },
     { type: 'town', owner: 'B' }
   ],
-  places: { ...town52.places }
+  places: {
+    A: { name: 'field', x: '50%', y: '10%' },
+    B: { name: 'town', x: '50%', y: '50%' },
+    C: { name: 'field', x: '50%', y: '90%' }
+  }
 };
 
 const uniqueTiles = [
