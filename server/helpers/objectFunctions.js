@@ -9,6 +9,7 @@ function getObjEnabledFields(obj, enabledFields) {
 }
 
 function objectClone(original) {
+  if (original === null) return null;
   if (typeof original !== 'object') return original;
 
   let copy;
@@ -19,7 +20,7 @@ function objectClone(original) {
     return copy;
   }
   copy = {};
-  for (key in original) copy[key] = objectClone(original[key]);
+  for (let key in original) copy[key] = objectClone(original[key]);
   return copy;
 }
 
