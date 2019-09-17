@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
 const rotate0 = {
-  zIndex: 6,
+  // zIndex: 6,
   margin: 0,
   padding: 0,
   width: '100%',
@@ -14,7 +14,8 @@ const rotate0 = {
 };
 const styles = {
   tileClass_name: {
-    display: 'flex'
+    display: 'flex',
+    zIndex: 6
   },
   tileClass_side0: {
     position: 'absolute',

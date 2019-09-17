@@ -12,7 +12,7 @@ const styles = {
 
 class MapRaw extends React.Component {
   render() {
-    const { classes, raw, onClick, y } = this.props;
+    const { classes, raw, onClick, y, onMipleClick } = this.props;
     return (
       <div className={classes.root}>
         {raw.map((cell, i) => {
@@ -26,7 +26,14 @@ class MapRaw extends React.Component {
               />
             );
           }
-          return <Tile key={i} tile={cell} />;
+          return (
+            <Tile
+              key={i}
+              position={{ x: i, y }}
+              tile={cell}
+              onMipleClick={onMipleClick}
+            />
+          );
         })}
       </div>
     );

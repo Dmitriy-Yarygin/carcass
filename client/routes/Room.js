@@ -113,6 +113,7 @@ class Room extends React.Component {
       }
     );
   };
+
   //////////////////
   handleBtn2Click = () => {
     console.log(this.state);

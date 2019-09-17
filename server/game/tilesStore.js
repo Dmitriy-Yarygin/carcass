@@ -25,7 +25,7 @@ class TilesStore {
       flagsArray[i] = true;
       jumbledArray.push(this.tilesInBox[i]);
     }
-    // log.silly(this.tilesInBox);
+    log.silly(JSON.stringify(jumbledArray.map(tile => tile.name)));
     return (this.tilesInBox = jumbledArray);
   }
   howManyTilesInStack() {

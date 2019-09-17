@@ -34,7 +34,7 @@ const town2 = {
   }
 };
 const town3 = {
-  name: 'Town2',
+  name: 'Town3',
   image: '/images/tiles/town3.jpg',
   sides: [
     { type: 'town', owner: 'A' },
@@ -406,4 +406,4 @@ const uniqueTiles = [
   { quantity: 1, tile: town53 }
 ];
 
-module.exports = { startTile, uniqueTiles, town52, town53 };
+module.exports = { startTile, uniqueTiles };

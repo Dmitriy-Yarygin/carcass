@@ -94,7 +94,6 @@ function carcaSockets(app) {
     socket.on(
       'game: put tile',
       async ({ roomId, position, rotation }, callback) => {
-        console.log('game: put tile');
         const userId = socket.session.user.id;
         const result = await roomsManager.putTile(
           userId,

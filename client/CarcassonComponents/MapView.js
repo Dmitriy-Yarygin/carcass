@@ -46,15 +46,29 @@ class MapView extends React.PureComponent {
     return null;
   }
 
+  ////////////////////////////////////// onMipleClick executed in MiplePlaces
+  onMipleClick = (key, { x, y }) => {
+    console.log(`Click key=${key}, position=${x}:${y}`);
+    const gameMap = new GameMap(this.state.extendedMap);
+    this.setState({ extendedMap: gameMap.selectArea(key, x, y) });
+  };
+  ////////////////////////////////////////////////////////////////////////////
+
   render() {
     console.log(`MapView render`);
-    const { classes, onClick } = this.props;
+    const { classes, onClick, onMipleClick } = this.props;
     const { extendedMap } = this.state;
     return (
       <div className={classes.root}>
         {extendedMap &&
           extendedMap.map((raw, i) => (
-            <MapRaw key={i} y={i} raw={raw} onClick={onClick} />
+            <MapRaw
+              key={i}
+              y={i}
+              raw={raw}
+              onClick={onClick}
+              onMipleClick={this.onMipleClick}
+            />
           ))}
       </div>
     );

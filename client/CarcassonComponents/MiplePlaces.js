@@ -25,19 +25,29 @@ const styles = {
 };
 
 class MiplePlaces extends React.Component {
+  mipleClick = name => e => {
+    if (this.props.onMipleClick) {
+      this.props.onMipleClick(name, this.props.position);
+      e.stopPropagation();
+    }
+  };
+
   render() {
+    // console.log(`MiplePlaces render`);
     const { classes, tile, rotation } = this.props;
     let points = [];
     if (tile.places) {
       for (let key in tile.places) {
-        const { x, y } = tile.places[key];
+        const { x, y, color } = tile.places[key];
         if (!x || !y) {
           console.error(`Check cordinates of ${tile.name} !`);
           continue;
         }
-        points.push({ name: key, x, y });
+        points.push({ name: key, x, y, color });
       }
     }
+
+    // console.log(points);
 
     const rotationStyle = rotation
       ? { transform: `rotate(${rotation * 90}deg)` }
@@ -46,14 +56,15 @@ class MiplePlaces extends React.Component {
     return (
       <div className={classes.root}>
         <div className={classes.subRoot} style={rotationStyle}>
-          {points.map(({ name, x, y }) => (
+          {points.map(({ name, x, y, color }) => (
             <div
               key={name}
               className={classes.pointStyle}
-              style={{ left: x, top: y }}
+              style={{ left: x, top: y, color }}
+              onClick={this.mipleClick(name)}
             >
               &#9733;
-              <span style={{ fontSize: '0.5em' }}>{name}</span>
+              {/* <span style={{ fontSize: '0.5em' }}>{name}</span> */}
             </div>
           ))}
         </div>

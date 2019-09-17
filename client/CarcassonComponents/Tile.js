@@ -11,13 +11,9 @@ const styles = {};
 
 class Tile extends React.Component {
   render() {
-    const {
-      // classes,
-      tile,
-      onClick
-    } = this.props;
+    const { classes, position, tile, onClick, onMipleClick } = this.props;
 
-    if (!tile) {
+    if (!tile || !tile.name) {
       return <div className="tileClass" onClick={onClick}></div>;
     }
 
@@ -26,8 +22,13 @@ class Tile extends React.Component {
     return (
       <div className="tileClass">
         <TileCover tile={tile} rotation={rotation} />
-        {/* <GetSidesNames tile={tile} rotation={rotation} /> */}
-        <MiplePlaces tile={tile} rotation={rotation} />
+        <GetSidesNames tile={tile} rotation={rotation} />
+        <MiplePlaces
+          position={position}
+          tile={tile}
+          rotation={rotation}
+          onMipleClick={onMipleClick}
+        />
       </div>
     );
   }

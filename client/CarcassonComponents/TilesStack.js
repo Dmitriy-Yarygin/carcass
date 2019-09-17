@@ -19,7 +19,7 @@ class TileStack extends React.Component {
     if (!tile) {
       return (
         <div className={emptyTileClass} onClick={onClick} style={cls}>
-          <h2>{tilesInStack}</h2>
+          <h2 style={{ zIndex: 1 }}>{tilesInStack}</h2>
           <TileCover tile={tile} />
         </div>
       );

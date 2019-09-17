@@ -1,20 +1,21 @@
+@keyframes etherialBlink {
+  0% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0.8;
+  }
+}
+
 .ethereal {
   border: 1px solid white;
-  animation-name: blink;
+  animation-name: etherialBlink;
   animation-duration: 2s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
-}
-@keyframes blink {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.3;
-  }
-  100% {
-    opacity: 1;
-  }
 }
 .tileClass_btn_rotate {
   z-index: 15;
