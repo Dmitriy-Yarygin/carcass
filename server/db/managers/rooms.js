@@ -212,7 +212,8 @@ const getTile = async (userId, roomId) => {
         turn: game_state.turn + 1,
         tile,
         tilesInStack: tilesStore.howManyTilesInStack(),
-        stage: 'gotTile'
+        stage: 'gotTile',
+        lastTilePosition: null
       }
     },
     userId
@@ -249,6 +250,7 @@ const putTile = async (userId, roomId, position, rotation) => {
           ...game_state,
           tile: null,
           stage: 'putTile',
+          lastTilePosition: position,
           playerTurn
         },
         stamped_map: gameMap.get()

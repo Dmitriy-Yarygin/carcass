@@ -50,13 +50,29 @@ class MapView extends React.PureComponent {
   onMipleClick = (key, { x, y }) => {
     console.log(`Click key=${key}, position=${x}:${y}`);
     const gameMap = new GameMap(this.state.extendedMap);
-    this.setState({ extendedMap: gameMap.selectArea(key, x, y) });
+
+    const { includedTiles, isAreaOpen } = gameMap.selectArea(key, x, y);
+    const mapMatrix = gameMap.get().tilesMap;
+
+    includedTiles.forEach(({ owners, x, y }) => {
+      owners.forEach(owner => {
+        mapMatrix[y][x].places[owner].color = 'red';
+      });
+    });
+
+    const pointsCount = gameMap.calculatePoints(key, x, y);
+
+    console.log(
+      `${key} is ${isAreaOpen ? 'open' : 'closed'}, points = ${pointsCount}`
+    );
+
+    this.setState({ extendedMap: mapMatrix });
   };
   ////////////////////////////////////////////////////////////////////////////
 
   render() {
     console.log(`MapView render`);
-    const { classes, onClick, onMipleClick } = this.props;
+    const { classes, onClick } = this.props;
     const { extendedMap } = this.state;
     return (
       <div className={classes.root}>

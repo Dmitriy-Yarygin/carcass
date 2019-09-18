@@ -64,7 +64,7 @@ class MiplePlaces extends React.Component {
               onClick={this.mipleClick(name)}
             >
               &#9733;
-              {/* <span style={{ fontSize: '0.5em' }}>{name}</span> */}
+              <span style={{ fontSize: '0.5em' }}>{name}</span>
             </div>
           ))}
         </div>

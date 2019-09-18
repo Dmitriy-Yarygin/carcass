@@ -1,33 +1,6 @@
 const { objectClone } = require('../helpers/objectFunctions');
 const { startTile } = require('./tiles');
 
-function calculatePoints(includedTiles, mapMatrix, openFlag) {
-  const { owners, x, y } = includedTiles[0];
-  const placeType = mapMatrix[y][x].places[owners[0]].name;
-  let points = includedTiles.length;
-  switch (placeType) {
-    case 'town':
-      includedTiles.forEach(({ owners, x, y }) => {
-        owners.forEach(owner => {
-          console.log(mapMatrix[y][x].places[owner]);
-          if (mapMatrix[y][x].places[owner].shields)
-            points += mapMatrix[y][x].places[owner].shields;
-        });
-      });
-      if (!openFlag) points *= 2;
-      break;
-    case 'road':
-      break;
-    case 'field':
-      points = -555;
-      break;
-    case 'monastery':
-      if (!openFlag) points = 9;
-      break;
-  }
-  return points;
-}
-
 function getBorders(mapMatrix, { x, y }) {
   // console.log(`mapMatrix [${y}][${x}]`);
   const neighbors = [
@@ -178,40 +151,34 @@ class GameMap {
   ///////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////
 
-  selectArea(key, x, y) {
-    const mapMatrix = this.tilesMap;
+  selectArea(key, x, y, extraCondition) {
+    const { tilesMap } = this;
+    const placeType = tilesMap[y][x].places[key].name;
+    console.log(`selectArea =================  ${placeType}  =========`);
     let checkedPlaces = [];
     // let checkedPlaces = [{ owner: key, x, y }];
     let includedTiles = [{ owners: [key], x, y }];
+    if (extraCondition && !extraCondition(tilesMap[y][x], key)) {
+      includedTiles = [];
+    }
     let openFlag = false;
 
     selectAreaRecursive(key, x, y);
     // console.log(`checkedPlaces: ${JSON.stringify(checkedPlaces)}`);
     // console.log(`includedTiles: ${JSON.stringify(includedTiles)}`);
 
-    const pointsCount = calculatePoints(includedTiles, mapMatrix, openFlag);
-
-    console.log(
-      `${key} is ${openFlag ? 'open' : 'closed'}, points = ${pointsCount}`
-    );
-
-    includedTiles.forEach(({ owners, x, y }) => {
-      owners.forEach(owner => {
-        mapMatrix[y][x].places[owner].color = 'red';
-      });
-    });
-    return mapMatrix;
+    return { includedTiles, isAreaOpen: openFlag };
     // return { tilesMap: this.tilesMap, timeStamp: this.timeStamp };
     /* -------------------------------------------------------*/
     function selectAreaRecursive(key, x, y) {
       // checkedTilesPositions.push({ x, y });
-      // console.log(`>>> Cell [${x}][${y}] >>>`);
-      if (isCellOutsideMap(mapMatrix, { x, y })) {
+      // console.log(`selectAreaRecursive Cell [${x}][${y}] >>>`);
+      if (isCellOutsideMap(tilesMap, { x, y })) {
         console.error(`Cell [${x}][${y}] outside the map`);
         return;
       }
-      // console.log(mapMatrix[y][x]);
-      if (!mapMatrix[y][x]) return;
+      // console.log(tilesMap[y][x]);
+      if (!tilesMap[y][x]) return;
       if (
         checkedPlaces.some(
           place => place.x === x && place.y === y && place.owner === key
@@ -221,38 +188,67 @@ class GameMap {
       }
       checkedPlaces.push({ owner: key, x, y });
       let ownSides = [];
-      const { sides, rotation = 0 } = mapMatrix[y][x];
-      sides.forEach(({ owner }, i) => {
-        if (owner === key) ownSides.push((i + rotation) % 4);
+
+      const { sides, rotation = 0 } = tilesMap[y][x];
+      sides.forEach((side, i) => {
+        const rotatedSideIndex = (i + rotation) % 4;
+        if (side.owner === key) {
+          ownSides.push({ i: rotatedSideIndex, fromRoad: null });
+        }
+        // console.log(`key=${key}, side${JSON.stringify(side)}`);
+        if (
+          (placeType === 'field' &&
+            side.type === 'road' &&
+            side.left === key) ||
+          side.right === key
+        ) {
+          const fromRoad = side.left === key ? 'right' : 'left';
+          ownSides.push({ i: rotatedSideIndex, fromRoad });
+        }
       });
       // console.log(`ownSides: ${JSON.stringify(ownSides)}`);
+      // console.log(`>>> Cell [${x}][${y}] >>>`);
 
-      console.log(`>>> Cell [${x}][${y}] >>>`);
-
-      const borders = getBorders(mapMatrix, { x, y });
+      const borders = getBorders(tilesMap, { x, y });
       // console.log(`borders: ${JSON.stringify(borders)}`);
 
-      ownSides.forEach(ownSideIndex => {
-        const isThisBorderOpen = borders[ownSideIndex].type === 'space';
+      ownSides.forEach(({ i, fromRoad }) => {
+        const isThisBorderOpen = borders[i].type === 'space';
         if (isThisBorderOpen) openFlag = true;
 
-        console.log(
-          `borders[ownSideIndex=${ownSideIndex}].type = ${borders[ownSideIndex].type} `
-        );
+        // console.log(`borders[i=${i}] = ${JSON.stringify(borders[i])} `);
         if (isThisBorderOpen) return;
-        const { owner, type, x, y } = borders[ownSideIndex];
+        const { x, y } = borders[i];
+        const owner =
+          placeType === 'field' && fromRoad
+            ? borders[i][fromRoad]
+            : borders[i].owner;
+
         const tileWithSameXY = includedTiles.find(
           place => place.x === x && place.y === y
         );
+
         if (!tileWithSameXY) {
-          includedTiles.push({ owners: [owner], x, y });
+          if (
+            !extraCondition ||
+            (extraCondition && extraCondition(tilesMap[y][x], owner))
+          ) {
+            includedTiles.push({ owners: [owner], x, y });
+          }
         }
+
         if (
           tileWithSameXY &&
           tileWithSameXY.owners.every(key => key !== owner)
         ) {
-          tileWithSameXY.owners.push(owner);
+          if (
+            !extraCondition ||
+            (extraCondition && extraCondition(tilesMap[y][x], owner))
+          ) {
+            tileWithSameXY.owners.push(owner);
+          }
         }
+        // console.log(includedTiles.map(({ x, y }) => `${x}:${y}`));
 
         selectAreaRecursive(owner, x, y);
       });
@@ -260,7 +256,130 @@ class GameMap {
     /* -------------------------------------------------------*/
   }
   ///////////////////////////////////////////////////////////////////////
+  calculatePoints(key, x, y) {
+    const { tilesMap } = this;
+    const placeType = tilesMap[y][x].places[key].name;
+    if (placeType === 'field') {
+      return this.calculateFieldPoints(key, x, y);
+    }
+    if (placeType === 'monastery') {
+      return this.calculateMonasteryPoints(key, x, y);
+    }
+
+    const { includedTiles, isAreaOpen } = this.selectArea(key, x, y);
+
+    let points = includedTiles.length;
+
+    if (placeType === 'town') {
+      includedTiles.forEach(({ owners, x, y }) => {
+        owners.forEach(owner => {
+          // console.log(tilesMap[y][x].places[owner]);
+          if (tilesMap[y][x].places[owner].shields)
+            points += tilesMap[y][x].places[owner].shields;
+        });
+      });
+      if (!isAreaOpen) points *= 2;
+    }
+
+    // if (placeType === 'road') // just return points = includedTiles.length;
+
+    return points;
+  }
+
   ///////////////////////////////////////////////////////////////////////
+  calculateFieldPoints(key, x, y) {
+    function extraCondition(thisTile, key) {
+      // console.log(        `extraCondition(thisTile=${JSON.stringify(thisTile)}, key=${key})`      );
+      return (
+        !thisTile.places[key].disConnected &&
+        thisTile.sides.some(({ type }) => type === 'town')
+      );
+    }
+    const { tilesMap } = this;
+    const placeType = tilesMap[y][x].places[key].name;
+    if (placeType !== 'field')
+      return console.error(
+        `calculateFieldPoints works with "fields" areas, but receive "${placeType}"`
+      );
+    const { includedTiles } = this.selectArea(key, x, y, extraCondition);
+    console.log(`=====>>> includedTiles=${JSON.stringify(includedTiles)}`);
+
+    const checkedTownsTiles = [];
+    let closedTownsCount = 0;
+
+    includedTiles.forEach(({ x, y }) => {
+      const townsKey = [];
+      const { places } = tilesMap[y][x];
+      for (let key in places) {
+        if (places[key].name === 'town' && townsKey.every(k => k !== key)) {
+          townsKey.push(key);
+        }
+      }
+      console.log(`townsKey=${JSON.stringify(townsKey)}`);
+
+      townsKey.forEach(townKey => {
+        const selectTownResult = this.selectArea(townKey, x, y);
+        console.log(`selectTownResult=${JSON.stringify(selectTownResult)}`);
+        // selectTownResult.includedTiles, selectTownResult.isAreaOpen
+
+        const isSomeTilesAlreadyCounted = selectTownResult.includedTiles.every(
+          ({ owners, x, y }) =>
+            owners.some(owner =>
+              checkedTownsTiles.some(
+                tile => tile.owner === owner && tile.x === x && tile.y === y
+              )
+            )
+        );
+
+        if (!isSomeTilesAlreadyCounted && !selectTownResult.isAreaOpen) {
+          closedTownsCount++;
+        }
+        // if finded town tiles not in checkedTownsTiles, then add them
+        selectTownResult.includedTiles.forEach(({ owners, x, y }) =>
+          owners.forEach(owner => {
+            if (
+              !checkedTownsTiles.find(
+                tile => tile.owner === owner && tile.x === x && tile.y === y
+              )
+            ) {
+              checkedTownsTiles.push({ owner, x, y });
+            }
+          })
+        );
+      });
+    });
+
+    // console.log(`includedTiles=${JSON.stringify(includedTiles)}`);
+    // includedTiles=[{"owners":["B"],"x":3,"y":2},{"owners":["B"],"x":2,"y":2}]
+    return closedTownsCount * 3;
+  }
+  ///////////////////////////////////////////////////////////////////////
+  calculateMonasteryPoints(key, x, y) {
+    const neighbors = [
+      { x, y: y - 1 },
+      { x: x + 1, y: y - 1 },
+      { x: x + 1, y },
+      { x: x + 1, y: y + 1 },
+      { x, y: y + 1 },
+      { x: x - 1, y: y + 1 },
+      { x: x - 1, y },
+      { x: x - 1, y: y - 1 }
+    ];
+    const { tilesMap } = this;
+    const placeType = tilesMap[y][x].places[key].name;
+    if (placeType !== 'monastery')
+      return console.error(
+        `calculateMonasteryPoints works with "monasteries" areas, but receive "${placeType}"`
+      );
+    let points = 1;
+    neighbors.forEach(position => {
+      const { x, y } = position;
+      if (!isCellOutsideMap(tilesMap, position) && tilesMap[y][x]) {
+        points++;
+      }
+    });
+    return points;
+  }
   ///////////////////////////////////////////////////////////////////////
 
   putTileOnMap(tile, position, rotation) {

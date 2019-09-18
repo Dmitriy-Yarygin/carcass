@@ -10,7 +10,7 @@ const startTile = {
   places: {
     A: { name: 'town', x: '50%', y: '20%' }, //, shields: false, miple: userID, points: null},
     B: { name: 'road', x: '50%', y: '50%' },
-    C: { name: 'field', x: '50%', y: '75%' },
+    C: { name: 'field', x: '50%', y: '75%', disConnected: true }, // disconnected from town by road
     D: { name: 'field', x: '15%', y: '30%' }
   }
 };
@@ -24,13 +24,13 @@ const town2 = {
     { type: 'road', owner: 'D', right: 'G', left: 'E' }
   ],
   places: {
-    A: { name: 'town', x: '50%', y: '20%' },
+    A: { name: 'town', x: '50%', y: '15%' },
     B: { name: 'road', x: '75%', y: '50%' },
-    C: { name: 'road', x: '50%', y: '75%' },
+    C: { name: 'road', x: '50%', y: '80%' },
     D: { name: 'road', x: '25%', y: '50%' },
-    E: { name: 'field', x: '60%', y: '35%' },
-    F: { name: 'field', x: '75%', y: '75%' },
-    G: { name: 'field', x: '25%', y: '75%' }
+    E: { name: 'field', x: '60%', y: '42%' },
+    F: { name: 'field', x: '80%', y: '80%', disConnected: true },
+    G: { name: 'field', x: '25%', y: '80%', disConnected: true }
   }
 };
 const town3 = {
@@ -71,7 +71,7 @@ const monastery2 = {
   sides: [
     { type: 'field', owner: 'B' },
     { type: 'field', owner: 'B' },
-    { type: 'road', owner: 'C' },
+    { type: 'road', owner: 'C', right: 'B', left: 'B' },
     { type: 'field', owner: 'B' }
   ],
   places: {
@@ -108,7 +108,7 @@ const town22 = {
     A: { name: 'town', x: '30%', y: '20%', shields: 1 },
     B: { name: 'field', x: '45%', y: '55%' },
     C: { name: 'road', x: '70%', y: '70%' },
-    D: { name: 'field', x: '85%', y: '85%' }
+    D: { name: 'field', x: '85%', y: '85%', disConnected: true }
   }
 };
 const town23 = {
@@ -124,7 +124,7 @@ const town23 = {
     A: { name: 'town', x: '30%', y: '20%' },
     B: { name: 'field', x: '45%', y: '55%' },
     C: { name: 'road', x: '70%', y: '70%' },
-    D: { name: 'field', x: '85%', y: '85%' }
+    D: { name: 'field', x: '85%', y: '85%', disConnected: true }
   }
 };
 
@@ -242,7 +242,7 @@ const town33 = {
     A: { name: 'town', x: '50%', y: '15%' },
     B: { name: 'road', x: '60%', y: '60%' },
     C: { name: 'field', x: '25%', y: '60%' },
-    D: { name: 'field', x: '80%', y: '80%' }
+    D: { name: 'field', x: '80%', y: '80%', disConnected: true }
   }
 };
 const town34 = {
@@ -258,7 +258,7 @@ const town34 = {
     A: { name: 'town', x: '50%', y: '15%' },
     B: { name: 'field', x: '70%', y: '50%' },
     C: { name: 'road', x: '40%', y: '60%' },
-    D: { name: 'field', x: '20%', y: '80%' }
+    D: { name: 'field', x: '20%', y: '80%', disConnected: true }
   }
 };
 
@@ -357,7 +357,7 @@ const town52 = {
   sides: [
     { type: 'field', owner: 'A' },
     { type: 'town', owner: 'B' },
-    { type: 'field', owner: 'A' },
+    { type: 'field', owner: 'C' },
     { type: 'town', owner: 'B' }
   ],
   places: {
