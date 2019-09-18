@@ -17,8 +17,8 @@ import { socket } from '../common/Socket';
 const styles = theme => ({
   root: {
     margin: 20,
-    padding: 5
-    // backgroundColor: 'rgba(156, 185, 161, 0.9)'
+    padding: 5,
+    backgroundColor: 'rgba(128, 134, 129, 0.9)'
   }
 });
 

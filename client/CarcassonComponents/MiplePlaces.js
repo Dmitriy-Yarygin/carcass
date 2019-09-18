@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
-import { isAbsolute } from 'path';
+import Miple from './Miple';
 
 const styles = {
   root: { position: 'absolute', width: '100%', height: '100%' },
@@ -12,14 +12,11 @@ const styles = {
     position: 'absolute',
     padding: '1px',
     color: 'orange',
-    fontSize: '1.2em',
-    fontWeight: 700,
     cursor: 'pointer',
-    // height: '12px',
-    // width: '12px',
-    // border: '1px solid black',
-    // borderRadius: '50%',
-    // backgroundColor: 'aqua',
+    height: '20px',
+    width: '20px',
+    border: '1px solid seagreen',
+    borderRadius: '50%',
     transform: 'translate(-50%, -50%)'
   }
 };
@@ -63,8 +60,7 @@ class MiplePlaces extends React.Component {
               style={{ left: x, top: y, color }}
               onClick={this.mipleClick(name)}
             >
-              &#9733;
-              <span style={{ fontSize: '0.5em' }}>{name}</span>
+              <Miple ppp={{ name }} />
             </div>
           ))}
         </div>
