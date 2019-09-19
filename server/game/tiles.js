@@ -8,10 +8,10 @@ const startTile = {
     { type: 'road', owner: 'B', right: 'C', left: 'D' }
   ],
   places: {
-    A: { name: 'town', x: '50%', y: '20%' }, //, shields: false, miple: userID, points: null},
+    A: { name: 'town', x: '50%', y: '20%' }, //, shields: false, miple: userID, points: null, occupied: userId},
     B: { name: 'road', x: '50%', y: '50%' },
-    C: { name: 'field', x: '50%', y: '75%', disConnected: true }, // disconnected from town by road
-    D: { name: 'field', x: '15%', y: '30%' }
+    C: { name: 'field', x: '50%', y: '80%', disConnected: true }, // disconnected from town by road
+    D: { name: 'field', x: '12%', y: '35%' }
   }
 };
 const town2 = {
@@ -25,7 +25,7 @@ const town2 = {
   ],
   places: {
     A: { name: 'town', x: '50%', y: '15%' },
-    B: { name: 'road', x: '75%', y: '50%' },
+    B: { name: 'road', x: '85%', y: '50%' },
     C: { name: 'road', x: '50%', y: '80%' },
     D: { name: 'road', x: '25%', y: '50%' },
     E: { name: 'field', x: '60%', y: '42%' },
@@ -314,9 +314,9 @@ const town44 = {
   ],
   places: {
     A: { name: 'town', x: '35%', y: '15%', shields: 1 },
-    B: { name: 'field', x: '30%', y: '90%' },
+    B: { name: 'field', x: '20%', y: '90%' },
     C: { name: 'road', x: '50%', y: '90%' },
-    D: { name: 'field', x: '70%', y: '90%' }
+    D: { name: 'field', x: '80%', y: '90%' }
   }
 };
 const town45 = {
@@ -330,9 +330,9 @@ const town45 = {
   ],
   places: {
     A: { name: 'town', x: '35%', y: '15%' },
-    B: { name: 'field', x: '30%', y: '90%' },
+    B: { name: 'field', x: '20%', y: '90%' },
     C: { name: 'road', x: '50%', y: '90%' },
-    D: { name: 'field', x: '70%', y: '90%' }
+    D: { name: 'field', x: '80%', y: '90%' }
   }
 };
 

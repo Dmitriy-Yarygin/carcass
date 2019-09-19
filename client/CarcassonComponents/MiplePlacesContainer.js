@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
-import Room from './Room';
-import * as roomActions from '../ducks/room/actions';
+import MiplePlaces from './MiplePlaces';
+// import * as roomActions from '../ducks/room/actions';
 import * as settingsActions from '../ducks/settings/actions';
 
 const mapStateToProps = state => ({
@@ -12,11 +12,11 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   updateRoom: editedRoom => dispatch(roomActions.roomUpdate(editedRoom)),
 
-  resetSettings: () => dispatch(settingsActions.resetSettings()),
+  // resetSettings: () => dispatch(settingsActions.resetSettings()),
   settingsUpdate: payload => dispatch(settingsActions.settingsUpdate(payload))
 });
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Room);
+)(MiplePlaces);

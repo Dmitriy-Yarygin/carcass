@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import GetSidesNames from './GetSidesNames';
-import MiplePlaces from './MiplePlaces';
+import MiplePlaces from './MiplePlacesContainer';
 import TileCover from './TileCover';
 import withStyles from '@material-ui/core/styles/withStyles';
 
@@ -11,7 +11,7 @@ const styles = {};
 
 class Tile extends React.Component {
   render() {
-    const { classes, position, tile, onClick, onMipleClick } = this.props;
+    const { classes, position, tile, onClick, roomId } = this.props;
 
     if (!tile || !tile.name) {
       return <div className="tileClass" onClick={onClick}></div>;
@@ -27,7 +27,7 @@ class Tile extends React.Component {
           position={position}
           tile={tile}
           rotation={rotation}
-          onMipleClick={onMipleClick}
+          roomId={roomId}
         />
       </div>
     );

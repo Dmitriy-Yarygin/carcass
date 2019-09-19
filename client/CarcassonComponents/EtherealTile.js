@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import TileCover from './TileCover';
-import MiplePlaces from './MiplePlaces';
+import MiplePlaces from './MiplePlacesContainer';
 import GetSidesNames from './GetSidesNames';
 import './Tile.css';
 import './EtherealTile.css';
@@ -33,8 +33,8 @@ class EtherealTile extends React.Component {
     return (
       <div className="tileClass ethereal" onClick={this.tileClick}>
         <TileCover tile={tile} rotation={rotation} />
-        <GetSidesNames tile={tile} rotation={rotation} />
-        <MiplePlaces tile={tile} rotation={rotation} />
+        {/* <GetSidesNames tile={tile} rotation={rotation} /> */}
+        {/* <MiplePlaces tile={tile} rotation={rotation} /> */}
 
         {tile.variants && tile.variants.length > 1 && (
           <button

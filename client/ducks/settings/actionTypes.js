@@ -1,0 +1,2 @@
+export const INIT_SETTINGS = 'INIT_SETTINGS';
+export const SETTINGS_UPDATE = 'SETTINGS_UPDATE';
