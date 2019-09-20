@@ -14,8 +14,8 @@ const styles = {
     height: '42px',
     top: '10px',
     left: '10px',
-    transform: 'translate(-50%, -50%)',
-    border: '1px dotted black'
+    transform: 'translate(-50%, -50%)'
+    // border: '1px dotted black'
   }
 };
 

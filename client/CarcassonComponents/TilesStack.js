@@ -7,9 +7,9 @@ import './TileStack.css';
 
 class TileStack extends React.Component {
   render() {
-    console.log(`TileStack render this.props = ${JSON.stringify(this.props)} `);
+    // console.log(`TileStack render this.props = ${JSON.stringify(this.props)} `);
     const { gameState, onClick, blinkFlag } = this.props;
-    const { tile, tilesInStack } = gameState;
+    const { stage, tile, tilesInStack } = gameState;
 
     const emptyTileClass = blinkFlag ? `tileClass blink` : `tileClass`;
 

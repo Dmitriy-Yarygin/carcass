@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import MiplePlaces from './MiplePlaces';
-// import * as roomActions from '../ducks/room/actions';
+import * as roomActions from '../ducks/room/actions';
 import * as settingsActions from '../ducks/settings/actions';
 
 const mapStateToProps = state => ({

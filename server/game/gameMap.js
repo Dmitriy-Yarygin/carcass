@@ -401,17 +401,48 @@ class GameMap {
 
     extendedMap[y][x] = { ...tile, rotation };
     // console.log(`>>>>>>>>>>>>>> extendedMap[${y}][${x}]`);
+
     const h = extendedMap.length - 1;
     const w = extendedMap[0].length - 1;
-    if (y < h) extendedMap.pop();
-    if (x < w) extendedMap.forEach(raw => raw.pop());
-    if (y > 0) extendedMap.shift();
-    if (x > 0) extendedMap.forEach(raw => raw.shift());
+    if (y < h) {
+      extendedMap.pop();
+      y + 1;
+    }
+    if (x < w) {
+      extendedMap.forEach(raw => raw.pop());
+      x + 1;
+    }
+    if (y > 0) {
+      extendedMap.shift();
+    }
+    if (x > 0) {
+      extendedMap.forEach(raw => raw.shift());
+    }
 
     this.tilesMap = extendedMap;
-    this.timeStamp = new Date();
 
     return true;
+  }
+
+  setMipleOnMap(userId, key, lastTilePosition) {
+    console.error(userId, key, JSON.stringify(lastTilePosition));
+
+    let { x, y } = lastTilePosition;
+    x--;
+    y--;
+    if (key) {
+      console.log(this.tilesMap);
+      this.tilesMap[y][x].places[key].occupied = userId;
+      console.log(
+        `>>>>>>>>>>>>>> this.tilesMap[${y}][${x}] = ${JSON.stringify(
+          this.tilesMap[y][x]
+        )}`
+      );
+    }
+
+    console.log(
+      `>>>>>>>>>>>>>> this.tilesMap = ${JSON.stringify(this.tilesMap)}`
+    );
   }
 }
 

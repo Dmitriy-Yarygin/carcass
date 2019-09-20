@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Miple from './Miple';
 import { COLORS, NOT_SETTED_MIPLE_PLACE_COLOR } from '../common/constants';
+import { socket } from '../common/Socket';
 
 const styles = {
   root: { position: 'absolute', width: '100%', height: '100%' },
@@ -33,11 +34,14 @@ const styles = {
 
 function getStarColor(occupied, thisRoom) {
   if (occupied) {
-    return COLORS[thisRoom.game_state.trunOrder.indexOf(occupied)]; // occupied === userId
+    return COLORS[thisRoom.game_state.turnOrder.indexOf(occupied)]; // occupied === userId
   }
 }
 
 function isThisLastTile(position, thisRoom) {
+  console.log(`Function "isThisLastTile": Check arguments! tilePos, lastPos`);
+  console.log(position);
+  console.log(thisRoom);
   if (
     position &&
     thisRoom &&
@@ -46,15 +50,13 @@ function isThisLastTile(position, thisRoom) {
     thisRoom.game_state.lastTilePosition
   ) {
     const { lastTilePosition, stage } = thisRoom.game_state;
-    return (
+    const result =
       stage === 'putTile' &&
       lastTilePosition.x === position.x &&
-      lastTilePosition.y === position.y
-    );
+      lastTilePosition.y === position.y;
+    console.log(`isThisLastTile = ${result}`);
+    return result;
   }
-  // console.error(`Function "isThisLastTile": Check arguments!`);
-  // console.log(position);
-  // console.log(thisRoom);
 
   return false;
 }
@@ -67,7 +69,7 @@ class MiplePlaces extends React.Component {
     const thisRoom = room.rooms
       ? room.rooms.find(room => room.id === roomId)
       : null;
-    if (thisRoom && !Object.is(thisRoom, state.thisRoom)) {
+    if (thisRoom) {
       return { thisRoom };
     }
     // No state update necessary
@@ -75,18 +77,50 @@ class MiplePlaces extends React.Component {
   }
 
   mipleClick = name => e => {
-    const { settingsUpdate, position } = this.props;
-    // const { thisRoom } = this.state;
+    const { roomId, settingsUpdate, position } = this.props;
+    const { thisRoom } = this.state;
+    // settingsUpdate({ key: name, position });
 
-    settingsUpdate({ key: name, position });
+    if (isThisLastTile(position, thisRoom)) {
+      socket.emit('game: pass the moove', { roomId, key: name }, answer => {
+        console.log(answer);
 
-    // if (isThisLastTile(position, thisRoom)) {
-    // }
+        if (answer.success) {
+          this.props.updateRoom(answer.result);
+        } else {
+          console.error(answer);
+        }
+      });
+    }
+
+    /*
+
+    socket.emit('game: start', { roomId: this.state.roomId }, answer => {
+      if (!answer.success) {
+    console.error(answer);
+    this.setState({
+      msg: answer.error.detail,
+      msgVariant: 'error'
+    });
+  }
+    });
+  };
+
+  if (!answer.success) {
+    console.error(answer);
+    this.setState({
+      msg: answer.error.detail,
+      msgVariant: 'error'
+    });
+  }
+  */
+
     e.stopPropagation();
   };
 
   render() {
-    // console.log(`MiplePlaces render`);
+    console.log(`MiplePlaces render`);
+    // console.log(this.props);
     const {
       classes,
       position,
@@ -118,11 +152,14 @@ class MiplePlaces extends React.Component {
       : {};
 
     let spotStyle = {};
-    if (isThisLastTile(position, thisRoom) || settings.isSpotsKeysVisible)
+    const lastTileFlag = isThisLastTile(position, thisRoom);
+    if (lastTileFlag || settings.isSpotsKeysVisible) {
       spotStyle.backgroundColor = NOT_SETTED_MIPLE_PLACE_COLOR;
-    if (!settings.isTileSpotsVisible) spotStyle.border = 'none';
-
-    let spotKeyStyle = settings.isSpotsKeysVisible ? {} : { display: 'none' };
+    }
+    if (!settings.isTileSpotsVisible && !lastTileFlag) {
+      spotStyle.border = 'none';
+    }
+    const spotKeyStyle = settings.isSpotsKeysVisible ? {} : { display: 'none' };
     /* ****************************************************************************** */
     return (
       <div className={classes.root}>

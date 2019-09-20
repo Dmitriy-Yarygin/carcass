@@ -25,8 +25,7 @@ const styles = theme => ({
 
 class Room extends React.Component {
   state = {
-    msg: null,
-    isTileSpotsVisible: false
+    msg: null
   };
 
   warningOnClose = () => {
@@ -101,40 +100,32 @@ class Room extends React.Component {
       answer => {
         if (this.checkSuccess(answer)) {
           // console.log(answer.result);
-          // this.props.updateRoom(answer.result);
+          this.props.updateRoom(answer.result);
         }
       }
     );
   };
-
-  handlePassBtnClick;
   ////////////////////////////////////////////////////////
   checkSettings = ({ stamped_map }, { key, position }) => {
-    if (stamped_map && key && position) {
-      const x = position.x - 1;
-      const y = position.y - 1;
-
-      console.log(`Click key=${key}, position=${x}:${y}`);
-      // const gameMap = new GameMap(stamped_map.tilesMap);
-
-      // const { includedTiles, isAreaOpen } = gameMap.selectArea(key, x, y);
-      // const stampedMap = gameMap.get();
-      // const mapMatrix = stampedMap.tilesMap;
-
-      // includedTiles.forEach(({ owners, x, y }) => {
-      //   owners.forEach(owner => {
-      //     mapMatrix[y][x].places[owner].color = 'red';
-      //   });
-      // });
-
-      // const pointsCount = gameMap.calculatePoints(key, x, y);
-
-      // console.log(
-      //   `${key} is ${isAreaOpen ? 'open' : 'closed'}, points = ${pointsCount}`
-      // );
-
-      // this.setState(stampedMap);
-    }
+    // if (stamped_map && key && position) {
+    //   const x = position.x - 1;
+    //   const y = position.y - 1;
+    //   console.log(`Click key=${key}, position=${x}:${y}`);
+    // }
+    // const gameMap = new GameMap(stamped_map.tilesMap);
+    // const { includedTiles, isAreaOpen } = gameMap.selectArea(key, x, y);
+    // const stampedMap = gameMap.get();
+    // const mapMatrix = stampedMap.tilesMap;
+    // includedTiles.forEach(({ owners, x, y }) => {
+    //   owners.forEach(owner => {
+    //     mapMatrix[y][x].places[owner].color = 'red';
+    //   });
+    // });
+    // const pointsCount = gameMap.calculatePoints(key, x, y);
+    // console.log(
+    //   `${key} is ${isAreaOpen ? 'open' : 'closed'}, points = ${pointsCount}`
+    // );
+    // this.setState(stampedMap);
   };
   /* ================================================================================= */
   handleBtn2Click = () => {
@@ -157,14 +148,15 @@ class Room extends React.Component {
       playersQueue,
       startBtnFlag,
       gameState,
-      tilesStackBlinkFlag;
+      tilesStackBlinkFlag,
+      showPassBtn;
     const { roomId, roomName } = this.state;
     const { classes, user, room, settings } = this.props;
     if (roomId && room && room.rooms) {
       thisRoom = room.rooms.find(room => room.id === roomId); //
       if (thisRoom) {
         //------------------------------------------
-        this.checkSettings(thisRoom, settings);
+        // this.checkSettings(thisRoom, settings);
         //------------------------------------------
         const { game_state, users } = thisRoom;
         if (users) playersQueue = users.map(({ email }) => email).join('; ');
@@ -172,12 +164,14 @@ class Room extends React.Component {
 
         if (gameState.turnOrder && users) {
           const { turnOrder, playerTurn } = gameState;
-          // console.log(`gameState = ${JSON.stringify(gameState)}`);
+          console.log(`BEFORE BLINK gameState = ${JSON.stringify(gameState)}`);
           tilesStackBlinkFlag = !!(
             user.id === turnOrder[playerTurn] &&
-            gameState.stage !== 'gotTile' &&
+            gameState.stage === 'pass' &&
             gameState.tilesInStack
           );
+          // console.log(`tilesStackBlinkFlag = ${tilesStackBlinkFlag}`);
+
           whosTurn = users.find(({ id }) => id === turnOrder[playerTurn]).email;
           playersQueue = turnOrder
             .map(
@@ -187,6 +181,8 @@ class Room extends React.Component {
             .join('; ');
         }
         startBtnFlag = gameState.name && gameState.name === 'created';
+        showPassBtn =
+          gameState && gameState.stage && gameState.stage === 'putTile'; ////////////////////////////****************** */
       }
     }
     // console.log(`user = ${JSON.stringify(user)}`);
@@ -240,13 +236,15 @@ class Room extends React.Component {
           <span> Letters </span>
 
           <br></br>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={this.handlePassBtnClick}
-          >
-            Pass
-          </Button>
+          {showPassBtn && (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={this.handlePassBtnClick}
+            >
+              Pass
+            </Button>
+          )}
         </Paper>
 
         <Paper className={classes.root} elevation={1}>

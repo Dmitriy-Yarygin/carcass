@@ -17,7 +17,7 @@ class MapView extends React.PureComponent {
   componentDidMount() {}
 
   static getDerivedStateFromProps(props, state) {
-    console.log('getDerivedStateFromProps');
+    // console.log('getDerivedStateFromProps');
     const { tilesMap, gameState } = props;
     // const extendedMap = state.extendedMap
     //   ? state.extendedMap
@@ -35,8 +35,13 @@ class MapView extends React.PureComponent {
       };
     }
     if (tilesMap.timeStamp !== state.timeStamp) {
-      console.log(JSON.stringify(state.timeStamp));
-      console.log(JSON.stringify(tilesMap.timeStamp));
+      // console.log(JSON.stringify(state.timeStamp));
+      // console.log(JSON.stringify(tilesMap.timeStamp));
+      if (gameState.stage === 'putTile')
+        return {
+          extendedMap,
+          timeStamp: tilesMap.timeStamp
+        };
       return {
         extendedMap,
         timeStamp: tilesMap.timeStamp

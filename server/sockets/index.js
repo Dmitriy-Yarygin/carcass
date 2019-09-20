@@ -102,10 +102,19 @@ function carcaSockets(app) {
           rotation
         );
         callback(result);
-        if (result.success)
-          socket.to(`room${roomId}`).emit('rooms:update', result);
+        //   if (result.success)
+        //     socket.to(`room${roomId}`).emit('rooms:update', result);
       }
     );
+
+    ////////////////////  socket.emit('game: pass the moove', {
+    socket.on('game: pass the moove', async ({ roomId, key }, callback) => {
+      const userId = socket.session.user.id;
+      const result = await roomsManager.passMoove(userId, roomId, key);
+      if (callback) callback(result);
+      if (result.success)
+        socket.to(`room${roomId}`).emit('rooms:update', result);
+    });
 
     socket.on('rooms', async ({ method, data }, callback) => {
       // log.info(`Server rooms:${method} >>> %O`, data);

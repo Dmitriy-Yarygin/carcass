@@ -155,7 +155,8 @@ const startGame = async (userId, roomId) => {
       game_state: {
         ...game_state,
         name: 'started',
-        turn: 0,
+        stage: 'pass',
+        turn: 1,
         playerTurn: 0,
         tilesInStack: tilesStore.howManyTilesInStack(),
         turnOrder
@@ -171,34 +172,21 @@ const getTile = async (userId, roomId) => {
     return result;
   }
   const { id, game_state, tiles } = result.result;
-
-  if (game_state.name === 'finished') {
-    return {
-      success: false,
-      error: { detail: `Game is over! No more tiles in stack!` }
-    };
-  }
-
-  if (game_state.name !== 'started') {
-    return {
-      success: false,
-      error: { detail: `Room owner should start the game!` }
-    };
-  }
-
   const { turnOrder, playerTurn } = game_state;
-  if (userId !== turnOrder[playerTurn]) {
-    return {
-      success: false,
-      error: { detail: `It's not your turn!` }
-    };
-  }
 
-  if (game_state.tile) {
-    return {
-      success: false,
-      error: { detail: `Player already take tile !` }
-    };
+  switch (true) {
+    case game_state.name === 'created':
+      return makeAnswerWithError(`Room owner should start the game!`);
+    case userId !== turnOrder[playerTurn]:
+      return makeAnswerWithError(`It's not your turn!`);
+    case game_state.tile:
+      return makeAnswerWithError(`Player already take tile !`);
+    case game_state.name === 'finished':
+      return makeAnswerWithError(`Game is over! No more tiles in stack!`);
+    case game_state.stage !== 'pass':
+      return makeAnswerWithError(
+        `You should put tile on board and set miple or pass the move!`
+      );
   }
 
   const tilesStore = new TilesStore(tiles);
@@ -209,7 +197,6 @@ const getTile = async (userId, roomId) => {
       tiles: tilesStore.getTilesInBox(),
       game_state: {
         ...game_state,
-        turn: game_state.turn + 1,
         tile,
         tilesInStack: tilesStore.howManyTilesInStack(),
         stage: 'gotTile',
@@ -229,20 +216,14 @@ const putTile = async (userId, roomId, position, rotation) => {
   const { id, game_state, stamped_map, tiles } = result.result;
   const { turnOrder, playerTurn } = game_state;
   if (userId !== turnOrder[playerTurn]) {
-    return {
-      success: false,
-      error: { detail: `It's not your turn!` }
-    };
+    return makeAnswerWithError(`It's not your turn!`);
   }
 
   const gameMap = new GameMap(stamped_map.tilesMap);
   const success = gameMap.putTileOnMap(game_state.tile, position, rotation);
+  // cos cut extended map and 0 row and 0 column after after another extend will be 1
+  const lastTilePosition = { x: position.x || 1, y: position.y || 1 };
   if (success) {
-    //////////////////////   later this block needs to be moved to block after Miple placed on board
-    if (tiles.length === 0) game_state.name = 'finished';
-    let { playerTurn, turnOrder } = game_state;
-    playerTurn = (playerTurn + 1) % turnOrder.length;
-    //////////////////////////////////////////////////
     return update(
       {
         id,
@@ -250,18 +231,56 @@ const putTile = async (userId, roomId, position, rotation) => {
           ...game_state,
           tile: null,
           stage: 'putTile',
-          lastTilePosition: position,
-          playerTurn
+          lastTilePosition
         },
         stamped_map: gameMap.get()
       },
       userId
     );
   }
-  return {
-    success: false,
-    error: { detail: `Can't put this tile on the map!` }
-  };
+  return makeAnswerWithError(`Can't put this tile on the map!`);
+};
+
+const passMoove = async (userId, roomId, key) => {
+  log.verbose(`key >>> ${key}, userId=${userId}, roomId=${roomId}`);
+  let result = await getGameData(userId, roomId);
+  if (!result.success) {
+    return result;
+  }
+  let { id, game_state, stamped_map, tiles } = result.result;
+  let { turn, turnOrder, playerTurn } = game_state;
+
+  if (userId !== turnOrder[playerTurn]) {
+    return makeAnswerWithError(`It's not your turn!`);
+  }
+  if (game_state.stage !== 'putTile') {
+    return makeAnswerWithError(
+      `You can pass the move only after putting tile on board!`
+    );
+  }
+
+  if (key) {
+    const gameMap = new GameMap(stamped_map.tilesMap);
+    gameMap.setMipleOnMap(userId, key, game_state.lastTilePosition);
+    stamped_map = gameMap.get();
+  }
+  if (tiles.length === 0) game_state.name = 'finished';
+  playerTurn = (playerTurn + 1) % turnOrder.length;
+
+  return update(
+    {
+      id,
+      game_state: {
+        ...game_state,
+        stage: 'pass',
+        turn: turn + 1,
+        playerTurn
+      },
+      stamped_map
+    },
+    userId
+  );
+  return makeAnswerWithError(`passMoove EEEEEEEEEEEEEEEEEEEEEror`);
 };
 
 module.exports = {
@@ -275,5 +294,6 @@ module.exports = {
   getGameData,
   startGame,
   getTile,
-  putTile
+  putTile,
+  passMoove
 };

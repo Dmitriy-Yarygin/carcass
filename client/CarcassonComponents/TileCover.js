@@ -26,7 +26,11 @@ class TileCover extends React.Component {
         className={classes.media}
         style={rotationStyle}
         image={tile && tile.image ? tile.image : '/images/tiles/tileBack.jpg'}
-        title={tile && tile.name ? tile.name : 'empty ???'}
+        title={
+          tile && tile.name
+            ? tile.name
+            : 'This tile name still unknown. You should take it in your turn.'
+        }
       />
     );
   }
