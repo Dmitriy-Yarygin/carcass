@@ -8,9 +8,9 @@ const startTile = {
     { type: 'road', owner: 'B', right: 'C', left: 'D' }
   ],
   places: {
-    A: { name: 'town', x: '50%', y: '20%' }, //, shields: false, miple: userID, points: null, occupied: userId},
+    A: { name: 'town', x: '50%', y: '15%' }, //, shields: false, miple: userID, points: null, occupied: userId},
     B: { name: 'road', x: '50%', y: '50%' },
-    C: { name: 'field', x: '50%', y: '80%', disConnected: true }, // disconnected from town by road
+    C: { name: 'field', x: '75%', y: '80%', disConnected: true }, // disconnected from town by road
     D: { name: 'field', x: '12%', y: '35%' }
   }
 };
@@ -25,12 +25,12 @@ const town2 = {
   ],
   places: {
     A: { name: 'town', x: '50%', y: '15%' },
-    B: { name: 'road', x: '85%', y: '50%' },
-    C: { name: 'road', x: '50%', y: '80%' },
-    D: { name: 'road', x: '25%', y: '50%' },
+    B: { name: 'road', x: '87%', y: '55%' },
+    C: { name: 'road', x: '46%', y: '86%' },
+    D: { name: 'road', x: '18%', y: '52%' },
     E: { name: 'field', x: '60%', y: '42%' },
-    F: { name: 'field', x: '80%', y: '80%', disConnected: true },
-    G: { name: 'field', x: '25%', y: '80%', disConnected: true }
+    F: { name: 'field', x: '80%', y: '85%', disConnected: true },
+    G: { name: 'field', x: '17%', y: '81%', disConnected: true }
   }
 };
 const town3 = {
@@ -43,7 +43,7 @@ const town3 = {
     { type: 'field', owner: 'B' }
   ],
   places: {
-    A: { name: 'town', x: '50%', y: '20%' },
+    A: { name: 'town', x: '50%', y: '15%' },
     B: { name: 'field', x: '50%', y: '60%' }
   }
 };
@@ -61,7 +61,7 @@ const monastery1 = {
   ],
   places: {
     A: { name: 'monastery', x: '50%', y: '50%' },
-    B: { name: 'field', x: '75%', y: '75%' }
+    B: { name: 'field', x: '80%', y: '80%' }
   }
 };
 const monastery2 = {
@@ -76,8 +76,8 @@ const monastery2 = {
   ],
   places: {
     A: { name: 'monastery', x: '50%', y: '50%' },
-    B: { name: 'field', x: '25%', y: '25%' },
-    C: { name: 'road', x: '50%', y: '75%' }
+    B: { name: 'field', x: '20%', y: '20%' },
+    C: { name: 'road', x: '46%', y: '84%' }
   }
 };
 
@@ -138,9 +138,9 @@ const road24 = {
     { type: 'road', owner: 'B', right: 'C', left: 'A' }
   ],
   places: {
-    A: { name: 'field', x: '25%', y: '30%' },
-    B: { name: 'road', x: '50%', y: '50%' },
-    C: { name: 'field', x: '70%', y: '70%' }
+    A: { name: 'field', x: '25%', y: '25%' },
+    B: { name: 'road', x: '53%', y: '53%' },
+    C: { name: 'field', x: '75%', y: '75%' }
   }
 };
 const road25 = {
@@ -153,8 +153,8 @@ const road25 = {
     { type: 'road', owner: 'B', right: 'C', left: 'A' }
   ],
   places: {
-    A: { name: 'field', x: '70%', y: '40%' },
-    B: { name: 'road', x: '50%', y: '50%' },
+    A: { name: 'field', x: '75%', y: '30%' },
+    B: { name: 'road', x: '45%', y: '50%' },
     C: { name: 'field', x: '25%', y: '75%' }
   }
 };
@@ -168,14 +168,14 @@ const cross36 = {
     { type: 'road', owner: 'D', right: 'G', left: 'H' }
   ],
   places: {
-    A: { name: 'road', x: '50%', y: '25%' },
-    B: { name: 'road', x: '75%', y: '50%' },
-    C: { name: 'road', x: '50%', y: '75%' },
-    D: { name: 'road', x: '25%', y: '50%' },
-    E: { name: 'field', x: '75%', y: '25%' },
-    F: { name: 'field', x: '75%', y: '75%' },
-    G: { name: 'field', x: '25%', y: '75%' },
-    H: { name: 'field', x: '25%', y: '25%' }
+    A: { name: 'road', x: '57%', y: '17%' },
+    B: { name: 'road', x: '84%', y: '54%' },
+    C: { name: 'road', x: '50%', y: '85%' },
+    D: { name: 'road', x: '15%', y: '52%' },
+    E: { name: 'field', x: '85%', y: '25%' },
+    F: { name: 'field', x: '81%', y: '84%' },
+    G: { name: 'field', x: '20%', y: '82%' },
+    H: { name: 'field', x: '22%', y: '21%' }
   }
 };
 const cross37 = {
@@ -188,8 +188,8 @@ const cross37 = {
     { type: 'road', owner: 'D', right: 'E', left: 'F' }
   ],
   places: {
-    A: { name: 'road', x: '50%', y: '25%' },
-    B: { name: 'field', x: '75%', y: '50%' },
+    A: { name: 'road', x: '51%', y: '18%' },
+    B: { name: 'field', x: '84%', y: '50%' },
     C: { name: 'road', x: '50%', y: '75%' },
     D: { name: 'road', x: '25%', y: '50%' },
     E: { name: 'field', x: '25%', y: '75%' },

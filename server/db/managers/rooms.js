@@ -144,7 +144,11 @@ const startGame = async (userId, roomId) => {
   if (userId !== owner) {
     return makeAnswerWithError(`Only room owner can start the game!`);
   }
+
+  // const allTilesInChessOrder = require('../../game/allTilesInChessOrder');
+  // const gameMap = new GameMap(allTilesInChessOrder());
   const gameMap = new GameMap();
+
   const turnOrder = users.map(({ id }) => id);
   const tilesStore = new TilesStore();
 

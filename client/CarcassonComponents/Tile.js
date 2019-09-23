@@ -22,7 +22,7 @@ class Tile extends React.Component {
     return (
       <div className="tileClass">
         <TileCover tile={tile} rotation={rotation} />
-        {/* <GetSidesNames tile={tile} rotation={rotation} /> */}
+        <GetSidesNames tile={tile} rotation={rotation} />
         <MiplePlaces
           position={position}
           tile={tile}
