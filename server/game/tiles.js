@@ -196,7 +196,21 @@ const cross37 = {
     F: { name: 'field', x: '25%', y: '25%' }
   }
 };
-const road46 = { ...road24, name: 'Road46', image: '/images/tiles/road46.jpg' };
+const road46 = {
+  name: 'Road46',
+  image: '/images/tiles/road46.jpg',
+  sides: [
+    { type: 'field', owner: 'A' },
+    { type: 'road', owner: 'B', right: 'A', left: 'C' },
+    { type: 'field', owner: 'C' },
+    { type: 'road', owner: 'B', right: 'C', left: 'A' }
+  ],
+  places: {
+    A: { name: 'field', x: '25%', y: '25%' },
+    B: { name: 'road', x: '58%', y: '43%' },
+    C: { name: 'field', x: '75%', y: '75%' }
+  }
+};
 const road47 = { ...road25, name: 'Road47', image: '/images/tiles/road47.jpg' };
 
 const town31 = {
@@ -384,38 +398,38 @@ const town53 = {
 
 const uniqueTiles = [
   { quantity: 3, tile: startTile },
-  { quantity: 3, tile: town2 },
-  { quantity: 3, tile: town3 },
-  { quantity: 2, tile: town4 },
+  // { quantity: 3, tile: town2 },
+  // { quantity: 3, tile: town3 },
+  // { quantity: 2, tile: town4 },
 
-  { quantity: 4, tile: monastery1 },
-  { quantity: 2, tile: monastery2 },
+  { quantity: 4, tile: monastery1 }
+  // { quantity: 2, tile: monastery2 }
 
-  { quantity: 2, tile: town21 },
-  { quantity: 2, tile: town22 },
-  { quantity: 3, tile: town23 },
+  // { quantity: 2, tile: town21 },
+  // { quantity: 2, tile: town22 },
+  // { quantity: 3, tile: town23 },
 
-  { quantity: 4, tile: road24 },
-  { quantity: 3, tile: road25 },
-  { quantity: 1, tile: cross36 },
-  { quantity: 4, tile: cross37 },
-  { quantity: 4, tile: road46 },
-  { quantity: 6, tile: road47 },
+  // { quantity: 4, tile: road24 },
+  // { quantity: 3, tile: road25 },
+  // { quantity: 1, tile: cross36 },
+  // { quantity: 4, tile: cross37 },
+  // { quantity: 4, tile: road46 },
+  // { quantity: 6, tile: road47 },
 
-  { quantity: 2, tile: town31 },
-  { quantity: 3, tile: town32 },
-  { quantity: 3, tile: town33 },
-  { quantity: 3, tile: town34 },
+  // { quantity: 2, tile: town31 },
+  // { quantity: 3, tile: town32 },
+  // { quantity: 3, tile: town33 },
+  // { quantity: 3, tile: town34 },
 
-  { quantity: 1, tile: town41 },
-  { quantity: 1, tile: town42 },
-  { quantity: 3, tile: town43 },
-  { quantity: 2, tile: town44 },
-  { quantity: 1, tile: town45 },
+  // { quantity: 1, tile: town41 },
+  // { quantity: 1, tile: town42 },
+  // { quantity: 3, tile: town43 },
+  // { quantity: 2, tile: town44 },
+  // { quantity: 1, tile: town45 },
 
-  { quantity: 3, tile: town51 },
-  { quantity: 2, tile: town52 },
-  { quantity: 1, tile: town53 }
+  // { quantity: 3, tile: town51 },
+  // { quantity: 2, tile: town52 },
+  // { quantity: 1, tile: town53 }
 ];
 
 module.exports = { startTile, uniqueTiles };

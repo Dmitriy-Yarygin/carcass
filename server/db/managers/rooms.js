@@ -150,6 +150,8 @@ const startGame = async (userId, roomId) => {
   const gameMap = new GameMap();
 
   const turnOrder = users.map(({ id }) => id);
+  const progress = {};
+  users.forEach(({ id }) => (progress[id] = { scores: 0, freeMiples: 7 }));
   const tilesStore = new TilesStore();
 
   return update(
@@ -163,7 +165,8 @@ const startGame = async (userId, roomId) => {
         turn: 1,
         playerTurn: 0,
         tilesInStack: tilesStore.howManyTilesInStack(),
-        turnOrder
+        turnOrder,
+        progress
       }
     },
     userId
@@ -181,12 +184,12 @@ const getTile = async (userId, roomId) => {
   switch (true) {
     case game_state.name === 'created':
       return makeAnswerWithError(`Room owner should start the game!`);
+    case game_state.name === 'finished':
+      return makeAnswerWithError(`Game is over! No more tiles in stack!`);
     case userId !== turnOrder[playerTurn]:
       return makeAnswerWithError(`It's not your turn!`);
     case game_state.tile:
       return makeAnswerWithError(`Player already take tile !`);
-    case game_state.name === 'finished':
-      return makeAnswerWithError(`Game is over! No more tiles in stack!`);
     case game_state.stage !== 'pass':
       return makeAnswerWithError(
         `You should put tile on board and set miple or pass the move!`
@@ -252,7 +255,7 @@ const passMoove = async (userId, roomId, key) => {
     return result;
   }
   let { id, game_state, stamped_map, tiles } = result.result;
-  let { turn, turnOrder, playerTurn } = game_state;
+  let { turn, turnOrder, playerTurn, progress } = game_state;
 
   if (userId !== turnOrder[playerTurn]) {
     return makeAnswerWithError(`It's not your turn!`);
@@ -262,14 +265,28 @@ const passMoove = async (userId, roomId, key) => {
       `You can pass the move only after putting tile on board!`
     );
   }
-
+  const gameMap = new GameMap(stamped_map.tilesMap);
   if (key) {
-    const gameMap = new GameMap(stamped_map.tilesMap);
-    gameMap.setMipleOnMap(userId, key, game_state.lastTilePosition);
-    stamped_map = gameMap.get();
+    if (!gameMap.setMipleOnMap(userId, key, game_state.lastTilePosition)) {
+      return makeAnswerWithError(
+        `You can't set miple on that place becouse object alredy occupied!`
+      );
+    }
+    if (progress[userId].freeMiples === 0) {
+      return makeAnswerWithError(`You haven't any free miple!`);
+    }
+    progress[userId].freeMiples--;
   }
-  if (tiles.length === 0) game_state.name = 'finished';
-  playerTurn = (playerTurn + 1) % turnOrder.length;
+
+  if (tiles.length) {
+    playerTurn = (playerTurn + 1) % turnOrder.length;
+    turn++;
+    // check all neigbors if there are monasteries
+    gameMap.endTurnScoresCount(game_state.lastTilePosition);
+  } else {
+    game_state.name = 'finished';
+    // TODO final count
+  }
 
   return update(
     {
@@ -277,14 +294,14 @@ const passMoove = async (userId, roomId, key) => {
       game_state: {
         ...game_state,
         stage: 'pass',
-        turn: turn + 1,
-        playerTurn
+        turn,
+        playerTurn,
+        progress
       },
-      stamped_map
+      stamped_map: gameMap.get()
     },
     userId
   );
-  return makeAnswerWithError(`passMoove EEEEEEEEEEEEEEEEEEEEEror`);
 };
 
 module.exports = {

@@ -4,6 +4,8 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import Miple from './Miple';
 import { COLORS, NOT_SETTED_MIPLE_PLACE_COLOR } from '../common/constants';
 import { socket } from '../common/Socket';
+import './TileStack.css'; // for blink
+import GameMap from '../../server/game/gameMap';
 
 const styles = {
   root: { position: 'absolute', width: '100%', height: '100%' },
@@ -39,9 +41,6 @@ function getStarColor(occupied, thisRoom) {
 }
 
 function isThisLastTile(position, thisRoom) {
-  console.log(`Function "isThisLastTile": Check arguments! tilePos, lastPos`);
-  console.log(position);
-  console.log(thisRoom);
   if (
     position &&
     thisRoom &&
@@ -54,7 +53,6 @@ function isThisLastTile(position, thisRoom) {
       stage === 'putTile' &&
       lastTilePosition.x === position.x &&
       lastTilePosition.y === position.y;
-    console.log(`isThisLastTile = ${result}`);
     return result;
   }
 
@@ -79,42 +77,18 @@ class MiplePlaces extends React.Component {
   mipleClick = name => e => {
     const { roomId, settingsUpdate, position } = this.props;
     const { thisRoom } = this.state;
-    // settingsUpdate({ key: name, position });
-
     if (isThisLastTile(position, thisRoom)) {
       socket.emit('game: pass the moove', { roomId, key: name }, answer => {
-        console.log(answer);
-
         if (answer.success) {
           this.props.updateRoom(answer.result);
         } else {
-          console.error(answer);
+          this.props.settingsUpdate({
+            msg: answer.error.detail,
+            msgVariant: 'error'
+          });
         }
       });
     }
-
-    /*
-
-    socket.emit('game: start', { roomId: this.state.roomId }, answer => {
-      if (!answer.success) {
-    console.error(answer);
-    this.setState({
-      msg: answer.error.detail,
-      msgVariant: 'error'
-    });
-  }
-    });
-  };
-
-  if (!answer.success) {
-    console.error(answer);
-    this.setState({
-      msg: answer.error.detail,
-      msgVariant: 'error'
-    });
-  }
-  */
-
     e.stopPropagation();
   };
 
@@ -153,6 +127,17 @@ class MiplePlaces extends React.Component {
 
     let spotStyle = {};
     const lastTileFlag = isThisLastTile(position, thisRoom);
+
+    if (lastTileFlag) {
+      spotStyle = {
+        border: '3px solid orangered',
+        animationName: 'blink',
+        animationDuration: '2s',
+        animationTimingFunction: 'linear',
+        animationIterationCount: 'infinite'
+      };
+    }
+
     if (lastTileFlag || settings.isSpotsKeysVisible) {
       spotStyle.backgroundColor = NOT_SETTED_MIPLE_PLACE_COLOR;
     }
@@ -160,23 +145,36 @@ class MiplePlaces extends React.Component {
       spotStyle.border = 'none';
     }
     const spotKeyStyle = settings.isSpotsKeysVisible ? {} : { display: 'none' };
+    const gameMap = new GameMap(thisRoom.stamped_map.tilesMap);
     /* ****************************************************************************** */
     return (
       <div className={classes.root}>
         <div className={classes.subRoot} style={rotationStyle}>
-          {points.map(({ name, x, y, color, occupied }) => (
-            <div
-              key={name}
-              className={classes.pointStyle}
-              style={{ left: x, top: y, color, ...spotStyle }}
-              onClick={this.mipleClick(name)}
-            >
-              {color && <Miple description={{ name }} />}
-              <span className={classes.name} style={spotKeyStyle}>
-                {name}
-              </span>
-            </div>
-          ))}
+          {points.map(({ name, x, y, color, occupied }) => {
+            if (lastTileFlag) {
+              const isPlaceAvailableForSettingMiple = gameMap.isItPossibleSetMipleOnMap(
+                name,
+                position
+              );
+
+              spotStyle.visibility = isPlaceAvailableForSettingMiple
+                ? 'visible'
+                : 'hidden';
+            }
+            return (
+              <div
+                key={name}
+                className={classes.pointStyle}
+                style={{ left: x, top: y, color, ...spotStyle }}
+                onClick={this.mipleClick(name)}
+              >
+                {color && <Miple description={{ name }} />}
+                <span className={classes.name} style={spotKeyStyle}>
+                  {name}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
     );

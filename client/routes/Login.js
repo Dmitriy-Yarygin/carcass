@@ -105,8 +105,6 @@ class SignIn extends React.Component {
             value: 0
           });
         } else {
-          console.error(res.success);
-
           this.setState({
             msg: `Registration error: ${res.error.detail}`,
             msgVariant: 'error'

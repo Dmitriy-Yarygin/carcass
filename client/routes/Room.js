@@ -8,6 +8,9 @@ import Button from '@material-ui/core/Button';
 import MySnackbar from '../common/MySnackbar';
 import MapView from '../CarcassonComponents/MapView';
 import TilesStack from '../CarcassonComponents/TilesStack';
+import './justBlink.css';
+import { COLORS } from '../common/constants';
+
 import GameMap from '../../server/game/gameMap';
 
 import Switch from '@material-ui/core/Switch';
@@ -48,9 +51,17 @@ class Room extends React.Component {
     );
   }
 
+  componentDidUpdate() {
+    const { settings } = this.props;
+    const { msg, msgVariant } = settings;
+    if (msg && msgVariant) {
+      this.props.settingsUpdate({ msg: null, msgVariant: null });
+      this.setState({ msg, msgVariant });
+    }
+  }
+
   checkSuccess = answer => {
     if (!answer.success) {
-      console.error(answer);
       this.setState({
         msg: answer.error.detail,
         msgVariant: 'error'
@@ -159,11 +170,11 @@ class Room extends React.Component {
         // this.checkSettings(thisRoom, settings);
         //------------------------------------------
         const { game_state, users } = thisRoom;
-        if (users) playersQueue = users.map(({ email }) => email).join('; ');
+        // if (users) playersQueue = users.map(({ email }) => email).join('; ');
         gameState = game_state;
 
         if (gameState.turnOrder && users) {
-          const { turnOrder, playerTurn } = gameState;
+          const { turnOrder, playerTurn, progress } = gameState;
           console.log(`BEFORE BLINK gameState = ${JSON.stringify(gameState)}`);
           tilesStackBlinkFlag = !!(
             user.id === turnOrder[playerTurn] &&
@@ -173,12 +184,11 @@ class Room extends React.Component {
           // console.log(`tilesStackBlinkFlag = ${tilesStackBlinkFlag}`);
 
           whosTurn = users.find(({ id }) => id === turnOrder[playerTurn]).email;
-          playersQueue = turnOrder
-            .map(
-              (id, i) =>
-                `${i + 1}) ${users.find(player => id === player.id).email}`
-            )
-            .join('; ');
+          playersQueue = turnOrder.map((id, i) => ({
+            user: users.find(player => id === player.id).email,
+            color: COLORS[i],
+            ...progress[id]
+          }));
         }
         startBtnFlag = gameState.name && gameState.name === 'created';
         showPassBtn =
@@ -198,9 +208,18 @@ class Room extends React.Component {
               Now turn of <b>{whosTurn}</b>
             </Typography>
           )}
-          {playersQueue && (
+          {playersQueue && playersQueue.length && (
             <Typography className={classes.title} variant="subtitle1" noWrap>
-              Turn queue: {playersQueue}
+              Turn queue:
+              {playersQueue.map(({ user, color, scores, freeMiples }, i) => (
+                <Typography variant="body1" gutterBottom key={i}>
+                  {`${i + 1}) ${user}`}
+                  <i>{`(${color}) - `}</i>
+                  <b>
+                    {scores} *{freeMiples}
+                  </b>
+                </Typography>
+              ))}
             </Typography>
           )}
 
@@ -238,6 +257,7 @@ class Room extends React.Component {
           <br></br>
           {showPassBtn && (
             <Button
+              className="justBlink"
               variant="contained"
               color="primary"
               onClick={this.handlePassBtnClick}
