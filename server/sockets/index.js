@@ -116,6 +116,23 @@ function carcaSockets(app) {
         socket.to(`room${roomId}`).emit('rooms:update', result);
     });
 
+    // socket.emit('game: calculate points', { roomId, key: name }, answer => {
+    socket.on(
+      'game: calculate points',
+      async ({ roomId, key, position }, callback) => {
+        const userId = socket.session.user.id;
+        const result = await roomsManager.calculatePoints(
+          userId,
+          roomId,
+          key,
+          position
+        );
+        if (callback) callback(result);
+        if (result.success)
+          socket.to(`room${roomId}`).emit('rooms:update', result);
+      }
+    );
+
     socket.on('rooms', async ({ method, data }, callback) => {
       // log.info(`Server rooms:${method} >>> %O`, data);
       const userId = socket.session.user.id;

@@ -97,6 +97,14 @@ class GameMap {
     return { tilesMap: this.tilesMap, timeStamp: this.timeStamp };
   }
 
+  getTile(x, y) {
+    if (isCellOutsideMap(this.tilesMap, { x, y })) {
+      console.error(`Cell ${x}:${y} is outside!`);
+      return null;
+    }
+    return this.tilesMap[y][x];
+  }
+
   static extendMap(tilesMap) {
     if (!tilesMap || !tilesMap.length) {
       return console.log('Check arguments for extendMap!');
@@ -458,9 +466,12 @@ class GameMap {
         tile &&
         tile.center &&
         tile.center.type &&
-        tile.center.type === 'monastery'
+        tile.center.type === 'monastery' &&
+        tile.places[tile.center.owner].occupied
       ) {
         const points = this.calculateMonasteryPoints(x, y);
+        if (points === 9) tile.places[tile.center.owner].points = 9;
+        // tile.places[tile.center.owner].points = points;
         console.log(`Not eextended map x=${x}:y=${y} points=${points}`);
         console.log(tile);
       }

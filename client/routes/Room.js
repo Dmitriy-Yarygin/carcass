@@ -213,10 +213,9 @@ class Room extends React.Component {
               Turn queue:
               {playersQueue.map(({ user, color, scores, freeMiples }, i) => (
                 <Typography variant="body1" gutterBottom key={i}>
-                  {`${i + 1}) ${user}`}
-                  <i>{`(${color}) - `}</i>
-                  <b>
-                    {scores} *{freeMiples}
+                  {`${i + 1}) ${user} - `}
+                  <b style={{ color, border: '2px solid' }}>
+                    {scores} &#9733; {freeMiples}
                   </b>
                 </Typography>
               ))}

@@ -286,6 +286,7 @@ const passMoove = async (userId, roomId, key) => {
   } else {
     game_state.name = 'finished';
     // TODO final count
+    gameMap.endTurnScoresCount(game_state.lastTilePosition);
   }
 
   return update(
@@ -296,6 +297,53 @@ const passMoove = async (userId, roomId, key) => {
         stage: 'pass',
         turn,
         playerTurn,
+        progress
+      },
+      stamped_map: gameMap.get()
+    },
+    userId
+  );
+};
+
+const calculatePoints = async (userId, roomId, key, position) => {
+  log.verbose(
+    `calculatePoints key >>> ${key}, pos=${JSON.stringify(
+      position
+    )} userId=${userId}, roomId=${roomId}`
+  );
+  let result = await getGameData(userId, roomId);
+  if (!result.success) {
+    return result;
+  }
+  let { id, game_state, stamped_map, tiles } = result.result;
+  let { turn, turnOrder, playerTurn, progress } = game_state;
+
+  const gameMap = new GameMap(stamped_map.tilesMap);
+
+  if (key && position) {
+    const x = position.x - 1;
+    const y = position.y - 1;
+    const tile = gameMap.getTile(x, y);
+    if (
+      tile.places[key] &&
+      tile.places[key].points &&
+      tile.places[key].points > 0 &&
+      tile.places[key].occupied &&
+      tile.places[key].occupied === userId
+    ) {
+      const occupiedBy = tile.places[key].occupied;
+      progress[occupiedBy].scores += tile.places[key].points;
+      progress[occupiedBy].freeMiples++;
+      tile.places[key].points = -tile.places[key].points;
+      tile.places[key].occupied = null;
+    }
+  }
+
+  return update(
+    {
+      id,
+      game_state: {
+        ...game_state,
         progress
       },
       stamped_map: gameMap.get()
@@ -316,5 +364,6 @@ module.exports = {
   startGame,
   getTile,
   putTile,
-  passMoove
+  passMoove,
+  calculatePoints
 };

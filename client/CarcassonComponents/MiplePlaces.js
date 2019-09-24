@@ -75,19 +75,38 @@ class MiplePlaces extends React.Component {
   }
 
   mipleClick = name => e => {
-    const { roomId, settingsUpdate, position } = this.props;
+    const { roomId, settingsUpdate, position, tile } = this.props;
     const { thisRoom } = this.state;
     if (isThisLastTile(position, thisRoom)) {
-      socket.emit('game: pass the moove', { roomId, key: name }, answer => {
-        if (answer.success) {
-          this.props.updateRoom(answer.result);
-        } else {
-          this.props.settingsUpdate({
-            msg: answer.error.detail,
-            msgVariant: 'error'
-          });
+      socket.emit(
+        'game: pass the moove',
+        { roomId, key: name, position },
+        answer => {
+          if (answer.success) {
+            this.props.updateRoom(answer.result);
+          } else {
+            this.props.settingsUpdate({
+              msg: answer.error.detail,
+              msgVariant: 'error'
+            });
+          }
         }
-      });
+      );
+    } else if (tile.places[name].points && tile.places[name].points > 0) {
+      socket.emit(
+        'game: calculate points',
+        { roomId, key: name, position },
+        answer => {
+          if (answer.success) {
+            this.props.updateRoom(answer.result);
+          } else {
+            this.props.settingsUpdate({
+              msg: answer.error.detail,
+              msgVariant: 'error'
+            });
+          }
+        }
+      );
     }
     e.stopPropagation();
   };
@@ -108,16 +127,16 @@ class MiplePlaces extends React.Component {
 
     const { thisRoom } = this.state;
 
-    let points = [];
+    let places = [];
     if (tile.places) {
       for (let key in tile.places) {
-        const { x, y, occupied } = tile.places[key];
+        const { x, y, occupied, points } = tile.places[key];
         if (!x || !y) {
           console.error(`Check cordinates of ${tile.name} !`);
           continue;
         }
         const color = getStarColor(occupied, thisRoom);
-        points.push({ name: key, x, y, color, occupied });
+        places.push({ name: key, x, y, color, points, occupied });
       }
     }
 
@@ -150,7 +169,7 @@ class MiplePlaces extends React.Component {
     return (
       <div className={classes.root}>
         <div className={classes.subRoot} style={rotationStyle}>
-          {points.map(({ name, x, y, color, occupied }) => {
+          {places.map(({ name, x, y, color, points, occupied }) => {
             if (lastTileFlag) {
               const isPlaceAvailableForSettingMiple = gameMap.isItPossibleSetMipleOnMap(
                 name,
@@ -168,7 +187,7 @@ class MiplePlaces extends React.Component {
                 style={{ left: x, top: y, color, ...spotStyle }}
                 onClick={this.mipleClick(name)}
               >
-                {color && <Miple description={{ name }} />}
+                {color && <Miple description={{ name, points }} />}
                 <span className={classes.name} style={spotKeyStyle}>
                   {name}
                 </span>
