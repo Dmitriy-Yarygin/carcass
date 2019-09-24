@@ -175,7 +175,7 @@ class Room extends React.Component {
 
         if (gameState.turnOrder && users) {
           const { turnOrder, playerTurn, progress } = gameState;
-          console.log(`BEFORE BLINK gameState = ${JSON.stringify(gameState)}`);
+          // console.log(`BEFORE BLINK gameState = ${JSON.stringify(gameState)}`);
           tilesStackBlinkFlag = !!(
             user.id === turnOrder[playerTurn] &&
             gameState.stage === 'pass' &&

@@ -6,6 +6,7 @@ const GameMap = require('../../game/gameMap');
 const TilesStore = require('../../game/tilesStore');
 
 const MAX_PLAYERS_IN_THE_ROOM = 6;
+const STARTING_MIPLES_QUANTITY = 10;
 
 const READ_FIELDS = [
   'id',
@@ -151,7 +152,10 @@ const startGame = async (userId, roomId) => {
 
   const turnOrder = users.map(({ id }) => id);
   const progress = {};
-  users.forEach(({ id }) => (progress[id] = { scores: 0, freeMiples: 7 }));
+  users.forEach(
+    ({ id }) =>
+      (progress[id] = { scores: 0, freeMiples: STARTING_MIPLES_QUANTITY })
+  );
   const tilesStore = new TilesStore();
 
   return update(
@@ -220,7 +224,7 @@ const putTile = async (userId, roomId, position, rotation) => {
     return result;
   }
 
-  const { id, game_state, stamped_map, tiles } = result.result;
+  const { id, game_state, stamped_map } = result.result;
   const { turnOrder, playerTurn } = game_state;
   if (userId !== turnOrder[playerTurn]) {
     return makeAnswerWithError(`It's not your turn!`);
@@ -288,7 +292,6 @@ const passMoove = async (userId, roomId, key) => {
     // TODO final count
     gameMap.endTurnScoresCount(game_state.lastTilePosition);
   }
-
   return update(
     {
       id,
@@ -305,11 +308,39 @@ const passMoove = async (userId, roomId, key) => {
   );
 };
 
-const calculatePoints = async (userId, roomId, key, position) => {
+const takeOffMiple = async (userId, roomId, key, position) => {
   log.verbose(
-    `calculatePoints key >>> ${key}, pos=${JSON.stringify(
+    `takeOffMiple key >>> ${key}, pos=${JSON.stringify(
       position
     )} userId=${userId}, roomId=${roomId}`
+  );
+  let result = await getGameData(userId, roomId);
+  if (!result.success) {
+    return result;
+  }
+  let { id, game_state, stamped_map } = result.result;
+  let { progress } = game_state;
+
+  const gameMap = new GameMap(stamped_map.tilesMap);
+  if (!gameMap.takeOffMiple(userId, key, position, progress)) {
+    return makeAnswerWithError(`You can't take off this miple!`);
+  }
+  return update(
+    {
+      id,
+      game_state: {
+        ...game_state,
+        progress
+      },
+      stamped_map: gameMap.get()
+    },
+    userId
+  );
+};
+// FORCEsetMiple /////////////////////////////////////////////////////////
+const FORCEsetMiple = async (userId, roomId, key, position) => {
+  log.verbose(
+    `FORCEsetMiple key >>> ${key}, userId=${userId}, roomId=${roomId}`
   );
   let result = await getGameData(userId, roomId);
   if (!result.success) {
@@ -319,33 +350,11 @@ const calculatePoints = async (userId, roomId, key, position) => {
   let { turn, turnOrder, playerTurn, progress } = game_state;
 
   const gameMap = new GameMap(stamped_map.tilesMap);
-
-  if (key && position) {
-    const x = position.x - 1;
-    const y = position.y - 1;
-    const tile = gameMap.getTile(x, y);
-    if (
-      tile.places[key] &&
-      tile.places[key].points &&
-      tile.places[key].points > 0 &&
-      tile.places[key].occupied &&
-      tile.places[key].occupied === userId
-    ) {
-      const occupiedBy = tile.places[key].occupied;
-      progress[occupiedBy].scores += tile.places[key].points;
-      progress[occupiedBy].freeMiples++;
-      tile.places[key].points = -tile.places[key].points;
-      tile.places[key].occupied = null;
-    }
-  }
+  gameMap.FORCEsetMiple(userId, key, position);
 
   return update(
     {
       id,
-      game_state: {
-        ...game_state,
-        progress
-      },
       stamped_map: gameMap.get()
     },
     userId
@@ -365,5 +374,6 @@ module.exports = {
   getTile,
   putTile,
   passMoove,
-  calculatePoints
+  takeOffMiple,
+  FORCEsetMiple
 };

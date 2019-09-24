@@ -206,7 +206,11 @@ class GameMap {
 
       const { occupied } = tilesMap[y][x].places[key];
       if (occupied) {
-        miples[occupied] = miples[occupied] ? miples[occupied] + 1 : 1;
+        if (!miples[occupied]) {
+          miples[occupied] = { locations: [{ key, x, y }] };
+        } else {
+          miples[occupied].locations.push({ key, x, y });
+        }
       }
 
       checkedPlaces.push({ owner: key, x, y });
@@ -457,7 +461,6 @@ class GameMap {
     y--;
     // check all neigbors if there are monasteries
     const neighborsCoordinates = getAllNeighborsCoordinates(x, y);
-
     [{ x, y }, ...neighborsCoordinates].forEach(({ x, y }) => {
       console.log(`>>> x=${x}:y=${y} `);
       if (isCellOutsideMap(this.tilesMap, { x, y })) return;
@@ -470,12 +473,80 @@ class GameMap {
         tile.places[tile.center.owner].occupied
       ) {
         const points = this.calculateMonasteryPoints(x, y);
-        if (points === 9) tile.places[tile.center.owner].points = 9;
-        // tile.places[tile.center.owner].points = points;
+        // if (points === 9) tile.places[tile.center.owner].points = 9;
+        tile.places[tile.center.owner].points = points;
         console.log(`Not eextended map x=${x}:y=${y} points=${points}`);
         console.log(tile);
       }
     });
+    /// check all thisTile places for closing roads or towns
+    const { places } = this.tilesMap[y][x];
+    // console.log('<<<<<<< places >>>>>>>>>');
+    // console.log(places);
+    for (let key in places) {
+      if (places[key].name === 'monastery') continue;
+      if (places[key].name === 'field') continue;
+      const { isAreaOpen, miples } = this.selectArea(key, x, y);
+      const rivals = Object.entries(miples);
+      if (!isAreaOpen && rivals.length) {
+        if (rivals.length === 1) {
+          const { key, x, y } = rivals[0][1].locations[0];
+          const { places } = this.tilesMap[y][x];
+          places[key].points = this.calculatePoints(key, x, y);
+        } else {
+          console.log(` choose bigger knight :) ${JSON.stringify(rivals)}`);
+          // TODO  choose bigger knight
+          // TODO  choose bigger knight
+          // TODO  choose bigger knight
+          // TODO  choose bigger knight
+        }
+      }
+    }
+  }
+
+  takeOffMiple(userId, key, position, progress) {
+    if (key && position) {
+      const x = position.x - 1;
+      const y = position.y - 1;
+      const tile = this.getTile(x, y);
+      if (
+        tile.places[key] &&
+        tile.places[key].points &&
+        tile.places[key].points > 0 &&
+        tile.places[key].occupied &&
+        tile.places[key].occupied === userId
+      ) {
+        progress[userId].scores += tile.places[key].points;
+        progress[userId].freeMiples++;
+        tile.places[key].points = -tile.places[key].points;
+        tile.places[key].occupied = null;
+
+        if (tile.places[key].name === 'monastery') return true;
+
+        const { miples } = this.selectArea(key, x, y);
+        if (
+          miples[userId] &&
+          miples[userId].locations &&
+          miples[userId].locations.length
+        ) {
+          miples[userId].locations.forEach(({ key, x, y }) => {
+            progress[userId].freeMiples++;
+            this.tilesMap[y][x].places[key].points = null;
+            this.tilesMap[y][x].places[key].occupied = null;
+          });
+        }
+
+        return true;
+      }
+      return false;
+    }
+  }
+
+  FORCEsetMiple(userId, key, position) {
+    const x = position.x - 1;
+    const y = position.y - 1;
+    const tile = this.getTile(x, y);
+    tile.places[key].occupied = userId;
   }
 }
 

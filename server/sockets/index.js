@@ -116,12 +116,12 @@ function carcaSockets(app) {
         socket.to(`room${roomId}`).emit('rooms:update', result);
     });
 
-    // socket.emit('game: calculate points', { roomId, key: name }, answer => {
+    // socket.emit('game: take off miple', { roomId, key: name }, answer => {
     socket.on(
-      'game: calculate points',
+      'game: take off miple',
       async ({ roomId, key, position }, callback) => {
         const userId = socket.session.user.id;
-        const result = await roomsManager.calculatePoints(
+        const result = await roomsManager.takeOffMiple(
           userId,
           roomId,
           key,
@@ -133,6 +133,24 @@ function carcaSockets(app) {
       }
     );
 
+    // 'game: FORCE set miple',
+    socket.on(
+      'game: FORCE set miple',
+      async ({ roomId, key, position }, callback) => {
+        const userId = socket.session.user.id;
+        const result = await roomsManager.FORCEsetMiple(
+          userId,
+          roomId,
+          key,
+          position
+        );
+        if (callback) callback(result);
+        if (result.success)
+          socket.to(`room${roomId}`).emit('rooms:update', result);
+      }
+    );
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
     socket.on('rooms', async ({ method, data }, callback) => {
       // log.info(`Server rooms:${method} >>> %O`, data);
       const userId = socket.session.user.id;

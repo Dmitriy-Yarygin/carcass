@@ -92,9 +92,25 @@ class MiplePlaces extends React.Component {
           }
         }
       );
-    } else if (tile.places[name].points && tile.places[name].points > 0) {
+    } else if (tile.places[name].points >= 0) {
+      console.log(`tile.places[name].points = ${tile.places[name].points}`);
       socket.emit(
-        'game: calculate points',
+        'game: take off miple',
+        { roomId, key: name, position },
+        answer => {
+          if (answer.success) {
+            this.props.updateRoom(answer.result);
+          } else {
+            this.props.settingsUpdate({
+              msg: answer.error.detail,
+              msgVariant: 'error'
+            });
+          }
+        }
+      );
+    } else {
+      socket.emit(
+        'game: FORCE set miple',
         { roomId, key: name, position },
         answer => {
           if (answer.success) {

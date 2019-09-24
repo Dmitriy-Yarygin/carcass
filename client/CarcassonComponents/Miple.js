@@ -36,7 +36,7 @@ class Miple extends React.Component {
     return (
       <div className={classes.root}>
         <Star className={classes.star} />
-        {description.points && (
+        {description.points >= 0 && (
           <span className={classes.name}>{description.points}</span>
         )}
       </div>
