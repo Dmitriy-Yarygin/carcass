@@ -75,7 +75,7 @@ class MiplePlaces extends React.Component {
   }
 
   mipleClick = name => e => {
-    const { roomId, settingsUpdate, position, tile } = this.props;
+    const { roomId, position, tile } = this.props;
     const { thisRoom } = this.state;
     if (isThisLastTile(position, thisRoom)) {
       socket.emit(
@@ -130,16 +130,7 @@ class MiplePlaces extends React.Component {
   render() {
     console.log(`MiplePlaces render`);
     // console.log(this.props);
-    const {
-      classes,
-      position,
-      tile,
-      rotation,
-      roomId,
-      room,
-      user,
-      settings
-    } = this.props;
+    const { classes, position, tile, rotation, settings } = this.props;
 
     const { thisRoom } = this.state;
 
@@ -159,7 +150,6 @@ class MiplePlaces extends React.Component {
     const rotationStyle = rotation
       ? { transform: `rotate(${rotation * 90}deg)` }
       : {};
-
     let spotStyle = {};
     const lastTileFlag = isThisLastTile(position, thisRoom);
 
@@ -203,7 +193,9 @@ class MiplePlaces extends React.Component {
                 style={{ left: x, top: y, color, ...spotStyle }}
                 onClick={this.mipleClick(name)}
               >
-                {color && <Miple description={{ name, points }} />}
+                {color && (
+                  <Miple description={{ name, points }} rotation={rotation} />
+                )}
                 <span className={classes.name} style={spotKeyStyle}>
                   {name}
                 </span>

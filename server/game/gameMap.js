@@ -473,8 +473,7 @@ class GameMap {
         tile.places[tile.center.owner].occupied
       ) {
         const points = this.calculateMonasteryPoints(x, y);
-        // if (points === 9) tile.places[tile.center.owner].points = 9;
-        tile.places[tile.center.owner].points = points;
+        if (points === 9) tile.places[tile.center.owner].points = points;
         console.log(`Not eextended map x=${x}:y=${y} points=${points}`);
         console.log(tile);
       }
@@ -489,57 +488,75 @@ class GameMap {
       const { isAreaOpen, miples } = this.selectArea(key, x, y);
       const rivals = Object.entries(miples);
       if (!isAreaOpen && rivals.length) {
+        const { key, x, y } = rivals[0][1].locations[0];
+        const points = this.calculatePoints(key, x, y);
         if (rivals.length === 1) {
-          const { key, x, y } = rivals[0][1].locations[0];
-          const { places } = this.tilesMap[y][x];
-          places[key].points = this.calculatePoints(key, x, y);
+          this.tilesMap[y][x].places[key].points = points;
         } else {
           console.log(` choose bigger knight :) ${JSON.stringify(rivals)}`);
-          // TODO  choose bigger knight
-          // TODO  choose bigger knight
-          // TODO  choose bigger knight
-          // TODO  choose bigger knight
+
+          const miplesCounts = rivals.map(elem => elem[1].locations.length);
+          const maxMiples = Math.max(...miplesCounts);
+          const winners = rivals.filter(
+            elem => elem[1].locations.length === maxMiples
+          );
+          winners.forEach(winner => {
+            const { key, x, y } = winner[1].locations[0];
+            this.tilesMap[y][x].places[key].points = points;
+          });
         }
       }
     }
   }
 
   takeOffMiple(userId, key, position, progress) {
-    if (key && position) {
-      const x = position.x - 1;
-      const y = position.y - 1;
-      const tile = this.getTile(x, y);
-      if (
-        tile.places[key] &&
-        tile.places[key].points &&
-        tile.places[key].points > 0 &&
-        tile.places[key].occupied &&
-        tile.places[key].occupied === userId
-      ) {
-        progress[userId].scores += tile.places[key].points;
-        progress[userId].freeMiples++;
-        tile.places[key].points = -tile.places[key].points;
-        tile.places[key].occupied = null;
+    if (!key || !position || !progress) return false;
 
-        if (tile.places[key].name === 'monastery') return true;
+    const x = position.x - 1;
+    const y = position.y - 1;
+    const tile = this.getTile(x, y);
+    const thisPlaceName = tile.places[key].name;
 
-        const { miples } = this.selectArea(key, x, y);
-        if (
-          miples[userId] &&
-          miples[userId].locations &&
-          miples[userId].locations.length
-        ) {
-          miples[userId].locations.forEach(({ key, x, y }) => {
-            progress[userId].freeMiples++;
-            this.tilesMap[y][x].places[key].points = null;
-            this.tilesMap[y][x].places[key].occupied = null;
-          });
-        }
-
-        return true;
-      }
+    if (
+      !tile.places[key] ||
+      !tile.places[key].occupied ||
+      tile.places[key].occupied !== userId
+    ) {
       return false;
     }
+
+    if (tile.places[key].points && tile.places[key].points > 0) {
+      progress[userId].scores += tile.places[key].points;
+      progress[userId].freeMiples++;
+      tile.places[key].points = -tile.places[key].points;
+      tile.places[key].occupied = null;
+
+      if (thisPlaceName === 'monastery') return true;
+
+      const { miples } = this.selectArea(key, x, y);
+      if (
+        miples[userId] &&
+        miples[userId].locations &&
+        miples[userId].locations.length
+      ) {
+        miples[userId].locations.forEach(({ key, x, y }) => {
+          progress[userId].freeMiples++;
+          this.tilesMap[y][x].places[key].points = null;
+          this.tilesMap[y][x].places[key].occupied = null;
+        });
+      }
+
+      return true;
+    } else if (thisPlaceName === 'road' || thisPlaceName === 'town') {
+      // console.log(`Check looser (knight or robber ) miple`);
+      const { isAreaOpen } = this.selectArea(key, x, y);
+      if (isAreaOpen) return false;
+      progress[userId].freeMiples++;
+      tile.places[key].occupied = null;
+      return true;
+    }
+
+    return false;
   }
 
   FORCEsetMiple(userId, key, position) {
@@ -547,6 +564,7 @@ class GameMap {
     const y = position.y - 1;
     const tile = this.getTile(x, y);
     tile.places[key].occupied = userId;
+    tile.places[key].points = 0;
   }
 }
 

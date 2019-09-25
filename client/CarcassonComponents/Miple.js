@@ -23,21 +23,27 @@ const styles = {
     color: 'black',
     // fontSize: '0.6em',
     top: '10px',
-    left: '10px',
-    transform: 'translate(-50%,-50%)'
+    left: '10px'
+    // transform: 'translate(-50%,-50%)'
   }
 };
 
 class Miple extends React.Component {
   render() {
     // console.log(`Miple render`);
-    const { classes, description } = this.props;
+    const { classes, description, rotation } = this.props;
+
+    const antiRotationStyle = rotation
+      ? { transform: `translate(-50%, -50%) rotate(${rotation * -90}deg)` }
+      : { transform: 'translate(-50%, -50%)' };
 
     return (
       <div className={classes.root}>
         <Star className={classes.star} />
         {description.points >= 0 && (
-          <span className={classes.name}>{description.points}</span>
+          <span className={classes.name} style={antiRotationStyle}>
+            {description.points}
+          </span>
         )}
       </div>
     );

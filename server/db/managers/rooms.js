@@ -282,15 +282,13 @@ const passMoove = async (userId, roomId, key) => {
     progress[userId].freeMiples--;
   }
 
+  gameMap.endTurnScoresCount(game_state.lastTilePosition);
   if (tiles.length) {
     playerTurn = (playerTurn + 1) % turnOrder.length;
     turn++;
-    // check all neigbors if there are monasteries
-    gameMap.endTurnScoresCount(game_state.lastTilePosition);
   } else {
     game_state.name = 'finished';
     // TODO final count
-    gameMap.endTurnScoresCount(game_state.lastTilePosition);
   }
   return update(
     {
