@@ -133,7 +133,7 @@ function carcaSockets(app) {
       }
     );
 
-    // 'game: FORCE set miple',
+    // 'game: FORCE set miple',    // only for development testing
     socket.on(
       'game: FORCE set miple',
       async ({ roomId, key, position }, callback) => {

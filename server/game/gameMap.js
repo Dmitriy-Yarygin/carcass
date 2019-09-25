@@ -410,25 +410,22 @@ class GameMap {
       return false;
     }
     const { x, y } = position;
+    let lastTilePosition = { x: x - 1, y: y - 1 };
 
-    if (!isCellOutsideMap(this.tilesMap, { x: x - 1, y: y - 1 })) {
+    if (!isCellOutsideMap(this.tilesMap, lastTilePosition)) {
       this.tilesMap[y - 1][x - 1] = { ...tile, rotation };
-      this.timeStamp = new Date();
-      return true;
+      return lastTilePosition;
     }
 
     extendedMap[y][x] = { ...tile, rotation };
-    // console.log(`>>>>>>>>>>>>>> extendedMap[${y}][${x}]`);
 
     const h = extendedMap.length - 1;
     const w = extendedMap[0].length - 1;
     if (y < h) {
       extendedMap.pop();
-      y + 1;
     }
     if (x < w) {
       extendedMap.forEach(raw => raw.pop());
-      x + 1;
     }
     if (y > 0) {
       extendedMap.shift();
@@ -438,44 +435,50 @@ class GameMap {
     }
 
     this.tilesMap = extendedMap;
-
-    return true;
+    return { x: x ? x - 1 : 0, y: y ? y - 1 : 0 };
   }
 
   isItPossibleSetMipleOnMap(key, { x, y }) {
     if (!key) return false;
-    const { miples } = this.selectArea(key, x - 1, y - 1);
-    // console.log('+++++++++++++++++++++++++');
-    // console.log(miples);
+    const { miples } = this.selectArea(key, x, y);
     return !Object.keys(miples).length;
   }
 
   setMipleOnMap(userId, key, { x, y }) {
     if (!this.isItPossibleSetMipleOnMap(key, { x, y })) return false;
-    this.tilesMap[y - 1][x - 1].places[key].occupied = userId;
+    this.tilesMap[y][x].places[key].occupied = userId;
     return true;
   }
 
-  endTurnScoresCount({ x, y }) {
-    x--;
-    y--;
+  finalScoresCount() {
+    console.log('@@@@@@@@@@@@@@@@  finalScoresCount  @@@@@@@@@@@@@@@@');
+    // console.log(this.tilesMap);
+    this.tilesMap.forEach((raw, y) => {
+      raw.forEach((cell, x) => {
+        if (!cell) return;
+        this.endTurnScoresCount({ x, y }, true);
+      });
+    });
+  }
+
+  endTurnScoresCount({ x, y }, isFinal) {
+    if (isCellOutsideMap(this.tilesMap, { x, y })) return;
     // check all neigbors if there are monasteries
     const neighborsCoordinates = getAllNeighborsCoordinates(x, y);
     [{ x, y }, ...neighborsCoordinates].forEach(({ x, y }) => {
-      console.log(`>>> x=${x}:y=${y} `);
-      if (isCellOutsideMap(this.tilesMap, { x, y })) return;
-      const tile = this.tilesMap[y][x];
+      // console.log(`>>> x=${x}:y=${y} `);
+      const tile = this.getTile(x, y);
       if (
         tile &&
         tile.center &&
         tile.center.type &&
         tile.center.type === 'monastery' &&
-        tile.places[tile.center.owner].occupied
+        tile.places[tile.center.owner].occupied &&
+        !tile.places[tile.center.owner].points
       ) {
         const points = this.calculateMonasteryPoints(x, y);
-        if (points === 9) tile.places[tile.center.owner].points = points;
-        console.log(`Not eextended map x=${x}:y=${y} points=${points}`);
-        console.log(tile);
+        if (points === 9 || isFinal)
+          tile.places[tile.center.owner].points = points;
       }
     });
     /// check all thisTile places for closing roads or towns
@@ -483,18 +486,23 @@ class GameMap {
     // console.log('<<<<<<< places >>>>>>>>>');
     // console.log(places);
     for (let key in places) {
+      if (places[key].points || places[key].points === 0) continue;
       if (places[key].name === 'monastery') continue;
-      if (places[key].name === 'field') continue;
+      if (places[key].name === 'field') {
+        if (isFinal) {
+          // TODO final count for peasants and fields
+        }
+        continue;
+      }
       const { isAreaOpen, miples } = this.selectArea(key, x, y);
       const rivals = Object.entries(miples);
-      if (!isAreaOpen && rivals.length) {
+      if ((isFinal || !isAreaOpen) && rivals.length) {
         const { key, x, y } = rivals[0][1].locations[0];
         const points = this.calculatePoints(key, x, y);
         if (rivals.length === 1) {
           this.tilesMap[y][x].places[key].points = points;
         } else {
-          console.log(` choose bigger knight :) ${JSON.stringify(rivals)}`);
-
+          // console.log(` choose bigger knight :) ${JSON.stringify(rivals)}`);
           const miplesCounts = rivals.map(elem => elem[1].locations.length);
           const maxMiples = Math.max(...miplesCounts);
           const winners = rivals.filter(
@@ -558,7 +566,7 @@ class GameMap {
 
     return false;
   }
-
+  // FORCEsetMiple  only for development testing
   FORCEsetMiple(userId, key, position) {
     const x = position.x - 1;
     const y = position.y - 1;

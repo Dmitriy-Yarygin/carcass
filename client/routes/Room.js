@@ -116,28 +116,6 @@ class Room extends React.Component {
       }
     );
   };
-  ////////////////////////////////////////////////////////
-  checkSettings = ({ stamped_map }, { key, position }) => {
-    // if (stamped_map && key && position) {
-    //   const x = position.x - 1;
-    //   const y = position.y - 1;
-    //   console.log(`Click key=${key}, position=${x}:${y}`);
-    // }
-    // const gameMap = new GameMap(stamped_map.tilesMap);
-    // const { includedTiles, isAreaOpen } = gameMap.selectArea(key, x, y);
-    // const stampedMap = gameMap.get();
-    // const mapMatrix = stampedMap.tilesMap;
-    // includedTiles.forEach(({ owners, x, y }) => {
-    //   owners.forEach(owner => {
-    //     mapMatrix[y][x].places[owner].color = 'red';
-    //   });
-    // });
-    // const pointsCount = gameMap.calculatePoints(key, x, y);
-    // console.log(
-    //   `${key} is ${isAreaOpen ? 'open' : 'closed'}, points = ${pointsCount}`
-    // );
-    // this.setState(stampedMap);
-  };
   /* ================================================================================= */
   handleBtn2Click = () => {
     console.log(this.state);
@@ -166,9 +144,6 @@ class Room extends React.Component {
     if (roomId && room && room.rooms) {
       thisRoom = room.rooms.find(room => room.id === roomId); //
       if (thisRoom) {
-        //------------------------------------------
-        // this.checkSettings(thisRoom, settings);
-        //------------------------------------------
         const { game_state, users } = thisRoom;
         // if (users) playersQueue = users.map(({ email }) => email).join('; ');
         gameState = game_state;

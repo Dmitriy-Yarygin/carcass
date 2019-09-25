@@ -51,8 +51,8 @@ function isThisLastTile(position, thisRoom) {
     const { lastTilePosition, stage } = thisRoom.game_state;
     const result =
       stage === 'putTile' &&
-      lastTilePosition.x === position.x &&
-      lastTilePosition.y === position.y;
+      lastTilePosition.x === position.x - 1 &&
+      lastTilePosition.y === position.y - 1;
     return result;
   }
 
@@ -108,21 +108,21 @@ class MiplePlaces extends React.Component {
           }
         }
       );
-    } else {
-      socket.emit(
-        'game: FORCE set miple',
-        { roomId, key: name, position },
-        answer => {
-          if (answer.success) {
-            this.props.updateRoom(answer.result);
-          } else {
-            this.props.settingsUpdate({
-              msg: answer.error.detail,
-              msgVariant: 'error'
-            });
-          }
-        }
-      );
+      // } else { // only for development testing
+      //   socket.emit(
+      //     'game: FORCE set miple',
+      //     { roomId, key: name, position },
+      //     answer => {
+      //       if (answer.success) {
+      //         this.props.updateRoom(answer.result);
+      //       } else {
+      //         this.props.settingsUpdate({
+      //           msg: answer.error.detail,
+      //           msgVariant: 'error'
+      //         });
+      //       }
+      //     }
+      //   );
     }
     e.stopPropagation();
   };
@@ -146,7 +146,7 @@ class MiplePlaces extends React.Component {
         places.push({ name: key, x, y, color, points, occupied });
       }
     }
-
+    console.log(places);
     const rotationStyle = rotation
       ? { transform: `rotate(${rotation * 90}deg)` }
       : {};
@@ -177,9 +177,10 @@ class MiplePlaces extends React.Component {
         <div className={classes.subRoot} style={rotationStyle}>
           {places.map(({ name, x, y, color, points, occupied }) => {
             if (lastTileFlag) {
+              console.log(`lastTileFlag=${lastTileFlag}`);
               const isPlaceAvailableForSettingMiple = gameMap.isItPossibleSetMipleOnMap(
                 name,
-                position
+                { x: position.x - 1, y: position.y - 1 }
               );
 
               spotStyle.visibility = isPlaceAvailableForSettingMiple

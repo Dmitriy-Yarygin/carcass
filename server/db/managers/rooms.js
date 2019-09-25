@@ -6,7 +6,7 @@ const GameMap = require('../../game/gameMap');
 const TilesStore = require('../../game/tilesStore');
 
 const MAX_PLAYERS_IN_THE_ROOM = 6;
-const STARTING_MIPLES_QUANTITY = 10;
+const STARTING_MIPLES_QUANTITY = 7;
 
 const READ_FIELDS = [
   'id',
@@ -231,10 +231,13 @@ const putTile = async (userId, roomId, position, rotation) => {
   }
 
   const gameMap = new GameMap(stamped_map.tilesMap);
-  const success = gameMap.putTileOnMap(game_state.tile, position, rotation);
-  // cos cut extended map and 0 row and 0 column after after another extend will be 1
-  const lastTilePosition = { x: position.x || 1, y: position.y || 1 };
-  if (success) {
+  const lastTilePosition = gameMap.putTileOnMap(
+    game_state.tile,
+    position,
+    rotation
+  );
+  log.info(`lastTilePosition = ${JSON.stringify(lastTilePosition)}`);
+  if (lastTilePosition) {
     return update(
       {
         id,
@@ -288,7 +291,8 @@ const passMoove = async (userId, roomId, key) => {
     turn++;
   } else {
     game_state.name = 'finished';
-    // TODO final count
+    gameMap.finalScoresCount();
+    console.log('@@@@@@@@@@@@@@@@  THE END  @@@@@@@@@@@@@@@@');
   }
   return update(
     {
@@ -335,7 +339,7 @@ const takeOffMiple = async (userId, roomId, key, position) => {
     userId
   );
 };
-// FORCEsetMiple /////////////////////////////////////////////////////////
+// FORCEsetMiple ////////////////////////////// only for development testing
 const FORCEsetMiple = async (userId, roomId, key, position) => {
   log.verbose(
     `FORCEsetMiple key >>> ${key}, userId=${userId}, roomId=${roomId}`
