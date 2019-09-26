@@ -3,8 +3,6 @@
 const session = require('koa-session');
 const redisStore = require('./db/redis');
 const Koa = require('koa');
-const Webpack = require('webpack');
-const koaWebpack = require('koa-webpack');
 const koaBody = require('koa-body');
 const serve = require('koa-static');
 const router = require('./routes');
@@ -39,6 +37,8 @@ app.use(router.routes());
 carcaSockets(app);
 
 if (config.env === 'development') {
+  const Webpack = require('webpack');
+  const koaWebpack = require('koa-webpack');
   const webpackConfig = require('../webpack/webpack.config.dev');
   const compiler = Webpack(webpackConfig);
   koaWebpack({ compiler, hotClient: false }).then(middleware => {

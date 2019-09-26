@@ -1,3 +1,2 @@
-release: knex migrate: latest
-release: knex seed: run
+release: knex migrate:latest && knex seed:run
 web: node ./server/index.js

@@ -34,6 +34,13 @@ const development = {
   }
 };
 
-const production = { ...development };
+const production = {
+  ...development,
+  redis: {
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+    password: process.env.REDIS_PASSWORD
+  }
+};
 
 module.exports = { production, development };

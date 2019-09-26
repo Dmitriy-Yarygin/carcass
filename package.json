@@ -74,7 +74,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server",
-    "build": "webpack --config webpack/webpack.config.prod.js --progress",
+    "build": "webpack --config webpack/webpack.config.prod.js",
     "prod": "NODE_ENV=production node server"
   },
   "repository": {

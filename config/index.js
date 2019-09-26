@@ -1,8 +1,8 @@
-require('dotenv').config()
+require('dotenv').config();
 
 const config = require('./config');
 
-module.exports = function () {
+module.exports = function() {
   const env = process.env.NODE_ENV || 'development';
-  return { env: env, ...config[env]};
+  return { env: env, ...config[env] };
 };
