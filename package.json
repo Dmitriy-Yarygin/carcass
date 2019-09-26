@@ -49,7 +49,6 @@
     "@babel/preset-env": "^7.4.5",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.6",
-    "clean-webpack-plugin": "^3.0.0",
     "compression-webpack-plugin": "^3.0.0",
     "css-loader": "^3.0.0",
     "eslint": "^5.13.0",
@@ -57,8 +56,6 @@
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-react": "^7.13.0",
     "file-loader": "^4.2.0",
-    "html-webpack-plugin": "^3.2.0",
-    "koa-webpack": "^5.2.1",
     "mini-css-extract-plugin": "^0.7.0",
     "node-sass": "^4.12.0",
     "nodemon": "^1.18.9",
@@ -66,26 +63,32 @@
     "react-dom": "^16.8.0",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
-    "webpack": "^4.34.0",
     "webpack-bundle-analyzer": "^3.3.2",
     "webpack-dev-server": "^3.7.1",
-    "webpack-merge": "^4.2.1"
+    "webpack": "^4.34.0",
+    "webpack-merge": "^4.2.1",
+    "koa-webpack": "^5.2.1",
+    "clean-webpack-plugin": "^3.0.0",
+    "html-webpack-plugin": "^3.2.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server/server.js",
+    "start": "node server",
     "build": "webpack --config webpack/webpack.config.prod.js --progress",
-    "prod": "NODE_ENV=production node server/server.js"
+    "prod": "NODE_ENV=production node server"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Dmitriy-Yarygin/carcass.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Dmitriy-Yarygin",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Dmitriy-Yarygin/carcass/issues"
   },
-  "homepage": "https://github.com/Dmitriy-Yarygin/carcass#readme"
+  "homepage": "https://github.com/Dmitriy-Yarygin/carcass#readme",
+  "engines": {
+    "node": "12.3.1"
+  }
 }

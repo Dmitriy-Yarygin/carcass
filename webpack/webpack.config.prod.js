@@ -1,7 +1,8 @@
 const Webpack = require('webpack');
 const merge = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+  .BundleAnalyzerPlugin;
 const CompressionPlugin = require('compression-webpack-plugin');
 const common = require('./webpack.common.js');
 
@@ -10,15 +11,22 @@ module.exports = merge(common, {
   bail: true,
   output: {
     filename: '[name].[contenthash].js',
-    chunkFilename: '[name].[contenthash].js',
-
+    chunkFilename: '[name].[contenthash].js'
   },
   optimization: {
     runtimeChunk: 'single',
     splitChunks: {
       cacheGroups: {
-        react: { test: /[\\/]node_modules[\\/]((react).*)[\\/]/, name: "react", chunks: "all" },
-        vendor: { test: /[\\/]node_modules[\\/]((?!react).*)[\\/]/, name: 'vendors', chunks: 'all' }
+        react: {
+          test: /[\\/]node_modules[\\/]((react).*)[\\/]/,
+          name: 'react',
+          chunks: 'all'
+        },
+        vendor: {
+          test: /[\\/]node_modules[\\/]((?!react).*)[\\/]/,
+          name: 'vendors',
+          chunks: 'all'
+        }
       }
     }
   },
@@ -39,11 +47,7 @@ module.exports = merge(common, {
     rules: [
       {
         test: /\.s?css/i,
-        use: [
-          MiniCssExtractPlugin.loader,
-          'css-loader',
-          'sass-loader'
-        ]
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader']
       }
     ]
   }

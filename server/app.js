@@ -11,6 +11,7 @@ const router = require('./routes');
 const config = require('../config')();
 const log = require('./helpers/logger')(__filename);
 const path = require('path');
+const fs = require('fs');
 const { carcaSockets } = require('./sockets');
 
 const app = new Koa();
@@ -48,6 +49,14 @@ if (config.env === 'development') {
         filename
       );
     });
+  });
+} else {
+  // && config.env === 'production') {
+  app.use(serve(config.path.build));
+  app.use(async ctx => {
+    const filename = path.resolve(config.path.build, 'index.html');
+    ctx.response.type = 'html';
+    ctx.response.body = fs.createReadStream(filename);
   });
 }
 ////////////////////////////////////////////////////////////
