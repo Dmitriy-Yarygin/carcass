@@ -488,20 +488,16 @@ class GameMap {
     for (let key in places) {
       if (places[key].points || places[key].points === 0) continue;
       if (places[key].name === 'monastery') continue;
-      if (places[key].name === 'field') {
-        if (isFinal) {
-          // TODO final count for peasants and fields
-          // TODO final count for peasants and fields
-          // TODO final count for peasants and fields
-          // TODO final count for peasants and fields
-          // TODO final count for peasants and fields
-          // TODO final count for peasants and fields
-          // TODO final count for peasants and fields
-        }
-        continue;
-      }
+      if (places[key].name === 'field' && !isFinal) continue;
       const { isAreaOpen, miples } = this.selectArea(key, x, y);
       const rivals = Object.entries(miples);
+
+      rivals.forEach(elem =>
+        elem[1].locations.forEach(
+          ({ key, x, y }) => (this.tilesMap[y][x].places[key].points = 0)
+        )
+      );
+
       if ((isFinal || !isAreaOpen) && rivals.length) {
         const { key, x, y } = rivals[0][1].locations[0];
         const points = this.calculatePoints(key, x, y);

@@ -70,10 +70,6 @@ class Room extends React.Component {
     return answer.success;
   };
 
-  handleRoomsBtnClick = () => {
-    socket.emit('show me rooms', {}, console.log);
-  };
-
   startClick = () => {
     socket.emit('game: start', { roomId: this.state.roomId }, answer => {
       this.checkSuccess(answer);
@@ -115,10 +111,6 @@ class Room extends React.Component {
         }
       }
     );
-  };
-  /* ================================================================================= */
-  handleBtn2Click = () => {
-    console.log(this.state);
   };
   /* ================================================================================= */
   handleTileSpotsVisibleChange = event => {
@@ -204,10 +196,17 @@ class Room extends React.Component {
               blinkFlag={tilesStackBlinkFlag}
             />
           )}
-          {startBtnFlag && <button onClick={this.startClick}>Start</button>}
-          <button onClick={this.handleBtn2Click}>State</button>
-          <button onClick={this.handleRoomsBtnClick}>Rooms</button>
-
+          <br></br>
+          {startBtnFlag && (
+            <Button
+              className="justBlink"
+              variant="contained"
+              color="primary"
+              onClick={this.startClick}
+            >
+              Start
+            </Button>
+          )}
           <br></br>
           <Switch
             checked={settings.isTileSpotsVisible}
