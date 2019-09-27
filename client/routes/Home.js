@@ -21,7 +21,7 @@ class Home extends React.Component {
     /*  <Paper className={classes.root} elevation={1}> */
     return (
       <Typography className={classes.title} variant="h6" noWrap>
-        Carcasson
+        Carcassone
       </Typography>
     );
   }

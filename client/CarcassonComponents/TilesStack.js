@@ -28,7 +28,7 @@ class TileStack extends React.Component {
     return (
       <div className="tileClass" style={cls}>
         <TileCover tile={tile} />
-        <GetSidesNames tile={tile} />
+        {/* <GetSidesNames tile={tile} /> */}
       </div>
     );
   }

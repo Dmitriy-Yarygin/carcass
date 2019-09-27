@@ -92,8 +92,8 @@ class MiplePlaces extends React.Component {
           }
         }
       );
-    } else if (tile.places[name].points >= 0) {
-      console.log(`tile.places[name].points = ${tile.places[name].points}`);
+    } else if (tile.places[name].occupied) {
+      // console.log(`tile.places[name].points = ${tile.places[name].points}`);
       socket.emit(
         'game: take off miple',
         { roomId, key: name, position },
@@ -109,26 +109,26 @@ class MiplePlaces extends React.Component {
         }
       );
       // } else { // only for development testing
-      //   socket.emit(
-      //     'game: FORCE set miple',
-      //     { roomId, key: name, position },
-      //     answer => {
-      //       if (answer.success) {
-      //         this.props.updateRoom(answer.result);
-      //       } else {
-      //         this.props.settingsUpdate({
-      //           msg: answer.error.detail,
-      //           msgVariant: 'error'
-      //         });
-      //       }
+      // socket.emit(
+      //   'game: FORCE set miple',
+      //   { roomId, key: name, position },
+      //   answer => {
+      //     if (answer.success) {
+      //       this.props.updateRoom(answer.result);
+      //     } else {
+      //       this.props.settingsUpdate({
+      //         msg: answer.error.detail,
+      //         msgVariant: 'error'
+      //       });
       //     }
-      //   );
+      //   }
+      // );
     }
     e.stopPropagation();
   };
 
   render() {
-    console.log(`MiplePlaces render`);
+    // console.log(`MiplePlaces render`);
     // console.log(this.props);
     const { classes, position, tile, rotation, settings } = this.props;
 
@@ -146,7 +146,6 @@ class MiplePlaces extends React.Component {
         places.push({ name: key, x, y, color, points, occupied });
       }
     }
-    console.log(places);
     const rotationStyle = rotation
       ? { transform: `rotate(${rotation * 90}deg)` }
       : {};
@@ -177,7 +176,7 @@ class MiplePlaces extends React.Component {
         <div className={classes.subRoot} style={rotationStyle}>
           {places.map(({ name, x, y, color, points, occupied }) => {
             if (lastTileFlag) {
-              console.log(`lastTileFlag=${lastTileFlag}`);
+              // console.log(`lastTileFlag=${lastTileFlag}`);
               const isPlaceAvailableForSettingMiple = gameMap.isItPossibleSetMipleOnMap(
                 name,
                 { x: position.x - 1, y: position.y - 1 }

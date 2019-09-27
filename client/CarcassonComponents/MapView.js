@@ -53,13 +53,21 @@ class MapView extends React.PureComponent {
 
   render() {
     console.log(`MapView render`);
-    const { classes, onClick, roomId } = this.props;
+    const { classes, onClick, roomId, gameState } = this.props;
+    const { lastTilePosition } = gameState;
     const { extendedMap } = this.state;
     return (
       <div className={classes.root}>
         {extendedMap &&
           extendedMap.map((raw, i) => (
-            <MapRaw key={i} y={i} raw={raw} onClick={onClick} roomId={roomId} />
+            <MapRaw
+              key={i}
+              y={i}
+              raw={raw}
+              onClick={onClick}
+              roomId={roomId}
+              lastTilePosition={lastTilePosition}
+            />
           ))}
       </div>
     );

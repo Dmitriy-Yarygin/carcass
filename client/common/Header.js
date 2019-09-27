@@ -37,7 +37,7 @@ class Header extends React.Component {
             />
 
             <Typography className={classes.title} variant="h6" noWrap>
-              Carcass
+              Carcassone
             </Typography>
 
             <div className={classes.grow} />

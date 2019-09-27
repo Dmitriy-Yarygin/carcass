@@ -12,7 +12,7 @@ const styles = {
 
 class MapRaw extends React.Component {
   render() {
-    const { classes, raw, onClick, y, roomId } = this.props;
+    const { classes, raw, onClick, y, roomId, lastTilePosition } = this.props;
     return (
       <div className={classes.root}>
         {raw.map((cell, i) => {
@@ -27,7 +27,13 @@ class MapRaw extends React.Component {
             );
           }
           return (
-            <Tile key={i} position={{ x: i, y }} tile={cell} roomId={roomId} />
+            <Tile
+              key={i}
+              position={{ x: i, y }}
+              tile={cell}
+              roomId={roomId}
+              lastTilePosition={lastTilePosition}
+            />
           );
         })}
       </div>
@@ -36,7 +42,8 @@ class MapRaw extends React.Component {
 }
 
 MapRaw.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  lastTilePosition: PropTypes.object
 };
 
 export default withStyles(styles)(MapRaw);

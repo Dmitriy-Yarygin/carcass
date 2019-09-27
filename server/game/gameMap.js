@@ -491,6 +491,12 @@ class GameMap {
       if (places[key].name === 'field') {
         if (isFinal) {
           // TODO final count for peasants and fields
+          // TODO final count for peasants and fields
+          // TODO final count for peasants and fields
+          // TODO final count for peasants and fields
+          // TODO final count for peasants and fields
+          // TODO final count for peasants and fields
+          // TODO final count for peasants and fields
         }
         continue;
       }

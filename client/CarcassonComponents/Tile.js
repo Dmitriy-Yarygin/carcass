@@ -11,16 +11,32 @@ const styles = {};
 
 class Tile extends React.Component {
   render() {
-    const { classes, position, tile, onClick, roomId } = this.props;
+    const {
+      classes,
+      position,
+      tile,
+      onClick,
+      roomId,
+      lastTilePosition
+    } = this.props;
 
+    let className = 'tileClass';
     if (!tile || !tile.name) {
-      return <div className="tileClass" onClick={onClick}></div>;
+      return <div className={className} onClick={onClick}></div>;
     }
 
     const rotation = tile.rotation || 0;
 
+    if (
+      lastTilePosition &&
+      lastTilePosition.x === position.x - 1 &&
+      lastTilePosition.y === position.y - 1
+    ) {
+      className += ' solidOrangeBorder';
+    }
+
     return (
-      <div className="tileClass">
+      <div className={className}>
         <TileCover tile={tile} rotation={rotation} />
         {/* <GetSidesNames tile={tile} rotation={rotation} /> */}
         <MiplePlaces
