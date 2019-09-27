@@ -13,10 +13,6 @@ router.post('/login', async (ctx, next) => {
   ctx.assert(result.success, 401, result.msg);
   ctx.session.user = result.user;
   ctx.body = result;
-  //////////////////////////////////////////////////
-  log.warn(`login ctx.body = result  >>>>>>>>>>>>>`);
-  log.warn(ctx.body);
-  //////////////////////////////////////////////////
 });
 
 router.post('/logout', async (ctx, next) => {

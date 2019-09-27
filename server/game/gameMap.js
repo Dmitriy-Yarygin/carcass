@@ -492,13 +492,12 @@ class GameMap {
       const { isAreaOpen, miples } = this.selectArea(key, x, y);
       const rivals = Object.entries(miples);
 
-      rivals.forEach(elem =>
-        elem[1].locations.forEach(
-          ({ key, x, y }) => (this.tilesMap[y][x].places[key].points = 0)
-        )
-      );
-
       if ((isFinal || !isAreaOpen) && rivals.length) {
+        rivals.forEach(elem =>
+          elem[1].locations.forEach(
+            ({ key, x, y }) => (this.tilesMap[y][x].places[key].points = 0)
+          )
+        );
         const { key, x, y } = rivals[0][1].locations[0];
         const points = this.calculatePoints(key, x, y);
         if (rivals.length === 1) {
