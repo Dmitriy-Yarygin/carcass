@@ -2,13 +2,18 @@
   position: relative;
   width: 90px;
   height: 90px;
-  border: 1px solid green;
+  /* border-bottom: 1px solid green;
+  border-right: 1px solid green; */
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+.solidGreenBorder {
+  border: 1px solid green;
 }
 
 .solidOrangeBorder {

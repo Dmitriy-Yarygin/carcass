@@ -1,5 +1,5 @@
 .blink {
-  border: 5px solid orangered;
+  /* border: 5px solid orangered; */
   animation-name: blink;
   animation-duration: 2s;
   animation-timing-function: linear;

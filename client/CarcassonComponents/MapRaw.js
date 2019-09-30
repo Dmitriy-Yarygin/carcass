@@ -12,7 +12,15 @@ const styles = {
 
 class MapRaw extends React.Component {
   render() {
-    const { classes, raw, onClick, y, roomId, lastTilePosition } = this.props;
+    const {
+      classes,
+      raw,
+      onClick,
+      y,
+      roomId,
+      lastTilePosition,
+      isVariantsVisible
+    } = this.props;
     return (
       <div className={classes.root}>
         {raw.map((cell, i) => {
@@ -23,6 +31,7 @@ class MapRaw extends React.Component {
                 position={{ x: i, y }}
                 tile={cell}
                 onClick={onClick}
+                isVariantsVisible={isVariantsVisible}
               />
             );
           }

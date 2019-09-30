@@ -8,22 +8,35 @@ const styles = {
     // zIndex: 9,
     position: 'relative'
   },
+
   star: {
+    zIndex: 11,
+    position: 'absolute',
+    width: '38px',
+    height: '38px',
+    top: '10px',
+    left: '10px',
+    transform: 'translate(-50%, -50%)'
+  },
+  starUnder: {
+    zIndex: 10,
     position: 'absolute',
     width: '42px',
     height: '42px',
     top: '10px',
     left: '10px',
-    transform: 'translate(-50%, -50%)'
-    // border: '1px dotted black'
+    transform: 'translate(-50%, -50%)',
+    color: 'black'
   },
 
   name: {
+    zIndex: 12,
     position: 'absolute',
     color: 'black',
     // fontSize: '0.6em',
     top: '10px',
-    left: '10px'
+    left: '10px',
+    textShadow: '0 0 2px white'
     // transform: 'translate(-50%,-50%)'
   }
 };
@@ -40,6 +53,7 @@ class Miple extends React.Component {
     return (
       <div className={classes.root}>
         <Star className={classes.star} />
+        <Star className={classes.starUnder} />
         {description.points >= 0 && (
           <span className={classes.name} style={antiRotationStyle}>
             {description.points}

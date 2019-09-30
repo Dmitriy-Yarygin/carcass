@@ -27,3 +27,7 @@
   left: 100%;
   transform: translate(-100%, 0%);
 }
+
+.visible {
+  visibility: hidden;
+}

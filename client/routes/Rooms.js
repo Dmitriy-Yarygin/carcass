@@ -22,7 +22,12 @@ const columns = [
   { title: 'Name', field: 'name' },
   // { title: 'Owner', field: 'owner', editable: 'never' },
   { title: 'Players', field: 'users', editable: 'never' },
-  { title: 'Created at', field: 'created_at', editable: 'never' },
+  {
+    title: 'Created at',
+    field: 'created_at',
+    editable: 'never',
+    defaultSort: 'desc'
+  },
   { title: 'State', field: 'game_state', editable: 'never' }
 ];
 

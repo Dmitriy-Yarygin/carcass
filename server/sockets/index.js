@@ -112,8 +112,23 @@ function carcaSockets(app) {
       const userId = socket.session.user.id;
       const result = await roomsManager.passMoove(userId, roomId, key);
       if (callback) callback(result);
-      if (result.success)
+      if (result.success) {
         socket.to(`room${roomId}`).emit('rooms:update', result);
+        const { users, game_state } = result.result;
+        const { playerTurn, turnOrder } = game_state;
+        const nextPlayerId = turnOrder[playerTurn];
+        const userName = users.find(({ id }) => id === nextPlayerId).email;
+        const nextPlayerSocketId = userSessionSocket.getSocketId(nextPlayerId);
+        const nextPlayerSocketConnection = io.connections.get(
+          nextPlayerSocketId
+        );
+        if (nextPlayerSocketConnection) {
+          nextPlayerSocketConnection.emit(
+            'game: player notify',
+            `${userName}, it's your turn now!`
+          );
+        }
+      }
     });
 
     // socket.emit('game: take off miple', { roomId, key: name }, answer => {

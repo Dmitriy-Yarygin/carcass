@@ -6,8 +6,10 @@ import GetSidesNames from './GetSidesNames';
 import './Tile.css';
 import './EtherealTile.css';
 
-class EtherealTile extends React.Component {
-  state = { rotationIndex: 0 };
+let timerId;
+
+class EtherealTile extends React.PureComponent {
+  state = { rotationIndex: 0, showThisVariants: false };
 
   handleBtnClick = e => {
     e.stopPropagation();
@@ -24,25 +26,49 @@ class EtherealTile extends React.Component {
     onClick(position, tile.variants[this.state.rotationIndex]);
   };
 
+  onMouseOver = e => {
+    timerId = null;
+    this.setState({ showThisVariants: true });
+  };
+  onMouseOut = e => {
+    console.log(e.target);
+    this.setState({ showThisVariants: false });
+  };
+
   render() {
     // console.log(this.props);
-    const { tile } = this.props;
-    const { rotationIndex } = this.state;
+    const { tile, isVariantsVisible } = this.props;
+    const { rotationIndex, showThisVariants } = this.state;
     const rotation = tile.variants[rotationIndex];
 
-    return (
-      <div className="tileClass ethereal" onClick={this.tileClick}>
-        <TileCover tile={tile} rotation={rotation} />
-        {/* <GetSidesNames tile={tile} rotation={rotation} /> */}
-        {/* <MiplePlaces tile={tile} rotation={rotation} /> */}
+    // const showVariants = isVariantsVisible;
 
-        {tile.variants && tile.variants.length > 1 && (
-          <button
-            className="tileClass_btn_rotate"
-            onClick={this.handleBtnClick}
-          >
-            &#8635;
-          </button>
+    return (
+      <div
+        className={
+          isVariantsVisible || showThisVariants
+            ? `tileClass ethereal`
+            : `tileClass solidGreenBorder`
+        }
+        onClick={this.tileClick}
+        onMouseOver={this.onMouseOver}
+        onMouseOut={this.onMouseOut}
+      >
+        {(isVariantsVisible || showThisVariants) && (
+          <>
+            <TileCover tile={tile} rotation={rotation} />
+            {/*  <GetSidesNames tile={tile} rotation={rotation} /> */}
+            {/*  <MiplePlaces tile={tile} rotation={rotation} /> */}
+
+            {tile.variants && tile.variants.length > 1 && (
+              <button
+                className="tileClass_btn_rotate"
+                onClick={this.handleBtnClick}
+              >
+                &#8635;
+              </button>
+            )}
+          </>
         )}
       </div>
     );

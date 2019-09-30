@@ -20,13 +20,15 @@ class Tile extends React.Component {
       lastTilePosition
     } = this.props;
 
-    let className = 'tileClass';
     if (!tile || !tile.name) {
-      return <div className={className} onClick={onClick}></div>;
+      return (
+        <div className={`tileClass solidGreenBorder`} onClick={onClick}></div>
+      );
     }
 
     const rotation = tile.rotation || 0;
 
+    let className = 'tileClass';
     if (
       lastTilePosition &&
       lastTilePosition.x === position.x - 1 &&

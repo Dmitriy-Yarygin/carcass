@@ -49,7 +49,23 @@ export const socketListeners = storeFunctions => {
     storeFunctions.delRoom(answer.id);
   });
 
-  socket.on('game: next turn', answer => {
-    console.log(answer);
-  });
+  // socket.on('game: next turn', answer => {
+  //   console.log(answer);
+  // });
+
+  socket.on('game: player notify', notify);
 };
+
+function notify(msg) {
+  if (!('Notification' in window)) {
+    return console.log('This browser does not support desktop notification');
+  } else if (Notification.permission === 'granted') {
+    var notification = new Notification(msg); //'It`s your turn now!');
+  } else if (Notification.permission !== 'denied') {
+    Notification.requestPermission(function(permission) {
+      if (permission === 'granted') {
+        var notification = new Notification(msg); //'It`s your turn now!');
+      }
+    });
+  }
+}

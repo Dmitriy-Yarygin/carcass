@@ -10,12 +10,8 @@ import MapView from '../CarcassonComponents/MapView';
 import TilesStack from '../CarcassonComponents/TilesStack';
 import './justBlink.css';
 import { COLORS } from '../common/constants';
-
-import GameMap from '../../server/game/gameMap';
-
 import Switch from '@material-ui/core/Switch';
 import Checkbox from '@material-ui/core/Checkbox';
-
 import { socket } from '../common/Socket';
 
 const styles = theme => ({
@@ -28,7 +24,8 @@ const styles = theme => ({
 
 class Room extends React.Component {
   state = {
-    msg: null
+    msg: null,
+    isVariantsVisible: false
   };
 
   warningOnClose = () => {
@@ -99,7 +96,6 @@ class Room extends React.Component {
     );
   };
 
-  //////////////////////////////////////
   handlePassBtnClick = () => {
     socket.emit(
       'game: pass the moove',
@@ -117,8 +113,8 @@ class Room extends React.Component {
     this.props.settingsUpdate({ isTileSpotsVisible: event.target.checked });
   };
   /* ================================================================================= */
-  handleSpotsKeysVisibleChange = event => {
-    this.props.settingsUpdate({ isSpotsKeysVisible: event.target.checked });
+  handleVariantsVisibleChange = event => {
+    this.setState({ isVariantsVisible: event.target.checked });
   };
   /* ================================================================================= */
 
@@ -126,31 +122,33 @@ class Room extends React.Component {
     console.log(`Room render`);
     let thisRoom,
       whosTurn,
+      whosTurnColor,
       playersQueue,
       startBtnFlag,
       gameState,
       tilesStackBlinkFlag,
       showPassBtn;
-    const { roomId, roomName } = this.state;
+    const { roomId, roomName, isVariantsVisible } = this.state;
     const { classes, user, room, settings } = this.props;
     if (roomId && room && room.rooms) {
       thisRoom = room.rooms.find(room => room.id === roomId); //
       if (thisRoom) {
         const { game_state, users } = thisRoom;
-        // if (users) playersQueue = users.map(({ email }) => email).join('; ');
         gameState = game_state;
 
         if (gameState.turnOrder && users) {
           const { turnOrder, playerTurn, progress } = gameState;
-          // console.log(`BEFORE BLINK gameState = ${JSON.stringify(gameState)}`);
           tilesStackBlinkFlag = !!(
             user.id === turnOrder[playerTurn] &&
             gameState.stage === 'pass' &&
             gameState.tilesInStack
           );
-          // console.log(`tilesStackBlinkFlag = ${tilesStackBlinkFlag}`);
 
-          whosTurn = users.find(({ id }) => id === turnOrder[playerTurn]).email;
+          whosTurn = users.find(({ id }, i) => {
+            if (id !== turnOrder[playerTurn]) return false;
+            whosTurnColor = { color: COLORS[i] };
+            return true;
+          }).email;
           playersQueue = turnOrder.map((id, i) => ({
             user: users.find(player => id === player.id).email,
             color: COLORS[i],
@@ -159,7 +157,7 @@ class Room extends React.Component {
         }
         startBtnFlag = gameState.name && gameState.name === 'created';
         showPassBtn =
-          gameState && gameState.stage && gameState.stage === 'putTile'; ////////////////////////////****************** */
+          gameState && gameState.stage && gameState.stage === 'putTile';
       }
     }
     // console.log(`user = ${JSON.stringify(user)}`);
@@ -171,7 +169,12 @@ class Room extends React.Component {
             Room {roomName}
           </Typography>
           {whosTurn && (
-            <Typography className={classes.title} variant="subtitle1" noWrap>
+            <Typography
+              className={classes.title}
+              variant="subtitle1"
+              noWrap
+              style={whosTurnColor}
+            >
               Now turn of <b>{whosTurn}</b>
             </Typography>
           )}
@@ -207,25 +210,24 @@ class Room extends React.Component {
               Start
             </Button>
           )}
+
           <br></br>
           <Switch
             checked={settings.isTileSpotsVisible}
             onChange={this.handleTileSpotsVisibleChange}
             value="isTileSpotsVisible"
-            // inputProps={{ 'aria-label': 'secondary checkbox' }}
             color="primary"
           />
           <span> tiles spots </span>
           <br></br>
 
           <Checkbox
-            checked={settings.isSpotsKeysVisible}
-            onChange={this.handleSpotsKeysVisibleChange}
-            value="isSpotsKeysVisible"
-            // inputProps={{ 'aria-label': 'primary checkbox' }}
+            checked={isVariantsVisible}
+            onChange={this.handleVariantsVisibleChange}
+            value="isVariantsVisible"
             color="primary"
           />
-          <span> Letters </span>
+          <span> Show variants </span>
 
           <br></br>
           {showPassBtn && (
@@ -246,8 +248,9 @@ class Room extends React.Component {
               roomId={roomId}
               tilesMap={thisRoom.stamped_map}
               gameState={gameState}
-              settings={settings}
+              // settings={settings}
               onClick={this.putTileClick}
+              isVariantsVisible={isVariantsVisible}
             />
           )}
         </Paper>
