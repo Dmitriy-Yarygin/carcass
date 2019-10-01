@@ -34,7 +34,6 @@ class Room extends React.Component {
   };
 
   componentDidMount() {
-    // console.log(`game_Room componentDidMount`);
     socket.emit(
       'game: get map',
       { roomId: this.props.match.params.id },
@@ -75,7 +74,6 @@ class Room extends React.Component {
   };
   ////////////////////////// GET TILE
   getTileClick = () => {
-    console.log('//////// GET TILE');
     socket.emit('game: get tile', { roomId: this.state.roomId }, answer => {
       if (this.checkSuccess(answer)) {
         this.props.updateRoom(answer.result);
@@ -85,11 +83,6 @@ class Room extends React.Component {
   ////////////////////////////////////// PUT TILE executed in EtherealTile
   putTileClick = (position, rotation) => {
     const { isVariantsVisible, shownVariantPosition } = this.state;
-    console.log(
-      `putTileClick   isVariantsVisible=${isVariantsVisible}, 
-      shownVariantPosition=${JSON.stringify(shownVariantPosition)}, 
-      position=${JSON.stringify(position)} `
-    );
     socket.emit(
       'game: put tile',
       { roomId: this.state.roomId, position, rotation },
@@ -108,7 +101,6 @@ class Room extends React.Component {
       { roomId: this.state.roomId },
       answer => {
         if (this.checkSuccess(answer)) {
-          // console.log(answer.result);
           this.props.updateRoom(answer.result);
         }
       }
@@ -173,7 +165,6 @@ class Room extends React.Component {
           gameState && gameState.stage && gameState.stage === 'putTile';
       }
     }
-    // console.log(`user = ${JSON.stringify(user)}`);
 
     return (
       <Grid container direction="row">

@@ -16,11 +16,7 @@ class MapView extends React.PureComponent {
   state = { timeStamp: null };
 
   static getDerivedStateFromProps(props, state) {
-    // console.log('getDerivedStateFromProps');
     const { tilesMap, gameState } = props;
-    // const extendedMap = state.extendedMap
-    //   ? state.extendedMap
-    //   : GameMap.extendMap(tilesMap.tilesMap);
     const extendedMap = GameMap.extendMap(tilesMap.tilesMap);
     if (
       gameState &&
@@ -28,14 +24,11 @@ class MapView extends React.PureComponent {
       gameState.stage &&
       gameState.stage === 'gotTile'
     ) {
-      console.log('newTile');
       return {
         extendedMap: GameMap.findVariants(extendedMap, gameState.tile)
       };
     }
     if (tilesMap.timeStamp !== state.timeStamp) {
-      // console.log(JSON.stringify(state.timeStamp));
-      // console.log(JSON.stringify(tilesMap.timeStamp));
       if (gameState.stage === 'putTile')
         return {
           extendedMap,
