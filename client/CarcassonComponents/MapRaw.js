@@ -19,7 +19,7 @@ class MapRaw extends React.Component {
       y,
       roomId,
       lastTilePosition,
-      isVariantsVisible
+      whatVariantsShow
     } = this.props;
     return (
       <div className={classes.root}>
@@ -31,7 +31,7 @@ class MapRaw extends React.Component {
                 position={{ x: i, y }}
                 tile={cell}
                 onClick={onClick}
-                isVariantsVisible={isVariantsVisible}
+                whatVariantsShow={whatVariantsShow}
               />
             );
           }

@@ -88,8 +88,6 @@ class Room extends React.Component {
       { roomId: this.state.roomId, position, rotation },
       answer => {
         if (this.checkSuccess(answer)) {
-          console.log('/// PUT TILE executed in EtherealTile answer');
-          console.log(answer.result);
           this.props.updateRoom(answer.result);
         }
       }
@@ -107,10 +105,6 @@ class Room extends React.Component {
         }
       }
     );
-  };
-  /* ================================================================================= */
-  handleTileSpotsVisibleChange = event => {
-    this.props.settingsUpdate({ isTileSpotsVisible: event.target.checked });
   };
   /* ================================================================================= */
   handleVariantsVisibleChange = event => {
@@ -213,15 +207,6 @@ class Room extends React.Component {
 
           <br></br>
           <Switch
-            checked={settings.isTileSpotsVisible}
-            onChange={this.handleTileSpotsVisibleChange}
-            value="isTileSpotsVisible"
-            color="primary"
-          />
-          <span> tiles spots </span>
-          <br></br>
-
-          <Checkbox
             checked={isVariantsVisible}
             onChange={this.handleVariantsVisibleChange}
             value="isVariantsVisible"

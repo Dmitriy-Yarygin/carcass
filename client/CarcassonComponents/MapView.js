@@ -13,8 +13,7 @@ const styles = {
 
 class MapView extends React.PureComponent {
   //React.Component {
-  state = { timeStamp: null };
-  componentDidMount() {}
+  state = { timeStamp: null, shownVariantPosition: null }; //shownVariantPosition:{x,y}
 
   static getDerivedStateFromProps(props, state) {
     // console.log('getDerivedStateFromProps');
@@ -51,6 +50,12 @@ class MapView extends React.PureComponent {
     return null;
   }
 
+  changeShownVariant = position => {
+    if (!this.props.isVariantsVisible) {
+      this.setState({ shownVariantPosition: position });
+    }
+  };
+
   render() {
     console.log(`MapView render`);
     const {
@@ -61,7 +66,8 @@ class MapView extends React.PureComponent {
       isVariantsVisible
     } = this.props;
     const { lastTilePosition } = gameState;
-    const { extendedMap } = this.state;
+    const { changeShownVariant, state } = this;
+    const { extendedMap, shownVariantPosition } = state;
     return (
       <div className={classes.root}>
         {extendedMap &&
@@ -73,7 +79,11 @@ class MapView extends React.PureComponent {
               onClick={onClick}
               roomId={roomId}
               lastTilePosition={lastTilePosition}
-              isVariantsVisible={isVariantsVisible}
+              whatVariantsShow={{
+                isVariantsVisible,
+                shownVariantPosition,
+                changeShownVariant
+              }}
             />
           ))}
       </div>

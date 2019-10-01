@@ -9,7 +9,7 @@ import './EtherealTile.css';
 let timerId;
 
 class EtherealTile extends React.PureComponent {
-  state = { rotationIndex: 0, showThisVariants: false };
+  state = { rotationIndex: 0 };
 
   handleBtnClick = e => {
     e.stopPropagation();
@@ -26,35 +26,34 @@ class EtherealTile extends React.PureComponent {
     onClick(position, tile.variants[this.state.rotationIndex]);
   };
 
-  onMouseOver = e => {
-    timerId = null;
-    this.setState({ showThisVariants: true });
-  };
-  onMouseOut = e => {
-    console.log(e.target);
-    this.setState({ showThisVariants: false });
+  onMouseOver = () => {
+    const { position, whatVariantsShow } = this.props;
+    const { changeShownVariant } = whatVariantsShow;
+    changeShownVariant(position);
   };
 
   render() {
     // console.log(this.props);
-    const { tile, isVariantsVisible } = this.props;
-    const { rotationIndex, showThisVariants } = this.state;
+    const { position, tile, whatVariantsShow } = this.props;
+    const { isVariantsVisible, shownVariantPosition } = whatVariantsShow;
+    const { rotationIndex } = this.state;
     const rotation = tile.variants[rotationIndex];
 
-    // const showVariants = isVariantsVisible;
+    const showThisVariants =
+      isVariantsVisible ||
+      (shownVariantPosition &&
+        shownVariantPosition.x === position.x &&
+        shownVariantPosition.y === position.y);
 
     return (
       <div
         className={
-          isVariantsVisible || showThisVariants
-            ? `tileClass ethereal`
-            : `tileClass solidGreenBorder`
+          showThisVariants ? `tileClass ethereal` : `tileClass solidGreenBorder`
         }
         onClick={this.tileClick}
         onMouseOver={this.onMouseOver}
-        onMouseOut={this.onMouseOut}
       >
-        {(isVariantsVisible || showThisVariants) && (
+        {showThisVariants && (
           <>
             <TileCover tile={tile} rotation={rotation} />
             {/*  <GetSidesNames tile={tile} rotation={rotation} /> */}
