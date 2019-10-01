@@ -41,7 +41,7 @@ class EtherealTile extends React.PureComponent {
                   shownVariantPosition=${JSON.stringify(shownVariantPosition)},
                   position=${JSON.stringify(position)}`);
     if (isVariantShown) {
-      // onClick(position, tile.variants[this.state.rotationIndex]);
+      onClick(position, tile.variants[this.state.rotationIndex]);
       return;
     }
 
