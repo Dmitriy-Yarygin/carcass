@@ -85,21 +85,18 @@ class Room extends React.Component {
   ////////////////////////////////////// PUT TILE executed in EtherealTile
   putTileClick = (position, rotation) => {
     const { isVariantsVisible, shownVariantPosition } = this.state;
-    if (
-      !isVariantsVisible &&
-      (!shownVariantPosition ||
-        shownVariantPosition.x !== position.x ||
-        shownVariantPosition.y !== position.y)
-    ) {
-      this.changeShownVariant(position);
-      return;
-    }
+    console.log(
+      `putTileClick   isVariantsVisible=${isVariantsVisible}, 
+      shownVariantPosition=${JSON.stringify(shownVariantPosition)}, 
+      position=${JSON.stringify(position)} `
+    );
     socket.emit(
       'game: put tile',
       { roomId: this.state.roomId, position, rotation },
       answer => {
         if (this.checkSuccess(answer)) {
           this.props.updateRoom(answer.result);
+          this.setState({ shownVariantPosition: null });
         }
       }
     );
@@ -124,9 +121,8 @@ class Room extends React.Component {
   /* ================================================================================= */
   changeShownVariant = position => {
     const { isVariantsVisible, shownVariantPosition } = this.state;
-    if (!this.state.isVariantsVisible) {
-      this.setState({ shownVariantPosition: position });
-    }
+    if (isVariantsVisible) return;
+    this.setState({ shownVariantPosition: position });
   };
   /* ================================================================================= */
 

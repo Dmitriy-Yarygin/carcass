@@ -22,14 +22,44 @@ class EtherealTile extends React.PureComponent {
   };
 
   tileClick = e => {
-    const { onClick, position, tile } = this.props;
-    onClick(position, tile.variants[this.state.rotationIndex]);
+    console.log(`tileClick`);
+    e.stopPropagation();
+    const { onClick, position, tile, whatVariantsShow } = this.props;
+    const {
+      isVariantsVisible,
+      shownVariantPosition,
+      changeShownVariant
+    } = whatVariantsShow;
+
+    const isVariantShown =
+      isVariantsVisible ||
+      (shownVariantPosition &&
+        shownVariantPosition.x === position.x &&
+        shownVariantPosition.y === position.y);
+    console.log(`isVariantShown=${isVariantShown}, isVariantsVisible=${isVariantsVisible},
+                  shownVariantPosition=${JSON.stringify(shownVariantPosition)},
+                  position=${JSON.stringify(position)}`);
+    if (isVariantShown) {
+      onClick(position, tile.variants[this.state.rotationIndex]);
+      return;
+    }
+
+    console.log('putTileClick changeShownVariant');
+    changeShownVariant(position);
   };
 
-  onMouseOver = () => {
+  onMouseEnter = e => {
+    // e.stopPropagation();
+    console.log('onMouseEnter Parent >>>>>>>>>>>>>>>>>>>>>>>>>>>.');
     const { position, whatVariantsShow } = this.props;
-    const { changeShownVariant } = whatVariantsShow;
-    changeShownVariant(position);
+    const { shownVariantPosition, changeShownVariant } = whatVariantsShow;
+    if (
+      !shownVariantPosition ||
+      (shownVariantPosition &&
+        (shownVariantPosition.x !== position.x ||
+          shownVariantPosition.y !== position.y))
+    )
+      changeShownVariant(position);
   };
 
   render() {
@@ -51,7 +81,7 @@ class EtherealTile extends React.PureComponent {
           showThisVariants ? `tileClass ethereal` : `tileClass solidGreenBorder`
         }
         onClick={this.tileClick}
-        onMouseOver={this.onMouseOver}
+        onMouseEnter={this.onMouseEnter}
       >
         {showThisVariants && (
           <>
