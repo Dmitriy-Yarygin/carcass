@@ -25,7 +25,8 @@ const styles = theme => ({
 class Room extends React.Component {
   state = {
     msg: null,
-    isVariantsVisible: false
+    isVariantsVisible: false,
+    shownVariantPosition: null
   };
 
   warningOnClose = () => {
@@ -83,6 +84,16 @@ class Room extends React.Component {
   };
   ////////////////////////////////////// PUT TILE executed in EtherealTile
   putTileClick = (position, rotation) => {
+    const { isVariantsVisible, shownVariantPosition } = this.state;
+    if (
+      !isVariantsVisible &&
+      (!shownVariantPosition ||
+        shownVariantPosition.x !== position.x ||
+        shownVariantPosition.y !== position.y)
+    ) {
+      this.changeShownVariant(position);
+      return;
+    }
     socket.emit(
       'game: put tile',
       { roomId: this.state.roomId, position, rotation },
@@ -111,6 +122,13 @@ class Room extends React.Component {
     this.setState({ isVariantsVisible: event.target.checked });
   };
   /* ================================================================================= */
+  changeShownVariant = position => {
+    const { isVariantsVisible, shownVariantPosition } = this.state;
+    if (!this.state.isVariantsVisible) {
+      this.setState({ shownVariantPosition: position });
+    }
+  };
+  /* ================================================================================= */
 
   render() {
     console.log(`Room render`);
@@ -122,8 +140,13 @@ class Room extends React.Component {
       gameState,
       tilesStackBlinkFlag,
       showPassBtn;
-    const { roomId, roomName, isVariantsVisible } = this.state;
-    const { classes, user, room, settings } = this.props;
+    const {
+      roomId,
+      roomName,
+      isVariantsVisible,
+      shownVariantPosition
+    } = this.state;
+    const { classes, user, room } = this.props;
     if (roomId && room && room.rooms) {
       thisRoom = room.rooms.find(room => room.id === roomId); //
       if (thisRoom) {
@@ -235,7 +258,11 @@ class Room extends React.Component {
               gameState={gameState}
               // settings={settings}
               onClick={this.putTileClick}
-              isVariantsVisible={isVariantsVisible}
+              whatVariantsShow={{
+                isVariantsVisible,
+                shownVariantPosition,
+                changeShownVariant: this.changeShownVariant
+              }}
             />
           )}
         </Paper>
