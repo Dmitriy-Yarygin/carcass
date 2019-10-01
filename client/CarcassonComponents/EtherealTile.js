@@ -28,19 +28,20 @@ class EtherealTile extends React.PureComponent {
     const {
       isVariantsVisible,
       shownVariantPosition,
-      changeShownVariant
+      changeShownVariant,
+      isItMouse
     } = whatVariantsShow;
 
     const isVariantShown =
       isVariantsVisible ||
-      (shownVariantPosition &&
+      (!!shownVariantPosition &&
         shownVariantPosition.x === position.x &&
         shownVariantPosition.y === position.y);
     console.log(`isVariantShown=${isVariantShown}, isVariantsVisible=${isVariantsVisible},
                   shownVariantPosition=${JSON.stringify(shownVariantPosition)},
                   position=${JSON.stringify(position)}`);
     if (isVariantShown) {
-      onClick(position, tile.variants[this.state.rotationIndex]);
+      // onClick(position, tile.variants[this.state.rotationIndex]);
       return;
     }
 
@@ -49,8 +50,8 @@ class EtherealTile extends React.PureComponent {
   };
 
   onMouseEnter = e => {
-    // e.stopPropagation();
-    console.log('onMouseEnter Parent >>>>>>>>>>>>>>>>>>>>>>>>>>>.');
+    console.log('onMouseEnter >>>>>>>>>>>>>>>>>>>>>>>>>>>.');
+    if (!this.props.whatVariantsShow.isItMouse) return;
     const { position, whatVariantsShow } = this.props;
     const { shownVariantPosition, changeShownVariant } = whatVariantsShow;
     if (
