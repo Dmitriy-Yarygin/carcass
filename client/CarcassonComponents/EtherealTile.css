@@ -28,6 +28,9 @@
   transform: translate(-100%, 0%);
 }
 
-.visible {
-  visibility: hidden;
+.ethereal-cross {
+  font-size: 4em;
+  font-weight: bold;
+  font-family: fantasy;
+  color: gainsboro;
 }

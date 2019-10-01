@@ -6,15 +6,8 @@ import GetSidesNames from './GetSidesNames';
 import './Tile.css';
 import './EtherealTile.css';
 
-const crossStyle = {
-  fontSize: '5em',
-  fontWeight: 'bold',
-  fontFamily: 'fantasy',
-  color: 'gainsboro'
-};
-
 class EtherealTile extends React.PureComponent {
-  state = { rotationIndex: 0 };
+  state = { rotationIndex: 0, isMouseEnter: false };
 
   handleBtnClick = e => {
     e.stopPropagation();
@@ -33,12 +26,12 @@ class EtherealTile extends React.PureComponent {
     const {
       isVariantsVisible,
       shownVariantPosition,
-      changeShownVariant,
-      isItMouse
+      changeShownVariant
     } = whatVariantsShow;
 
     const isVariantShown =
       isVariantsVisible ||
+      this.state.isMouseEnter ||
       (!!shownVariantPosition &&
         shownVariantPosition.x === position.x &&
         shownVariantPosition.y === position.y);
@@ -54,6 +47,13 @@ class EtherealTile extends React.PureComponent {
     changeShownVariant(position);
   };
 
+  onMouseEnter = e => {
+    if (!this.state.isMouseEnter) this.setState({ isMouseEnter: true });
+  };
+  onMouseLeave = e => {
+    if (this.state.isMouseEnter) this.setState({ isMouseEnter: false });
+  };
+
   render() {
     // console.log(this.props);
     const { position, tile, whatVariantsShow } = this.props;
@@ -63,35 +63,41 @@ class EtherealTile extends React.PureComponent {
 
     const showThisVariants =
       isVariantsVisible ||
+      this.state.isMouseEnter ||
       (shownVariantPosition &&
         shownVariantPosition.x === position.x &&
         shownVariantPosition.y === position.y);
 
+    const etherealInsideStyle = {};
+
+    if (showThisVariants)
+      return (
+        <div
+          className={`tileClass ethereal`}
+          onClick={this.tileClick}
+          onMouseLeave={this.onMouseLeave}
+        >
+          <TileCover tile={tile} rotation={rotation} className={''} />
+          {/*  <GetSidesNames tile={tile} rotation={rotation} /> */}
+          {/*  <MiplePlaces tile={tile} rotation={rotation} /> */}
+
+          {tile.variants && tile.variants.length > 1 && (
+            <button
+              className="tileClass_btn_rotate"
+              onClick={this.handleBtnClick}
+            >
+              &#8635;
+            </button>
+          )}
+        </div>
+      );
     return (
       <div
-        className={
-          showThisVariants ? `tileClass ethereal` : `tileClass solidGreenBorder`
-        }
+        className={`tileClass solidGreenBorder`}
         onClick={this.tileClick}
+        onMouseEnter={this.onMouseEnter}
       >
-        {showThisVariants ? (
-          <>
-            <TileCover tile={tile} rotation={rotation} />
-            {/*  <GetSidesNames tile={tile} rotation={rotation} /> */}
-            {/*  <MiplePlaces tile={tile} rotation={rotation} /> */}
-
-            {tile.variants && tile.variants.length > 1 && (
-              <button
-                className="tileClass_btn_rotate"
-                onClick={this.handleBtnClick}
-              >
-                &#8635;
-              </button>
-            )}
-          </>
-        ) : (
-          <b style={crossStyle}> + </b>
-        )}
+        <b className={'ethereal-cross'}> + </b>
       </div>
     );
   }
