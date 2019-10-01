@@ -7,7 +7,9 @@ export const COLORS = [
   'green',
   'aqua',
   'navy',
-  'purple'
+  'purple',
+  'dimgray',
+  'black'
 ];
 
 export const NOT_SETTED_MIPLE_PLACE_COLOR = '#cddc39';

@@ -5,7 +5,7 @@ const Users_rooms = require('../models/Users_rooms');
 const GameMap = require('../../game/gameMap');
 const TilesStore = require('../../game/tilesStore');
 
-const MAX_PLAYERS_IN_THE_ROOM = 6;
+const MAX_PLAYERS_IN_THE_ROOM = 9;
 const STARTING_MIPLES_QUANTITY = 7;
 
 const READ_FIELDS = [
