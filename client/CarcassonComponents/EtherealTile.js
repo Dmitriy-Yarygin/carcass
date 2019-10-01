@@ -6,7 +6,12 @@ import GetSidesNames from './GetSidesNames';
 import './Tile.css';
 import './EtherealTile.css';
 
-let timerId;
+const crossStyle = {
+  fontSize: '5em',
+  fontWeight: 'bold',
+  fontFamily: 'fantasy',
+  color: 'gainsboro'
+};
 
 class EtherealTile extends React.PureComponent {
   state = { rotationIndex: 0 };
@@ -49,20 +54,6 @@ class EtherealTile extends React.PureComponent {
     changeShownVariant(position);
   };
 
-  onMouseEnter = e => {
-    console.log('onMouseEnter >>>>>>>>>>>>>>>>>>>>>>>>>>>.');
-    if (!this.props.whatVariantsShow.isItMouse) return;
-    const { position, whatVariantsShow } = this.props;
-    const { shownVariantPosition, changeShownVariant } = whatVariantsShow;
-    if (
-      !shownVariantPosition ||
-      (shownVariantPosition &&
-        (shownVariantPosition.x !== position.x ||
-          shownVariantPosition.y !== position.y))
-    )
-      changeShownVariant(position);
-  };
-
   render() {
     // console.log(this.props);
     const { position, tile, whatVariantsShow } = this.props;
@@ -82,9 +73,8 @@ class EtherealTile extends React.PureComponent {
           showThisVariants ? `tileClass ethereal` : `tileClass solidGreenBorder`
         }
         onClick={this.tileClick}
-        onMouseEnter={this.onMouseEnter}
       >
-        {showThisVariants && (
+        {showThisVariants ? (
           <>
             <TileCover tile={tile} rotation={rotation} />
             {/*  <GetSidesNames tile={tile} rotation={rotation} /> */}
@@ -99,6 +89,8 @@ class EtherealTile extends React.PureComponent {
               </button>
             )}
           </>
+        ) : (
+          <b style={crossStyle}> + </b>
         )}
       </div>
     );

@@ -34,6 +34,8 @@ const styles = {
     position: 'absolute',
     color: 'black',
     // fontSize: '0.6em',
+    fontFamily: 'serif',
+    fontWeight: 'bold',
     top: '10px',
     left: '10px',
     textShadow: '0 0 2px white'
