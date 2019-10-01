@@ -26,7 +26,14 @@ class Room extends React.Component {
   state = {
     msg: null,
     isVariantsVisible: false,
-    shownVariantPosition: null
+    shownVariantPosition: null,
+    isItMouse: true
+  };
+
+  onTouchStart = e => {
+    console.log('========= onTouchStart ========');
+    if (!this.state.isItMouse) return;
+    this.setState({ isItMouse: false });
   };
 
   warningOnClose = () => {
@@ -132,7 +139,8 @@ class Room extends React.Component {
       roomId,
       roomName,
       isVariantsVisible,
-      shownVariantPosition
+      shownVariantPosition,
+      isItMouse
     } = this.state;
     const { classes, user, room } = this.props;
     if (roomId && room && room.rooms) {
@@ -167,7 +175,7 @@ class Room extends React.Component {
     }
 
     return (
-      <Grid container direction="row">
+      <Grid container direction="row" onTouchStart={this.onTouchStart}>
         <Paper className={classes.root} elevation={1}>
           <Typography className={classes.title} variant="h6" noWrap>
             Room {roomName}
@@ -248,7 +256,8 @@ class Room extends React.Component {
               whatVariantsShow={{
                 isVariantsVisible,
                 shownVariantPosition,
-                changeShownVariant: this.changeShownVariant
+                changeShownVariant: this.changeShownVariant,
+                isItMouse
               }}
             />
           )}

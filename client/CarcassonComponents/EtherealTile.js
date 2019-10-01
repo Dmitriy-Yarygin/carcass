@@ -25,11 +25,13 @@ class EtherealTile extends React.PureComponent {
     const {
       isVariantsVisible,
       shownVariantPosition,
-      changeShownVariant
+      changeShownVariant,
+      isItMouse
     } = whatVariantsShow;
 
     const isVariantShown =
       isVariantsVisible ||
+      (isItMouse && this.state.isMouseEnter) ||
       (!!shownVariantPosition &&
         shownVariantPosition.x === position.x &&
         shownVariantPosition.y === position.y);
