@@ -4,7 +4,9 @@ const config = require('../../config')();
 class redisStore {
   constructor() {
     if (!redisStore.instance) {
-      redisStore.instance = store(config.redis || {});
+      // redisStore.instance = store(config.redis || {});
+      console.log(config.redis);
+      redisStore.instance = store();
     }
     return redisStore.instance;
   }

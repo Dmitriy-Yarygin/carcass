@@ -10,7 +10,11 @@ const development = {
     max: 10
   },
   migrations: {
+    directory: './server/db/migrations',
     tableName: 'knex_migrations'
+  },
+  seeds: {
+    directory: './server/db/seeds'
   }
 };
 

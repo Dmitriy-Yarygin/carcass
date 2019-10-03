@@ -31,16 +31,16 @@ const development = {
     commonLogFileLevel: 'info',
     errorsLogFileName: 'error.log',
     commonLogFileName: 'combined.log'
+  },
+  redis: {
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT
   }
 };
 
 const production = {
   ...development,
-  redis: {
-    host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT,
-    password: process.env.REDIS_PASSWORD
-  }
+  redis: { ...development.redis, password: process.env.REDIS_PASSWORD }
 };
 
 module.exports = { production, development };
