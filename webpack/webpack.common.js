@@ -1,13 +1,14 @@
-const Path = require("path");
-const {CleanWebpackPlugin} = require("clean-webpack-plugin");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+const Path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const config = require('../config')();
 
-const ASSET_PATH = process.env.ASSET_PATH || "/";
+const ASSET_PATH = process.env.ASSET_PATH || '/';
 
 module.exports = {
   entry: {
-    app: [Path.resolve(__dirname, "../client/index.js")]
+    app: [Path.resolve(__dirname, '../client/index.js')]
   },
   output: {
     path: config.path.build,
@@ -16,15 +17,21 @@ module.exports = {
   },
 
   plugins: [
-    new CleanWebpackPlugin({ verbose: true, cleanOnceBeforeBuildPatterns: ['**/*']}),
+    new CleanWebpackPlugin({
+      verbose: true,
+      cleanOnceBeforeBuildPatterns: ['**/*']
+    }),
+    // new CopyPlugin([{ from: '../static', to: '../build' }]),
+    new CopyPlugin([{ from: 'static' }]),
+
     new HtmlWebpackPlugin({
-      template: Path.resolve(__dirname, "../client/index.html"),
+      template: Path.resolve(__dirname, '../client/index.html'),
       title: 'Caching'
     })
   ],
   resolve: {
     alias: {
-      "~": Path.resolve(__dirname, "../client")
+      '~': Path.resolve(__dirname, '../client')
     }
   },
   module: {
@@ -32,14 +39,14 @@ module.exports = {
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: "babel-loader"
+        use: 'babel-loader'
       },
       {
         test: /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2)(\?.*)?$/,
         use: {
-          loader: "file-loader",
+          loader: 'file-loader',
           options: {
-            name: "[path][name].[ext]"
+            name: '[path][name].[ext]'
           }
         }
       }

@@ -11,6 +11,7 @@ const log = require('./helpers/logger')(__filename);
 const path = require('path');
 const fs = require('fs');
 const { carcaSockets } = require('./sockets');
+const isNginxWorking = false;
 
 const app = new Koa();
 
@@ -30,13 +31,12 @@ app.keys = [config.session.key];
 app.use(session({ ...config.session, store: redisStore }, app));
 // app.use(session(config.session, app));
 
-app.use(serve(config.path.static));
-
 app.use(router.routes());
 
 carcaSockets(app);
 
 if (config.env === 'development') {
+  app.use(serve(config.path.static));
   const Webpack = require('webpack');
   const koaWebpack = require('koa-webpack');
   const webpackConfig = require('../webpack/webpack.config.dev');
@@ -50,7 +50,7 @@ if (config.env === 'development') {
       );
     });
   });
-} else {
+} else if (!isNginxWorking) {
   // && config.env === 'production') {
   app.use(serve(config.path.build));
   app.use(async ctx => {
