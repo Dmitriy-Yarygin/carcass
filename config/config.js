@@ -34,13 +34,13 @@ const development = {
   }
 };
 
-const production = {
-  ...development,
-  redis: {
-    host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT,
-    password: process.env.REDIS_PASSWORD
-  }
-};
+const production = { ...development };
+
+const { REDIS_URL } = process.env;
+if (REDIS_URL) {
+  const [ , , passwordAndHost, port] = REDIS_URL.split(':');
+  const [password, host] = passwordAndHost.split('@');
+  production.redis = { host, port, password };
+}
 
 module.exports = { production, development };
