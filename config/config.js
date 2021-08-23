@@ -35,7 +35,7 @@ const development = {
 };
 
 const production = { ...development };
-
+// for heroku
 const { REDIS_URL, DATABASE_URL } = process.env;
 if (REDIS_URL) {
   const [ , , passwordAndHost, port] = REDIS_URL.split(':');
