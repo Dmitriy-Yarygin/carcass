@@ -36,11 +36,17 @@ const development = {
 
 const production = { ...development };
 
-const { REDIS_URL } = process.env;
+const { REDIS_URL, DATABASE_URL } = process.env;
 if (REDIS_URL) {
   const [ , , passwordAndHost, port] = REDIS_URL.split(':');
   const [password, host] = passwordAndHost.split('@');
   production.redis = { host, port, password };
+}
+if (DATABASE_URL) {
+  const [user, passwordHost, portDatabase ] = DATABASE_URL.split('://')[1].split(':');
+  const [password, host] = passwordHost.split('@');
+  const [port, database] = portDatabase.split('/');
+  production.database = { host, port, database, user, password };
 }
 
 module.exports = { production, development };
