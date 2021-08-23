@@ -12,6 +12,8 @@ const knex = Knex({
     ...config.database
   }
 });
+// knex.migrate.latest();
+// knex.seed.run();
 
 // Give the knex instance to objection.
 Model.knex(knex);
