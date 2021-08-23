@@ -6,18 +6,26 @@ const projectDirectory = path.join(
     .join(path.sep)
 );
 
+const { 
+  SESSION_KEY, HOST, PORT, REDIS_URL, DATABASE_URL,
+} = process.env;
+
+const getRedisConfig = () => {
+  if (REDIS_URL) {
+    const [ , , passwordAndHost, port] = REDIS_URL.split(':');
+    const [password, host] = passwordAndHost.split('@');
+    return { host, port, password };
+  }
+  return {};
+}
+
 const development = {
-  host: process.env.HOST || 'localhost',
-  port: process.env.PORT || 3000,
-  database: {
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 5432,
-    database: process.env.POSTGRES_DB,
-    user: process.env.POSTGRES_USER,
-    password: process.env.POSTGRES_PASSWORD
-  },
+  host: HOST,
+  port: PORT,
+  database: DATABASE_URL,
+  redis: getRedisConfig(),
   session: {
-    key: process.env.SESSION_KEY, // || throw new Error('Please define SESSION_KEY env variable'),
+    key: SESSION_KEY, // || throw new Error('Please define SESSION_KEY env variable'),
     maxAge: 1000 * 60 * 60 * 8
   },
   path: {
@@ -35,18 +43,5 @@ const development = {
 };
 
 const production = { ...development };
-// for heroku deploy
-const { REDIS_URL, DATABASE_URL } = process.env;
-if (REDIS_URL) {
-  const [ , , passwordAndHost, port] = REDIS_URL.split(':');
-  const [password, host] = passwordAndHost.split('@');
-  production.redis = { host, port, password };
-}
-if (DATABASE_URL) {
-  const [user, passwordHost, portDatabase ] = DATABASE_URL.split('://')[1].split(':');
-  const [password, host] = passwordHost.split('@');
-  const [port, database] = portDatabase.split('/');
-  production.database = { host, port, database, user, password };
-}
 
 module.exports = { production, development };

@@ -9,11 +9,19 @@ const knex = Knex({
   client: 'pg',
   useNullAsDefault: true,
   connection: {
-    ...config.database
-  }
+    connectionString: config.database,
+    ssl: config.database.includes('localhost') 
+      ? false 
+      : {
+        rejectUnauthorized: false,
+      },
+  },
 });
-// knex.migrate.latest();
-// knex.seed.run();
+knex.migrate.latest()
+  .then(([migrationStatus])=>{
+    if (migrationStatus===1) knex.seed.run();
+  })
+  .catch(console.error);
 
 // Give the knex instance to objection.
 Model.knex(knex);
